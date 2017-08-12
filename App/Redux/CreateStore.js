@@ -10,7 +10,7 @@ import ScreenTracking from './ScreenTrackingMiddleware'
 export default (rootReducer, rootSaga) => {
   /* ------------- Redux Configuration ------------- */
 
-  const middleware = []
+  const middleware = [] // Custom Middleware goes here
   const enhancers = []
 
   /* ------------- Analytics Middleware ------------- */
