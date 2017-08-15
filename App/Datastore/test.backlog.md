@@ -1,7 +1,5 @@
 ## Backlog of features to test
 
-------
-
 * Constructor
   * It function is Defined
   * It builds collection from array of Collections. Should match expected
