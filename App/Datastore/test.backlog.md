@@ -42,4 +42,4 @@
   * It Remove works correctly
     * It query argument is not provided, should return error
     * Insert 3 document. Then Remove 2. Then Count. Should return 1
-      * Should publish WAMP route to update remote. Data should match expected
+    * Should publish WAMP route to update remote. Data should match expected
