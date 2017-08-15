@@ -3,7 +3,7 @@ import { ScrollView, Text, Image, View } from 'react-native'
 import DevscreensButton from '../../ignite/DevScreens/DevscreensButton.js'
 import wamp from 'wamp.js2'
 const ws = new wamp.Connection({
-  url: 'ws://10.0.0.4:9000/ws',
+  url: 'ws://104.236.15.64:8080/ws',
   realm: 'realm1'
 })
 
