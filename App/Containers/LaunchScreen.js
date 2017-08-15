@@ -8,13 +8,16 @@ const ws = new wamp.Connection({
 })
 
 import { Images } from '../Themes'
-
+import Mongoose  from '../Datastore'
+var mongo = new Mongoose()
+console.log(mongo)
 // Styles
 import styles from './Styles/LaunchScreenStyles'
 
 export default class LaunchScreen extends Component {
   constructor() {
     super()
+    mongo.testFind()
     this.state = {
       counter: 0
     }
