@@ -1,38 +1,37 @@
-import React, { Component } from 'react'
+ import React, { Component } from 'react'
 import { ScrollView, Text, Image, View } from 'react-native'
 import DevscreensButton from '../../ignite/DevScreens/DevscreensButton.js'
-import wamp from 'wamp.js2'
-const ws = new wamp.Connection({
-  url: 'ws://104.236.15.64:8080/ws',
-  realm: 'realm1'
-})
 
 import { Images } from '../Themes'
 import Mongoose  from '../Datastore'
-var mongo = new Mongoose()
-console.log(mongo)
+import WAMP  from '../WAMP'
+let mongo = new Mongoose()
+let ws
+
 // Styles
 import styles from './Styles/LaunchScreenStyles'
 
 export default class LaunchScreen extends Component {
   constructor() {
     super()
-    mongo.testFind()
     this.state = {
       counter: 0
     }
   }
   componentWillMount () {
-    ws.onopen = (session) => {
-      console.log('connection openned - WAMP.JS')
-      session.subscribe('com.example.counter', (data) => {
-        this.updateCounter(data[0])
-      })
-    }
-    ws.onclose = (session) => {
-      console.log('connection close - WAMP.JS')
-    }
-    ws.open()
+    const subArray = [
+      {
+        uri: 'conapp.fakenews.fetch.insert',
+        cb: (data) => {
+          console.log(data)
+          this.updateCounter(data[0].data._id.toString())
+        }
+      }
+    ]
+    // ws = new WAMP({subArray})
+
+    ws = new WAMP({subArray})
+    console.log(ws)
   }
   updateCounter (newCounter) {
     this.setState({
