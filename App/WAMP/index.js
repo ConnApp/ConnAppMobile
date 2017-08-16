@@ -2,21 +2,41 @@ import wampConfig from './config.js'
 import wamp from 'wamp.js2'
 
 class WAMP {
-  constructor(subArray = []) {
+  constructor({subArray = [], pubArray = []}) {
     // Builds conenction object
     this.Connection = new wamp.Connection(wampConfig)
 
     //Listens for status change to updat the class variables
     this.Connection.onstatuschange(this.onstatuschange)
+
     // Open connection handler
-    this.Connection.onopen = (session) => {
-      if (subArray.length) {
-        subArray.forEach(sub => subscribe(session, sub, sub))
-      }
-    }
+    this.Connection.onopen = this.onopen
 
     // Open Connection
     this.Connection.open()
+  }
+
+  // Close connection
+  close() {
+    this.Connection.close()
+  }
+
+  onopen(session) {
+    // If array subs exists, subscribe to each
+    if (subArray.length) {
+      subArray.forEach(sub => {
+        console.log(sub)
+        this.subscribe(session, sub)
+      })
+    }
+
+    // If array subs exists, subscribe to each
+    if (pubArray.length) {
+      pubArray.forEach(pub => {
+        console.log(pub)
+        this.pusblish(session, pub)
+      })
+    }
   }
 
   // Listens for connection close
@@ -36,8 +56,8 @@ class WAMP {
   }
 
   // publish data to an URI
-  publish(session, sub) {
-    session.publish(sub.uri, sub.cb)
+  publish(session, pub) {
+    session.publish(pub.uri, pub.cb)
   }
 }
 
