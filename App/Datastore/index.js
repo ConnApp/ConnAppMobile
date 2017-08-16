@@ -1,9 +1,12 @@
 import Datastore from 'react-native-local-mongodb'
+import WAMP from '../WAMP'
 
 class Mongoose {
   constructor(collections = ['Default']) {
+    super()
+
     // Builds database file for each collection
-    this.db = collections.map.(collection => {
+    this.db = collections.map(collection => {
       // Defines filename for the collection
       const filename = `${collection}File`
 
@@ -45,7 +48,7 @@ class Mongoose {
   }
 
   // Insert function wrapped in a promise
-  insert({ collection = 'Default', data = undefined }) {
+  insert({ collection = 'Default', data = undefined, isSync = false  }) {
     return new Promise((resolve, reject) => {
       // Validates data argument
       if (!data) {
@@ -62,8 +65,23 @@ class Mongoose {
           // if there is error, reject
           if (err) return reject(err)
 
-          // Dispatch WAMP route here to update remote database.
-          // Dispatch redux route to updated screen
+          let pubArray = data.map(item => ({
+              uri: `conapp.${collection}.insert`,
+              data: item
+            })
+          )
+
+          // If the update was triggered by the server or not
+          if (!isSync) {
+            // Dispatch WAMP route here to update remote database.
+            let ws = new WAMP({ pubArray })
+
+            // Close connection after dispatch
+            ws.close()
+          }
+
+          // Dispatch event to updated screen
+
 
           return resolve(result)
         })
@@ -71,7 +89,7 @@ class Mongoose {
   }
 
   // Updated function wrapped in a promise
-  update({ collection = 'Default', query = undefined, data = undefined, options = {} }) {
+  update({ collection = 'Default', query = undefined, data = undefined, options = {}, isSync = false }) {
     return new Promise((resolve, reject) => {
       // Defines err variable
       let err = {
@@ -87,12 +105,26 @@ class Mongoose {
       // If data or query was not defined
       if (err.list.length) return reject(err)
 
-
       // Update data in the collection and return promise
       return this.db[collection]
-        .update(query, data, options, (err, result) => {
+        .update(query, data, options,  (err, result) => {
           if (err) return reject(err)
           // Dispatch WAMP route here to update remote database
+          let pubArray = data.map(item => ({
+              uri: `conapp.${collection}.update`,
+              data: item
+            })
+          )
+
+          // If the update was triggered by the server or not
+          if (!isSync) {
+            // Dispatch WAMP route here to update remote database.
+            let ws = new WAMP({ pubArray })
+
+            // Close connection after dispatch
+            ws.close()
+          }
+
           // Dispatch redux route to updated screen
 
           return resolve(result)
@@ -110,7 +142,7 @@ class Mongoose {
   }
 
   // Remove function wrapped in a promise
-  remove({ collection = 'Default', query = undefined, options = {}}) {
+  remove({ collection = 'Default', query = undefined, options = {}, isSync = false }) {
     // Remove data from the collection and return promise
     return new Promise((resolve, reject) => {
       // validate query object
