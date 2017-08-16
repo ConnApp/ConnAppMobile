@@ -3,8 +3,6 @@ import WAMP from '../WAMP'
 
 class Mongoose {
   constructor(collections = ['Default']) {
-    super()
-
     // Builds database file for each collection
     this.db = collections.map(collection => {
       // Defines filename for the collection
@@ -48,7 +46,7 @@ class Mongoose {
   }
 
   // Insert function wrapped in a promise
-  insert({ collection = 'Default', data = undefined, isSync = false  }) {
+  insert({ collection = 'Default', data = undefined, isSync = true  }) {
     return new Promise((resolve, reject) => {
       // Validates data argument
       if (!data) {
@@ -72,7 +70,7 @@ class Mongoose {
           )
 
           // If the update was triggered by the server or not
-          if (!isSync) {
+          if (isSync) {
             // Dispatch WAMP route here to update remote database.
             let ws = new WAMP({ pubArray })
 
@@ -117,7 +115,7 @@ class Mongoose {
           )
 
           // If the update was triggered by the server or not
-          if (!isSync) {
+          if (isSync) {
             // Dispatch WAMP route here to update remote database.
             let ws = new WAMP({ pubArray })
 
