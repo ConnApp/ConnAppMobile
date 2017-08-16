@@ -5,8 +5,6 @@ class WAMP {
   constructor({subArray = [], pubArray = []}) {
     // Builds conenction object
     this.Connection = new wamp.Connection(wampConfig)
-    this.subArray = subArray
-    this.pubArray = pubArray
 
     //Listens for status change to updat the class variables
     this.Connection.onstatuschange(this.onstatuschange)
@@ -16,17 +14,14 @@ class WAMP {
       // If array subs exists, subscribe to each
       if (subArray.length) {
         subArray.forEach(sub => {
-          this.subscribe(session, sub)
+          session.subscribe(sub.uri, sub.cb)
         })
       }
 
       // If array subs exists, subscribe to each
       if (pubArray.length) {
         pubArray.forEach(pub => {
-          this.publish(session, pub)
-          .then(function(test) {
-            console.log(test, 'test')
-          })
+          session.publish(sub.uri, sub.data)
         })
       }
     }
@@ -50,16 +45,6 @@ class WAMP {
     this.status, this.details = status, details
   }
 
-  // subscribes to a URI with a callback
-  subscribe(session, sub) {
-    console.log(sub)
-    session.subscribe(sub.uri, sub.cb)
-  }
-
-  // publish data to an URI
-  publish(session, pub) {
-    session.publish(pub.uri, pub.data)
-  }
 }
 
 export default WAMP
