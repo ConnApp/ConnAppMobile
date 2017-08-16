@@ -5,12 +5,31 @@ class WAMP {
   constructor({subArray = [], pubArray = []}) {
     // Builds conenction object
     this.Connection = new wamp.Connection(wampConfig)
+    this.subArray = subArray
+    this.pubArray = pubArray
 
     //Listens for status change to updat the class variables
     this.Connection.onstatuschange(this.onstatuschange)
 
     // Open connection handler
-    this.Connection.onopen = this.onopen
+    this.Connection.onopen = (session) => {
+      // If array subs exists, subscribe to each
+      if (subArray.length) {
+        subArray.forEach(sub => {
+          this.subscribe(session, sub)
+        })
+      }
+
+      // If array subs exists, subscribe to each
+      if (pubArray.length) {
+        pubArray.forEach(pub => {
+          this.publish(session, pub)
+          .then(function(test) {
+            console.log(test, 'test')
+          })
+        })
+      }
+    }
 
     // Open Connection
     this.Connection.open()
@@ -19,24 +38,6 @@ class WAMP {
   // Close connection
   close() {
     this.Connection.close()
-  }
-
-  onopen(session) {
-    // If array subs exists, subscribe to each
-    if (subArray.length) {
-      subArray.forEach(sub => {
-        console.log(sub)
-        this.subscribe(session, sub)
-      })
-    }
-
-    // If array subs exists, subscribe to each
-    if (pubArray.length) {
-      pubArray.forEach(pub => {
-        console.log(pub)
-        this.pusblish(session, pub)
-      })
-    }
   }
 
   // Listens for connection close
@@ -57,7 +58,7 @@ class WAMP {
 
   // publish data to an URI
   publish(session, pub) {
-    session.publish(pub.uri, pub.cb)
+    session.publish(pub.uri, pub.data)
   }
 }
 
