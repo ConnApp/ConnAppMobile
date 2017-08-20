@@ -12,16 +12,37 @@ class WAMP {
     // Open connection handler
     this.Connection.onopen = (session) => {
       // If array subs exists, subscribe to each
+      console.log('connection open')
       if (subArray.length) {
-        subArray.forEach(sub => {
-          session.subscribe(sub.uri, sub.cb)
+        this.subStats = subArray.map(sub => {
+          let status = true
+          try {
+            session.subscribe(sub.uri, sub.cb)
+          } catch(e) {
+            status = e
+          }
+          console.log(`Subscribed to ${sub.uri}`)
+          return {
+            sub: sub,
+            status: status
+          }
         })
       }
-
       // If array subs exists, subscribe to each
+      console.log(pubArray.length)
       if (pubArray.length) {
-        pubArray.forEach(pub => {
-          session.publish(sub.uri, sub.data)
+        this.pubStats = pubArray.map(pub => {
+          let status = true
+          try {
+            session.publish(pub.uri, [pub.data])
+          } catch(e) {
+            status = e
+          }
+          console.log(`Published ${pub.data} to ${pub.uri}`)
+          return {
+            pub: pub,
+            status: status
+          }
         })
       }
     }
