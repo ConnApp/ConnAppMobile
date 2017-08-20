@@ -1,11 +1,12 @@
  import React, { Component } from 'react'
-import { ScrollView, Text, Image, View } from 'react-native'
+import { ScrollView, Text, Image, View, ListView } from 'react-native'
 import DevscreensButton from '../../ignite/DevScreens/DevscreensButton.js'
 
 import { Images } from '../Themes'
 import Mongoose  from '../Datastore'
 import WAMP  from '../WAMP'
-let mongo = new Mongoose()
+const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
+let mongo = new Mongoose(['fakenews', 'test'])
 let ws
 
 // Styles
@@ -15,27 +16,37 @@ export default class LaunchScreen extends Component {
   constructor() {
     super()
     this.state = {
-      counter: 0
+      news: [],
+      dataSource: ds.cloneWithRows([])
     }
   }
   componentWillMount () {
-    const subArray = [
-      {
-        uri: 'conapp.fakenews.fetch.insert',
-        cb: (data) => {
-          console.log(data)
-          this.updateCounter(data[0].data._id.toString())
-        }
-      }
-    ]
-    // ws = new WAMP({subArray})
-
-    ws = new WAMP({subArray})
-    console.log(ws)
-  }
-  updateCounter (newCounter) {
     this.setState({
-      counter: newCounter
+      ...this.state,
+      dataSource: ds.cloneWithRows(this.state.news)
+    })
+
+    mongo.db.fakenews.on('insert', (data) => {
+      this.insertNews(data)
+    })
+
+    mongo.db.fakenews.sync()
+  }
+  insertNews (newFakewnews) {
+    const news = {
+      news: [newFakewnews, ...this.state.news]
+    }
+    this.setState({
+      ...this.state.news,
+      news,
+      dataSource: ds.cloneWithRows(news)
+    })
+  }
+  setNews (news) {
+    this.setState({
+      ...this.state.news,
+      news,
+      dataSource: ds.cloneWithRows(news)
     })
   }
   render () {
@@ -44,16 +55,21 @@ export default class LaunchScreen extends Component {
         <Image source={Images.background} style={styles.backgroundImage} resizeMode='stretch' />
         <ScrollView style={styles.container}>
 
-          <View style={styles.section} >
-            <Text style={styles.sectionText}>
-              `This is an WAMP counter text`
-            </Text>
-            <Text style={styles.sectionText}>
-              {this.state.counter}
-            </Text>
-          </View>
+          <ListView
+            dataSource={this.state.dataSource}
+            renderRow={(rowData) => (
+              <View style={styles.section} >
+                <Text style={styles.titleText}>
+                  {rowData.title}
+                </Text>
+                <Text style={styles.sectionText}>
+                  {rowData.body}
+                </Text>
+              </View>
+            )}
+          />
 
-          <DevscreensButton />
+
         </ScrollView>
       </View>
     )
