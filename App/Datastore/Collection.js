@@ -18,21 +18,52 @@ export default class Collection {
 
     // Collection name
     this.name = collectionName
-    
+
     // Loads collection object
     this.dataStore.loadDatabase((err) => {
       if (err) throw err
 
-      this.sockets['insert'] = [{
+      const subArray = [{
         uri: `connapp.app.${this.name.toLowerCase()}.insert`,
         cb: data => {
-          const insertData = data[0]
+          console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
           const fromRemote = true
-          this.insert({ insertData, fromRemote })
+          data = data[0]
+          this.insert({ data, fromRemote })
+            .then(res => {
+              console.log(res)
+            })
+            .catch(err => {
+              throw err
+            })
         }
       }]
 
+      this.sockets['insert'] = [ new WAMP({ subArray }) ]
+
       console.log(`${collectionName} loaded successfully`)
+    })
+  }
+
+  sync () {
+    this
+    .find({})
+    .then(news => {
+      console.log(news)
+      let ids = news.length? news.map(newDoc => newDoc._id) : []
+
+      let pubArray = [
+        {
+          uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
+          data: ids
+        }
+      ]
+
+      // Dispatch WAMP route here to sync with remote database.
+      let ws = new WAMP({ pubArray })
+
+      // Close connection after dispatch
+      ws.close()
     })
   }
 
@@ -71,10 +102,10 @@ export default class Collection {
         }))
 
         // Make sure is array
-        if (!Array.isArray(this.sockets[item._id])) this.sockets[item._id] = []
+        if (!Array.isArray(this.sockets['find'])) this.sockets['find'] = []
 
         // Subscribe to fetch route and update sockets objects
-        this.sockets[item._id].push( new WAMP({ subArray }) )
+        this.sockets['find'].push( new WAMP({ subArray }) )
       })
     })
   }
@@ -115,7 +146,7 @@ export default class Collection {
           }
 
           // Mounts array for publishing insert routes
-
+          console.log(result)
           // Dispatch event to updated screen
           this.event.emit('insert', result)
 
