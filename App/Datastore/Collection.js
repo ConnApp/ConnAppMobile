@@ -1,10 +1,14 @@
 import Datastore from 'react-native-local-mongodb'
+import EventEmitter from 'EventEmitter'
 import WAMP from '../WAMP'
 
 export default class Collection {
   constructor (collectionName = 'Default') {
     // Defines filename for the collection
     const filename = `${collectionName}File`
+
+    // Defines event emitter
+    this.event = new EventEmitter()
 
     // Defines object of WAMP connection
     this.sockets = {}
@@ -14,15 +18,15 @@ export default class Collection {
 
     // Collection name
     this.name = collectionName
-
+    
     // Loads collection object
-    this.dataStore.loadDatabase(function (err) {
+    this.dataStore.loadDatabase((err) => {
       if (err) throw err
 
       this.sockets['insert'] = [{
         uri: `connapp.app.${this.name.toLowerCase()}.insert`,
         cb: data => {
-          const insertData = data[0].data
+          const insertData = data[0]
           const fromRemote = true
           this.insert({ insertData, fromRemote })
         }
@@ -30,6 +34,10 @@ export default class Collection {
 
       console.log(`${collectionName} loaded successfully`)
     })
+  }
+
+  on (event, cb) {
+    this.event.addListener(event, cb)
   }
 
   // find function wrapped in a promise
@@ -52,7 +60,7 @@ export default class Collection {
         // rejects the error, if any
         if (err) return reject(err)
 
-        // Mounts array for subscribing fetch routes
+        // Mounts array for subscribing to fetch routes
         let subArray = result.map(item => ({
           uri: `connapp.app.${this.name.toLowerCase()}.update.${item._id}`,
           cb: data => {
@@ -109,6 +117,7 @@ export default class Collection {
           // Mounts array for publishing insert routes
 
           // Dispatch event to updated screen
+          this.event.emit('insert', result)
 
           // Resolves result
           return resolve(result)
@@ -159,6 +168,7 @@ export default class Collection {
           }
 
           // Dispatch redux route to updated screen
+          this.event.emit('insert', result)
 
           return resolve(result)
         })
@@ -189,6 +199,7 @@ export default class Collection {
           if (err) return reject(err)
           // Dispatch WAMP route here to update remote database
           // Dispatch redux route to updated screen
+          this.event.emit('remove', result)
 
           return resolve(result)
         })
