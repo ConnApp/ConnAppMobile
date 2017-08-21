@@ -28,17 +28,25 @@ class WAMP {
           }
         })
       }
+
       // If array subs exists, subscribe to each
       console.log(pubArray.length)
       if (pubArray.length) {
         this.pubStats = pubArray.map(pub => {
           let status = true
+          
+          if (!Array.isArray(pub.data)) {
+            pub.data = [pub.data]
+          }
+
           try {
-            session.publish(pub.uri, [pub.data])
+            session.publish(pub.uri, [pub.data], {data: pub.data})
           } catch(e) {
             status = e
           }
+
           console.log(`Published ${pub.data} to ${pub.uri}`)
+
           return {
             pub: pub,
             status: status
