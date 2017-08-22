@@ -11,7 +11,7 @@ export default class Collection {
     this.event = new EventEmitter()
 
     // Defines object of WAMP connection
-    this.sockets = {}
+    this.sockets = []
 
     // Creates collection Object
     this.dataStore = new Datastore({ filename })
@@ -32,7 +32,7 @@ export default class Collection {
           console.log(data + ' to be inserted')
           this.insert({ data, fromRemote })
             .then(res => {
-              console.log(res + ' inserted successfully')
+              console.log(res._id + ' inserted successfully')
             })
             .catch(err => {
               throw err
@@ -40,10 +40,14 @@ export default class Collection {
         }
       }]
 
-      this.sockets['insert'] = [ new WAMP({ subArray }) ]
+      this.sockets.push( new WAMP({ subArray }) )
 
       console.log(`${collectionName} loaded successfully`)
     })
+  }
+
+  closeSockets () {
+    this.sockets.forEach(socket => socket.close())
   }
 
   sync () {
@@ -62,7 +66,7 @@ export default class Collection {
       ]
 
       // Dispatch WAMP route here to sync with remote database.
-      let ws = new WAMP({ pubArray })
+      this.sockets.push( new WAMP({ pubArray }) )
 
     })
   }
@@ -96,7 +100,9 @@ export default class Collection {
         let subArray = result.map(item => ({
           uri: `connapp.app.${this.name.toLowerCase()}.update.${item._id}`,
           cb: data => {
+            console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
             data = data[0]
+            console.log(data)
             const query = { _id: data._id }
             const fromRemote = true
             this.update({ query, data, fromRemote })
@@ -107,7 +113,7 @@ export default class Collection {
         if (!Array.isArray(this.sockets['find'])) this.sockets['find'] = []
 
         // Subscribe to fetch route and update sockets objects
-        this.sockets['find'].push( new WAMP({ subArray }) )
+        this.sockets.push( new WAMP({ subArray }) )
 
         resolve(result)
       })
@@ -143,10 +149,7 @@ export default class Collection {
             ]
 
             // Dispatch WAMP route here to update remote database.
-            let ws = new WAMP({ pubArray })
-
-            // Close connection after dispatch
-            ws.close()
+            this.sockets.push( new WAMP({ pubArray }) )
           }
 
           // Mounts array for publishing insert routes
@@ -167,7 +170,6 @@ export default class Collection {
       let err = {
         list: []
       }
-      console.log()
 
       // Check if query is defined
       if (!query) err.list.push(new Error('No query provided!'))
@@ -178,15 +180,17 @@ export default class Collection {
       // If data or query was not defined
       if (err.list.length) return reject(err)
 
+      options.returnUpdatedDocs = true
+
       // Update is a set, to update only matched fields
-      data = {
+      const setData = {
         $set: data
       }
       console.log('------- UPDATE ---------')
       console.log(query, data)
       // Update data in the collection and return promise
       return this.dataStore
-        .update(query, data, options,  (err, result) => {
+        .update(query, setData, options, (err, result) => {
           if (err) return reject(err)
 
           // If the update was triggered by the server or not
@@ -198,11 +202,11 @@ export default class Collection {
             }))
 
             // Dispatch WAMP route here to update remote database.
-            let ws = new WAMP({ pubArray })
+            this.sockets.push( new WAMP({ pubArray }) )
           }
 
           // Dispatch redux route to updated screen
-          this.event.emit('update', result)
+          this.event.emit('update', data)
 
           return resolve(result)
         })
