@@ -41,13 +41,17 @@ export default class LaunchScreen extends Component {
     })
 
     mongo.db.fakenews.on('update', (data) => {
+      this.updateNew(data)
+    })
+
+    mongo.db.fakenews.on('update', (data) => {
       console.log('data for update ---------------')
       console.log(data)
     })
 
   }
   insertNews (newFakewnews) {
-    console.log('Inset insert stuff')
+    console.log('Insert insert stuff')
 
     const news = [newFakewnews, ...this.state.news]
 
@@ -58,6 +62,21 @@ export default class LaunchScreen extends Component {
     })
 
   }
+
+  updateNew (newNews) {
+    console.log('Update Stuff')
+
+    const news = this.state.news.map(newDoc => {
+
+      const isMatch = newDoc._id == newNews._id
+      console.log(isMatch)
+      return isMatch? newNews : newDoc
+    })
+
+    this.setNews (news)
+
+  }
+
   setNews (news) {
     this.setState({
       ...this.state.news,
@@ -65,6 +84,7 @@ export default class LaunchScreen extends Component {
       dataSource: ds.cloneWithRows(news)
     })
   }
+
   render () {
     return (
       <View style={styles.mainContainer}>
