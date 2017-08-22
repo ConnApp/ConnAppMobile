@@ -9,19 +9,14 @@ class Mongoose {
         finalObj[current.name] = current
         return finalObj
       }, {})
-    console.log(this.db)
   }
 
   closeAllSockets () {
     Object.keys(this.db).forEach(collectionName => {
-      let collection = this.db[collectionName];
-      Object.keys(collection.sockets).forEach(socketName => {
-        let sockets = collection.sockets[socketName];
-        sockets.forEach(socket => socket.close())
-      })
+      let collection = this.db[collectionName]
+      collection.closeSockets()
     })
   }
-
 }
 
 export default Mongoose
