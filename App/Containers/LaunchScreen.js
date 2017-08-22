@@ -20,27 +20,43 @@ export default class LaunchScreen extends Component {
       dataSource: ds.cloneWithRows([])
     }
   }
+
+  populateNews () {
+    return mongo.db.fakenews.find({})
+  }
+
   componentWillMount () {
-    this.setState({
-      ...this.state,
-      dataSource: ds.cloneWithRows(this.state.news)
-    })
+    this.populateNews()
+      .then(news => {
+        console.log(news)
+        this.setNews(news)
+        mongo.db.fakenews.sync()
+      })
+      .catch(err => {
+        throw err
+      })
 
     mongo.db.fakenews.on('insert', (data) => {
       this.insertNews(data)
     })
 
-    mongo.db.fakenews.sync()
+    mongo.db.fakenews.on('update', (data) => {
+      console.log('data for update ---------------')
+      console.log(data)
+    })
+
   }
   insertNews (newFakewnews) {
-    const news = {
-      news: [newFakewnews, ...this.state.news]
-    }
+    console.log('Inset insert stuff')
+
+    const news = [newFakewnews, ...this.state.news]
+
     this.setState({
       ...this.state.news,
       news,
       dataSource: ds.cloneWithRows(news)
     })
+
   }
   setNews (news) {
     this.setState({

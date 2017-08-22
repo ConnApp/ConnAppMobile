@@ -29,9 +29,10 @@ export default class Collection {
           console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
           const fromRemote = true
           data = data[0]
+          console.log(data + ' to be inserted')
           this.insert({ data, fromRemote })
             .then(res => {
-              console.log(res)
+              console.log(res + ' inserted successfully')
             })
             .catch(err => {
               throw err
@@ -49,25 +50,25 @@ export default class Collection {
     this
     .find({})
     .then(news => {
-      console.log(news)
       let ids = news.length? news.map(newDoc => newDoc._id) : []
-
+      console.log(typeof ids, Array.isArray(ids))
+      console.log('ids for sync: '+ids)
+      console.log(`connapp.server.${this.name.toLowerCase()}.fetch`)
       let pubArray = [
         {
           uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
-          data: ids
+          data: {argsList: ids}
         }
       ]
 
       // Dispatch WAMP route here to sync with remote database.
       let ws = new WAMP({ pubArray })
 
-      // Close connection after dispatch
-      ws.close()
     })
   }
 
   on (event, cb) {
+    console.log(`listenting to ${event}`)
     this.event.addListener(event, cb)
   }
 
@@ -95,9 +96,10 @@ export default class Collection {
         let subArray = result.map(item => ({
           uri: `connapp.app.${this.name.toLowerCase()}.update.${item._id}`,
           cb: data => {
+            data = data[0]
             const query = { _id: data._id }
             const fromRemote = true
-            this.update({ query, fromRemote })
+            this.update({ query, data, fromRemote })
           }
         }))
 
@@ -106,6 +108,8 @@ export default class Collection {
 
         // Subscribe to fetch route and update sockets objects
         this.sockets['find'].push( new WAMP({ subArray }) )
+
+        resolve(result)
       })
     })
   }
@@ -146,7 +150,7 @@ export default class Collection {
           }
 
           // Mounts array for publishing insert routes
-          console.log(result)
+
           // Dispatch event to updated screen
           this.event.emit('insert', result)
 
@@ -163,6 +167,7 @@ export default class Collection {
       let err = {
         list: []
       }
+      console.log()
 
       // Check if query is defined
       if (!query) err.list.push(new Error('No query provided!'))
@@ -177,29 +182,27 @@ export default class Collection {
       data = {
         $set: data
       }
-
+      console.log('------- UPDATE ---------')
+      console.log(query, data)
       // Update data in the collection and return promise
       return this.dataStore
         .update(query, data, options,  (err, result) => {
           if (err) return reject(err)
-          // Dispatch WAMP route here to update remote database
-          let pubArray = data.map(item => ({
-              uri: `connapp.server.${this.name.toLowerCase()}.update`,
-              data: item
-            })
-          )
 
           // If the update was triggered by the server or not
           if (!fromRemote) {
+            // Dispatch WAMP route here to update remote database
+            let pubArray = data.map(item => ({
+              uri: `connapp.server.${this.name.toLowerCase()}.update`,
+              data: item
+            }))
+
             // Dispatch WAMP route here to update remote database.
             let ws = new WAMP({ pubArray })
-
-            // Close connection after dispatch
-            ws.close()
           }
 
           // Dispatch redux route to updated screen
-          this.event.emit('insert', result)
+          this.event.emit('update', result)
 
           return resolve(result)
         })
