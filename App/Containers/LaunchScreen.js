@@ -6,7 +6,7 @@ import { Images } from '../Themes'
 import Mongoose  from '../Datastore'
 import WAMP  from '../WAMP'
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
-let mongo = new Mongoose(['fakenews', 'test'])
+let mongo = new Mongoose(['fakenews'])
 let ws
 
 // Styles
@@ -57,12 +57,14 @@ export default class LaunchScreen extends Component {
 
   updateNew (newNews) {
     console.log('Update Stuff')
+    console.log(newNews)
+    console.log('Update Stuff')
 
-    const news = this.state.news.map(newDoc => {
-      const isMatch = newDoc._id == newNews._id
-      console.log(isMatch)
-      return isMatch? newNews : newDoc
-    }).filter(newDoc => newDoc.active)
+    if (newNews[0]) newNews = newNews[0]
+
+    const news = this.state.news.map(newDoc =>
+      newDoc._id == newNews._id? newNews : newDoc
+    ).filter(newDoc => newDoc.active)
 
     this.setNews(news)
   }
