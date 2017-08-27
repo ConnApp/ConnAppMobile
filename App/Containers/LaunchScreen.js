@@ -1,10 +1,18 @@
- import React, { Component } from 'react'
+import React, { Component } from 'react'
 import { ScrollView, Text, Image, View, ListView } from 'react-native'
 import DevscreensButton from '../../ignite/DevScreens/DevscreensButton.js'
 
 import { Images } from '../Themes'
-import Mongoose  from '../Datastore'
-import WAMP  from '../WAMP'
+import { Button } from 'react-native-elements'
+
+const navigationItems = [
+  'Programação',
+  'Agenda',
+  'Informações',
+  'Notícias',
+  'Notas',
+]
+
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 let mongo = new Mongoose(['fakenews'])
 let ws
