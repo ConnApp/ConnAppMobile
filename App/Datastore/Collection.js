@@ -29,10 +29,10 @@ export default class Collection {
           console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
           const fromRemote = true
           data = data[0]
-          console.log(data + ' to be inserted')
+          console.log(`${data}  to be inserted`)
           this.insert({ data, fromRemote })
             .then(res => {
-              console.log(res._id + ' inserted successfully')
+              console.log(`${res._id} inserted successfully`)
             })
             .catch(err => {
               throw err
@@ -57,7 +57,7 @@ export default class Collection {
       .then(news => {
         let ids = news.length? news.map(newDoc => newDoc._id) : []
         console.log(typeof ids, Array.isArray(ids))
-        console.log('ids for sync: '+ids)
+        console.log(`ids for sync: ${ids}`)
         console.log(`connapp.server.${this.name.toLowerCase()}.fetch`)
         let pubArray = [
           {
@@ -74,9 +74,9 @@ export default class Collection {
     })
   }
 
-  on (event, cb) {
-    console.log(`listenting to ${event}`)
-    this.event.addListener(event, cb)
+  on (action, callback) {
+    console.log(`listenting to ${action}`)
+    this.event.addListener(action, callback)
   }
 
   // find function wrapped in a promise
@@ -110,8 +110,21 @@ export default class Collection {
             const fromRemote = true
             if (data.active) {
               this.update({ query, data, fromRemote })
+                .then(res => {
+                  console.log(`${query._id} updated with success`)
+                })
+                .catch(err => {
+                  console.log(err)
+                })
             } else {
-              this.update({ query, fromRemote })
+              console.log(`Performing logical remove on ${query._id}`)
+              this.logicalRemove({ query, fromRemote })
+                .then(res => {
+                  console.log(`${query._id} removed with success`)
+                })
+                .catch(err => {
+                  console.log(err)
+                })
             }
           }
         }))
@@ -133,7 +146,7 @@ export default class Collection {
       // Validates data argument
       if (!data) {
         // Defines error variable object
-        let err = new Error('Insert data not provided')
+        let err = new Error(`Insert data not provided`)
 
         // rejects error object
         return reject({err})
@@ -172,10 +185,11 @@ export default class Collection {
 
   // Remove function wrapped in a promise
   logicalRemove({ query = undefined, fromRemote = false }) {
+    console.log(`Logical remove initated`)
     return new Promise((resolve, reject) => {
       if (!query) {
         // Defines error variable object
-        let err = new Error('No query provided for logicalRemove')
+        let err = new Error(`No query provided for logicalRemove`)
 
         // rejects error object
         return reject({err})
@@ -203,10 +217,10 @@ export default class Collection {
       }
 
       // Check if query is defined
-      if (!query) err.list.push(new Error('No query provided!'))
+      if (!query) err.list.push(new Error(`No query provided!`))
 
       // Check if data is defined
-      if (!data) err.list.push(new Error('No data provided!'))
+      if (!data) err.list.push(new Error(`No data provided!`))
 
       // If data or query was not defined
       if (err.list.length) return reject(err)
@@ -217,7 +231,7 @@ export default class Collection {
       const setData = {
         $set: data
       }
-      console.log('------- UPDATE ---------')
+      console.log(`------- UPDATE ---------`)
       console.log(query, data)
       // Update data in the collection and return promise
       return this.dataStore
@@ -259,7 +273,7 @@ export default class Collection {
     return new Promise((resolve, reject) => {
       // validate query object
       if (!query) {
-        let err = new Error('Insert query not provided')
+        let err = new Error(`Insert query not provided`)
         return reject({err})
       }
 
