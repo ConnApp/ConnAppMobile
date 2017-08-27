@@ -62,9 +62,9 @@ export default class LaunchScreen extends Component {
       const isMatch = newDoc._id == newNews._id
       console.log(isMatch)
       return isMatch? newNews : newDoc
-    })
+    }).filter(newDoc => newDoc.active)
 
-    this.setNews (news)
+    this.setNews(news)
   }
 
   setNews (news) {
