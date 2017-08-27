@@ -94,6 +94,8 @@ export default class Collection {
       // If limit is defined, use limit
       if (limit) Find = Find.limit(limit)
 
+      query.active = true
+
       // Executes the query
       return Find.exec((err, result) => {
         // rejects the error, if any
@@ -118,6 +120,7 @@ export default class Collection {
                 })
             } else {
               console.log(`Performing logical remove on ${query._id}`)
+              console.log(query)
               this.logicalRemove({ query, fromRemote })
                 .then(res => {
                   console.log(`${query._id} removed with success`)
@@ -195,14 +198,12 @@ export default class Collection {
         return reject({err})
       }
 
-      const setActiveToFalse = {
-        $set: {
-          active:false
-        }
+      const data = {
+        active:false
       }
 
       this
-        .update(query, setActiveToFalse)
+        .update({query, data})
         .then(resolve)
         .catch(reject)
     })
@@ -215,7 +216,7 @@ export default class Collection {
       let err = {
         list: []
       }
-
+      console.log(!query)
       // Check if query is defined
       if (!query) err.list.push(new Error(`No query provided!`))
 
@@ -238,6 +239,7 @@ export default class Collection {
         .update(query, setData, options, (err, result) => {
           if (err) return reject(err)
 
+          data = [data]
           // If the update was triggered by the server or not
           if (!fromRemote) {
             // Dispatch WAMP route here to update remote database
