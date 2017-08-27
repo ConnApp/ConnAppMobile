@@ -50,10 +50,10 @@ export default class Collection {
     this.sockets.forEach(socket => socket.close())
   }
 
-  sync (query = {}) {
+  sync (query = {}, getAll = true) {
     return new Promise((resolve, reject) => {
       this
-      .find(query)
+      .find({ query, getAll })
       .then(news => {
         let ids = news.length? news.map(newDoc => newDoc._id) : []
         console.log(typeof ids, Array.isArray(ids))
@@ -69,7 +69,7 @@ export default class Collection {
         // Dispatch WAMP route here to sync with remote database.
         this.sockets.push( new WAMP({ pubArray }) )
 
-        resolve(news)
+        resolve(news.filter(newsDoce => newsDoce.active))
       })
     })
   }
@@ -80,7 +80,7 @@ export default class Collection {
   }
 
   // find function wrapped in a promise
-  find({ query = {}, project = {}, skip = undefined, sort = { createdAt: -1 }, limit = undefined }) {
+  find({ query = {}, project = {}, skip = undefined, sort = { createdAt: -1 }, limit = undefined , getAll = false}) {
     return new Promise((resolve, reject) => {
       // Defines Query object
       let Find = this.dataStore.find(query, project)
@@ -94,7 +94,9 @@ export default class Collection {
       // If limit is defined, use limit
       if (limit) Find = Find.limit(limit)
 
-      query.active = true
+      if (!getAll) {
+        query.active = true
+      }
 
       // Executes the query
       return Find.exec((err, result) => {
@@ -111,6 +113,7 @@ export default class Collection {
             const query = { _id: data._id }
             const fromRemote = true
             if (data.active) {
+              console.log(`Performing regular update remove on ${query._id}`)
               this.update({ query, data, fromRemote })
                 .then(res => {
                   console.log(`${query._id} updated with success`)
@@ -203,7 +206,7 @@ export default class Collection {
       }
 
       this
-        .update({query, data})
+        .update({query, data, fromRemote})
         .then(resolve)
         .catch(reject)
     })
@@ -236,14 +239,15 @@ export default class Collection {
       console.log(query, data)
       // Update data in the collection and return promise
       return this.dataStore
-        .update(query, setData, options, (err, result) => {
+        .update(query, setData, options, (err, result, newDocs) => {
           if (err) return reject(err)
 
-          data = [data]
+          if (!Array.isArray(newDocs)) newDocs = [newDocs]
+
           // If the update was triggered by the server or not
           if (!fromRemote) {
             // Dispatch WAMP route here to update remote database
-            let pubArray = data.map(item => ({
+            let pubArray = newDocs.map(item => ({
               uri: `connapp.server.${this.name.toLowerCase()}.update`,
               data: item
             }))
@@ -253,9 +257,9 @@ export default class Collection {
           }
 
           // Dispatch redux route to updated screen
-          this.event.emit('update', data)
+          this.event.emit('update', newDocs)
 
-          return resolve(result)
+          return resolve({newDocs, result})
         })
     })
   }
