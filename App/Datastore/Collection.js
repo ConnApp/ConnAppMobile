@@ -80,7 +80,7 @@ export default class Collection {
   }
 
   // find function wrapped in a promise
-  find({ query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined }) {
+  find({ query = {}, project = {}, skip = undefined, sort = { createdAt: -1 }, limit = undefined }) {
     return new Promise((resolve, reject) => {
       // Defines Query object
       let Find = this.dataStore.find(query, project)
@@ -108,7 +108,11 @@ export default class Collection {
             console.log(data)
             const query = { _id: data._id }
             const fromRemote = true
-            this.update({ query, data, fromRemote })
+            if (data.active) {
+              this.update({ query, data, fromRemote })
+            } else {
+              this.update({ query, fromRemote })
+            }
           }
         }))
 
@@ -163,6 +167,30 @@ export default class Collection {
           // Resolves result
           return resolve(result)
         })
+    })
+  }
+
+  // Remove function wrapped in a promise
+  logicalRemove({ query = undefined, fromRemote = false }) {
+    return new Promise((resolve, reject) => {
+      if (!query) {
+        // Defines error variable object
+        let err = new Error('No query provided for logicalRemove')
+
+        // rejects error object
+        return reject({err})
+      }
+
+      const setActiveToFalse = {
+        $set: {
+          active:false
+        }
+      }
+
+      this
+        .update(query, setActiveToFalse)
+        .then(resolve)
+        .catch(reject)
     })
   }
 
@@ -246,6 +274,7 @@ export default class Collection {
         })
     })
   }
+
 
   // Ensure Indexing function wrapped in a promise
   ensureIndex({ collection = 'Default', options = {} }) {
