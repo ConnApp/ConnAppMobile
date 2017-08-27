@@ -21,21 +21,7 @@ export default class LaunchScreen extends Component {
     }
   }
 
-  populateNews () {
-    return mongo.db.fakenews.find({})
-  }
-
   componentWillMount () {
-    this.populateNews()
-      .then(news => {
-        console.log(news)
-        this.setNews(news)
-        mongo.db.fakenews.sync()
-      })
-      .catch(err => {
-        throw err
-      })
-
     mongo.db.fakenews.on('insert', (data) => {
       this.insertNews(data)
     })
@@ -44,11 +30,17 @@ export default class LaunchScreen extends Component {
       this.updateNew(data)
     })
 
-    mongo.db.fakenews.on('update', (data) => {
-      console.log('data for update ---------------')
-      console.log(data)
-    })
-
+    // Sync has to come last because the event listeners have to be set
+    // beforehand to update the screen correctly
+    mongo.db.fakenews.sync()
+      .then(news => {
+        console.log('-----News synced')
+        console.log(news)
+        this.setNews(news)
+      })
+      .catch(err => {
+        throw err
+      })
   }
   insertNews (newFakewnews) {
     console.log('Insert insert stuff')
@@ -67,14 +59,12 @@ export default class LaunchScreen extends Component {
     console.log('Update Stuff')
 
     const news = this.state.news.map(newDoc => {
-
       const isMatch = newDoc._id == newNews._id
       console.log(isMatch)
       return isMatch? newNews : newDoc
     })
 
     this.setNews (news)
-
   }
 
   setNews (news) {

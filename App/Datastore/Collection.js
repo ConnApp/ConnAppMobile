@@ -50,24 +50,27 @@ export default class Collection {
     this.sockets.forEach(socket => socket.close())
   }
 
-  sync () {
-    this
-    .find({})
-    .then(news => {
-      let ids = news.length? news.map(newDoc => newDoc._id) : []
-      console.log(typeof ids, Array.isArray(ids))
-      console.log('ids for sync: '+ids)
-      console.log(`connapp.server.${this.name.toLowerCase()}.fetch`)
-      let pubArray = [
-        {
-          uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
-          data: {argsList: ids}
-        }
-      ]
+  sync (query = {}) {
+    return new Promise((resolve, reject) => {
+      this
+      .find(query)
+      .then(news => {
+        let ids = news.length? news.map(newDoc => newDoc._id) : []
+        console.log(typeof ids, Array.isArray(ids))
+        console.log('ids for sync: '+ids)
+        console.log(`connapp.server.${this.name.toLowerCase()}.fetch`)
+        let pubArray = [
+          {
+            uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
+            data: {argsList: ids}
+          }
+        ]
 
-      // Dispatch WAMP route here to sync with remote database.
-      this.sockets.push( new WAMP({ pubArray }) )
+        // Dispatch WAMP route here to sync with remote database.
+        this.sockets.push( new WAMP({ pubArray }) )
 
+        resolve(news)
+      })
     })
   }
 
