@@ -1,29 +1,50 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, Image, View, ListView } from 'react-native'
+import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-native'
 
 import { Images } from '../Themes'
 import { Button } from 'react-native-elements'
 
+
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
+
 
 const navigationItems = [
   { title: 'Programação', bg: '#65BAF7' },
-  { title: 'Agenda',      bg: '#8AB2C0' },
+  { title: 'Agenda', bg: '#8AB2C0' },
   { title: 'Informações', bg: '#AFAB89' },
-  { title: 'Notícias',    bg: '#D4A352' },
-  { title: 'Notas',       bg: '#F99C1B' }
+  { title: 'Notícias', bg: '#D4A352' },
+  { title: 'Notas', bg: '#F99C1B' }
 ]
 
-const buttonStyle = {
-  padding: 1,
-  margin: 0,
-  flex: 1
-}
-// Styles
-import styles from './Styles/LaunchScreenStyles'
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: '#122C34'
+  },
+  header: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  headerImage: {
+    marginTop: 5
+  },
+  menuList: {
+    flex: 4,
+    marginLeft: -15,
+    marginRight: -15
+  },
+  menuButtonView: {
+    flex: 1
+  },
+  menuButton: {
+    flex: 1
+  }
+})
 
 export default class LaunchScreen extends Component {
-  constructor() {
+  constructor () {
     super()
     this.state = {
       dataSource: ds.cloneWithRows(navigationItems)
@@ -32,18 +53,24 @@ export default class LaunchScreen extends Component {
 
   render () {
     return (
-      <View style={styles.mainContainer}>
-          <ListView
-            dataSource={this.state.dataSource}
-            renderRow={(rowData) => (
-              <View style={buttonStyle} >
-              <Button
-                large
-                backgroundColor={rowData.bg}
-                title={rowData.title} />
-              </View>
-            )}
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image
+            style={styles.headerImage}
+            source={Images.enegepLogo}
           />
+        </View>
+        <View style={styles.menuList}>
+          {navigationItems.map((item, key) => (
+            <Button
+              key={key}
+              containerViewStyle={styles.menuButtonView}
+              buttonStyle={styles.menuButton}
+              backgroundColor={item.bg}
+              title={item.title}
+            />
+          ))}
+        </View>
       </View>
     )
   }
