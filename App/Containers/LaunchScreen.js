@@ -1,58 +1,88 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, Image, View } from 'react-native'
-import DevscreensButton from '../../ignite/DevScreens/DevscreensButton.js'
-import wamp from 'wamp.js2'
-const ws = new wamp.Connection({
-  url: 'ws://10.0.0.4:9000/ws',
-  realm: 'realm1'
-})
+import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-native'
 
 import { Images } from '../Themes'
+import { Button } from 'react-native-elements'
+import Gradient from '../Gradient'
 
-// Styles
-import styles from './Styles/LaunchScreenStyles'
+const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
+
+const colors = {
+  initialColor: '054D73',
+  finalColor: '5FA7CD',
+  steps: 6
+}
+
+const colorGradient = new Gradient(colors)
+
+console.log(colorGradient)
+
+const navigationItems = [
+  { title: 'Programação', bg: colorGradient[1] },
+  { title: 'Agenda',      bg: colorGradient[2]  },
+  { title: 'Informações', bg: colorGradient[3]  },
+  { title: 'Notícias',    bg: colorGradient[4]  },
+  { title: 'Notas',       bg: colorGradient[5]  }
+]
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    backgroundColor: colorGradient[0]
+  },
+  header: {
+    flex: 2,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  headerImage: {
+    flex: 1,
+    marginTop: 15,
+    width: 300,
+    resizeMode: 'contain'
+  },
+  menuList: {
+    flex: 4,
+    marginLeft: -15,
+    marginRight: -15
+  },
+  menuButtonView: {
+    flex: 1
+  },
+  menuButton: {
+    flex: 1
+  }
+})
 
 export default class LaunchScreen extends Component {
-  constructor() {
+  constructor () {
     super()
     this.state = {
-      counter: 0
+      dataSource: ds.cloneWithRows(navigationItems)
     }
   }
-  componentWillMount () {
-    ws.onopen = (session) => {
-      console.log('connection openned - WAMP.JS')
-      session.subscribe('com.example.counter', (data) => {
-        this.updateCounter(data[0])
-      })
-    }
-    ws.onclose = (session) => {
-      console.log('connection close - WAMP.JS')
-    }
-    ws.open()
-  }
-  updateCounter (newCounter) {
-    this.setState({
-      counter: newCounter
-    })
-  }
+
   render () {
     return (
-      <View style={styles.mainContainer}>
-        <Image source={Images.background} style={styles.backgroundImage} resizeMode='stretch' />
-        <ScrollView style={styles.container}>
-
-          <View style={styles.section} >
-            <Text style={styles.sectionText}>
-              `This is an WAMP counter text`
-            </Text>
-            <Text style={styles.sectionText}>
-              {this.state.counter}
-            </Text>
-          </View>
-
-          <DevscreensButton />
-        </ScrollView>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Image
+            style={styles.headerImage}
+            source={Images.enegepLogo}
+          />
+        </View>
+        <View style={styles.menuList}>
+          {navigationItems.map((item, key) => (
+            <Button
+              key={key}
+              containerViewStyle={styles.menuButtonView}
+              buttonStyle={styles.menuButton}
+              backgroundColor={item.bg}
+              title={item.title}
+            />
+          ))}
+        </View>
       </View>
     )
   }
