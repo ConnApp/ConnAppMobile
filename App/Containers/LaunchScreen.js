@@ -3,24 +3,33 @@ import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-nativ
 
 import { Images } from '../Themes'
 import { Button } from 'react-native-elements'
-
+import Gradient from '../Gradient'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
+const colors = {
+  initialColor: '054D73',
+  finalColor: '5FA7CD',
+  steps: 6
+}
+
+const colorGradient = new Gradient(colors)
+
+console.log(colorGradient)
 
 const navigationItems = [
-  { title: 'Programação', bg: '#65BAF7' },
-  { title: 'Agenda', bg: '#8AB2C0' },
-  { title: 'Informações', bg: '#AFAB89' },
-  { title: 'Notícias', bg: '#D4A352' },
-  { title: 'Notas', bg: '#F99C1B' }
+  { title: 'Programação', bg: colorGradient[1] },
+  { title: 'Agenda',      bg: colorGradient[2]  },
+  { title: 'Informações', bg: colorGradient[3]  },
+  { title: 'Notícias',    bg: colorGradient[4]  },
+  { title: 'Notas',       bg: colorGradient[5]  }
 ]
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: '#122C34'
+    backgroundColor: colorGradient[0]
   },
   header: {
     flex: 2,
@@ -28,7 +37,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
   },
   headerImage: {
-    marginTop: 5
+    flex: 1,
+    marginTop: 15,
+    width: 300,
+    resizeMode: 'contain'
   },
   menuList: {
     flex: 4,
