@@ -47,15 +47,20 @@ class Gradient {
     }
   }
 
-
   toHexColor (color) {
-    return (
-      '#' +
-      color.red.toString(16) +
-      color.blue.toString(16) +
-      color.green.toString(16)
-    )
+    color = {
+      red: color.red.toString(16),
+      green: color.green.toString(16),
+      blue: color.blue.toString(16),
+    }
+
+    let red = color.red.length == 1? `0${color.red}` : color.red
+    let green = color.green.length == 1? `0${color.green}` : color.green
+    let blue = color.blue.length == 1? `0${color.blue}` : color.blue
+
+    return `#${red}${blue}${green}`
   }
+
 }
 
 export default Gradient
