@@ -31,7 +31,7 @@ class Gradient {
     return {
       red: Math.round(color.red + step.red),
       green: Math.round(color.green + step.green),
-      blue:Math.round( color.blue + step.blue),
+      blue: Math.round( color.blue + step.blue),
     }
   }
 
