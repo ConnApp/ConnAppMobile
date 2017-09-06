@@ -18,11 +18,11 @@ const colorGradient = new Gradient(colors)
 console.log(colorGradient)
 
 const navigationItems = [
-  { title: 'Programação', bg: colorGradient[1] },
-  { title: 'Agenda',      bg: colorGradient[2]  },
-  { title: 'Informações', bg: colorGradient[3]  },
-  { title: 'Notícias',    bg: colorGradient[4]  },
-  { title: 'Notas',       bg: colorGradient[5]  }
+  { title: 'Programação', navKey: 'Events', bg: colorGradient[1]  },
+  { title: 'Agenda',      navKey: 'Events', bg: colorGradient[2]  },
+  { title: 'Informações', navKey: 'Events', bg: colorGradient[3]  },
+  { title: 'Notícias',    navKey: 'Events', bg: colorGradient[4]  },
+  { title: 'Notas',       navKey: 'Events', bg: colorGradient[5]  }
 ]
 
 const styles = StyleSheet.create({
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     flex: 1,
-    marginTop: 15,
+    marginTop: 0,
     width: 300,
     resizeMode: 'contain'
   },
@@ -55,7 +55,15 @@ const styles = StyleSheet.create({
   }
 })
 
+// Hack to hide navigation bar
+const style = StyleSheet.create({ hideText:{ display:"none" } })
+
 export default class LaunchScreen extends Component {
+
+  static navigationOptions = {
+    header: <Text style={style.hideText} ></Text>
+  }
+
   constructor () {
     super()
     this.state = {
@@ -63,6 +71,9 @@ export default class LaunchScreen extends Component {
     }
   }
 
+  goToEvents() {
+    this.props.navigation.navigate('Events')
+  }
   render () {
     return (
       <View style={styles.container}>
@@ -76,6 +87,7 @@ export default class LaunchScreen extends Component {
           {navigationItems.map((item, key) => (
             <Button
               key={key}
+              onPress={() => this.goToEvents(item.navKey)}
               containerViewStyle={styles.menuButtonView}
               buttonStyle={styles.menuButton}
               backgroundColor={item.bg}
