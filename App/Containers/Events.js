@@ -3,6 +3,7 @@ import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-nativ
 
 import { Images } from '../Themes'
 import { Button } from 'react-native-elements'
+import EventCard from '../Components/EventCard'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
@@ -13,14 +14,20 @@ const colors = {
 }
 
 const events = [
-
+  { title: 'Palestra teste', place: 'Lírio - 1', start: '11:15', end: '11:55', likes: 'Sala Teste'},
+  { title: 'Test Tile2', place: 'Place 2', start: '12:15', end: '12:55', likes: 'Sala Teste'},
+  { title: 'Test Tile3', place: 'Place 3', start: '13:15', end: '13:55', likes: 'Sala Teste'},
+  { title: 'Test Tile4', place: 'Place 4', start: '14:15', end: '14:55', likes: 'Sala Teste'},
+  { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
 ]
 
 const styles = StyleSheet.create({
-  container: {
+  contentContainer: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: colors.initialColor
+  },
+  scrollView: {
+    backgroundColor: '#efefef'
   },
   header: {
     flex: 2,
@@ -45,13 +52,12 @@ export default class Events extends Component {
 
   render () {
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Image
-            style={styles.headerImage}
-            source={Images.enegepLogo}
-          />
-        </View>
+      <View contentContainerStyle={styles.contentContainer}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          {events.map((event, key) => (
+            <EventCard key={key} event={event} />
+          ))}
+        </ScrollView>
       </View>
     )
   }
