@@ -1,15 +1,15 @@
 import React, { Component } from 'react'
 import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-native'
 
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import Gradient from '../Gradient'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
 const colors = {
-  initialColor: '054D73',
-  finalColor: '5FA7CD',
+  initialColor: Colors.primary,
+  finalColor: Colors.primaryLight,
   steps: 6
 }
 
