@@ -1,17 +1,11 @@
 import React, { Component } from 'react'
 import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-native'
 
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import EventCard from '../Components/EventCard'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
-
-const colors = {
-  initialColor: '#054D73',
-  finalColor: '#5FA7CD',
-  steps: 6
-}
 
 const events = [
   { title: 'Palestra teste', place: 'Lírio - 1', start: '11:15', end: '11:55', likes: 'Sala Teste'},
