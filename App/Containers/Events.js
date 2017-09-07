@@ -50,6 +50,12 @@ export default class Events extends Component {
     }
   }
 
+  componentWillMount() {
+    // Find mongo this.props.navigation.state.routeName
+    console.log('-----------------------------------')
+    console.log(this.props.navigation.state.routeName)
+  }
+
   render () {
     return (
       <View contentContainerStyle={styles.contentContainer}>

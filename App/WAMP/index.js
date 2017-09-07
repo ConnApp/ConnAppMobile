@@ -12,7 +12,7 @@ class WAMP {
     // Open connection handler
     this.Connection.onopen = (session) => {
       // If array subs exists, subscribe to each
-      console.log('connection open')
+      // console.log('connection open')
       if (subArray.length) {
         this.subStats = subArray.map(sub => {
           let status = true
@@ -21,7 +21,7 @@ class WAMP {
           } catch(e) {
             status = e
           }
-          console.log(`Subscribed to ${sub.uri}`)
+          // console.log(`Subscribed to ${sub.uri}`)
           return {
             sub: sub,
             status: status
@@ -30,11 +30,11 @@ class WAMP {
       }
 
       // If array subs exists, subscribe to each
-      console.log(pubArray.length)
+      // console.log(pubArray.length)
       if (pubArray.length) {
         this.pubStats = pubArray.map(pub => {
           let status = true
-          
+
           if (!Array.isArray(pub.data)) {
             pub.data = [pub.data]
           }
@@ -45,7 +45,7 @@ class WAMP {
             status = e
           }
 
-          console.log(`Published ${pub.data} to ${pub.uri}`)
+          // console.log(`Published ${pub.data} to ${pub.uri}`)
 
           return {
             pub: pub,
@@ -66,7 +66,7 @@ class WAMP {
 
   // Listens for connection close
   onclose() {
-    console.log('WAMP connection closed')
+    // console.log('WAMP connection closed')
   }
 
   // Listens for status change method

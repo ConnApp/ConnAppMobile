@@ -15,7 +15,7 @@ const colors = {
 const styles = StyleSheet.create({
   contentContainer: {
     height: 100,
-    margin: 15,
+    margin: 10,
     padding: 10,
     elevation: 5,
     backgroundColor: 'white'

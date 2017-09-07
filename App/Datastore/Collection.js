@@ -26,13 +26,13 @@ export default class Collection {
       const subArray = [{
         uri: `connapp.app.${this.name.toLowerCase()}.insert`,
         cb: data => {
-          console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
+          // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
           const fromRemote = true
           data = data[0]
-          console.log(`${data}  to be inserted`)
+          // console.log(`${data}  to be inserted`)
           this.insert({ data, fromRemote })
             .then(res => {
-              console.log(`${res._id} inserted successfully`)
+              // console.log(`${res._id} inserted successfully`)
             })
             .catch(err => {
               throw err
@@ -42,7 +42,7 @@ export default class Collection {
 
       this.sockets.push( new WAMP({ subArray }) )
 
-      console.log(`${collectionName} loaded successfully`)
+      // console.log(`${collectionName} loaded successfully`)
     })
   }
 
@@ -56,9 +56,9 @@ export default class Collection {
       .find({ query, getAll })
       .then(news => {
         let ids = news.length? news.map(newDoc => newDoc._id) : []
-        console.log(typeof ids, Array.isArray(ids))
-        console.log(`ids for sync: ${ids}`)
-        console.log(`connapp.server.${this.name.toLowerCase()}.fetch`)
+        // console.log(typeof ids, Array.isArray(ids))
+        // console.log(`ids for sync: ${ids}`)
+        // console.log(`connapp.server.${this.name.toLowerCase()}.fetch`)
         let pubArray = [
           {
             uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
@@ -75,7 +75,7 @@ export default class Collection {
   }
 
   on (action, callback) {
-    console.log(`listenting to ${action}`)
+    // console.log(`listenting to ${action}`)
     this.event.addListener(action, callback)
   }
 
@@ -107,29 +107,29 @@ export default class Collection {
         let subArray = result.map(item => ({
           uri: `connapp.app.${this.name.toLowerCase()}.update.${item._id}`,
           cb: data => {
-            console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
+            // console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
             data = data[0]
-            console.log(data)
+            // console.log(data)
             const query = { _id: data._id }
             const fromRemote = true
             if (data.active) {
-              console.log(`Performing regular update remove on ${query._id}`)
+              // console.log(`Performing regular update remove on ${query._id}`)
               this.update({ query, data, fromRemote })
                 .then(res => {
-                  console.log(`${query._id} updated with success`)
+                  // console.log(`${query._id} updated with success`)
                 })
                 .catch(err => {
-                  console.log(err)
+                  // console.log(err)
                 })
             } else {
-              console.log(`Performing logical remove on ${query._id}`)
-              console.log(query)
+              // console.log(`Performing logical remove on ${query._id}`)
+              // console.log(query)
               this.logicalRemove({ query, fromRemote })
                 .then(res => {
-                  console.log(`${query._id} removed with success`)
+                  // console.log(`${query._id} removed with success`)
                 })
                 .catch(err => {
-                  console.log(err)
+                  // console.log(err)
                 })
             }
           }
@@ -191,7 +191,7 @@ export default class Collection {
 
   // Remove function wrapped in a promise
   logicalRemove({ query = undefined, fromRemote = false }) {
-    console.log(`Logical remove initated`)
+    // console.log(`Logical remove initated`)
     return new Promise((resolve, reject) => {
       if (!query) {
         // Defines error variable object
@@ -219,7 +219,7 @@ export default class Collection {
       let err = {
         list: []
       }
-      console.log(!query)
+      // console.log(!query)
       // Check if query is defined
       if (!query) err.list.push(new Error(`No query provided!`))
 
@@ -235,8 +235,8 @@ export default class Collection {
       const setData = {
         $set: data
       }
-      console.log(`------- UPDATE ---------`)
-      console.log(query, data)
+      // console.log(`------- UPDATE ---------`)
+      // console.log(query, data)
       // Update data in the collection and return promise
       return this.dataStore
         .update(query, setData, options, (err, result, newDocs) => {

@@ -15,7 +15,6 @@ const colors = {
 
 const colorGradient = new Gradient(colors)
 
-console.log(colorGradient)
 
 const navigationItems = [
   { title: 'Programação', navKey: 'Events', bg: colorGradient[1]  },
