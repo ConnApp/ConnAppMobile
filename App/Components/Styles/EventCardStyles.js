@@ -8,7 +8,7 @@ export default StyleSheet.create({
     height: 100,
     margin: 10,
     padding: 10,
-    elevation: 5,
+    elevation: 3,
     backgroundColor: 'white'
   },
   title: {

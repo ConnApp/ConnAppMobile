@@ -9,8 +9,8 @@ import styles from './Styles/EventCardStyles'
 
 // <View style={styles.}></View>
 export default class EventCard extends Component {
-
   render () {
+    // console.log(this.props.event)
     return (
       <View style={styles.contentContainer}>
         <View style={styles.title}>
