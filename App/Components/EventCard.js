@@ -57,9 +57,7 @@ const styles = StyleSheet.create({
   },
   timeStampIconContainer: {
     flex: 1,
-    fontSize: 19,
-    alignItems: 'center',
-    color: colors.finalColor
+    alignItems: 'center'
   },
   timeStampIconStyle: {
     fontSize: 24,
@@ -67,8 +65,7 @@ const styles = StyleSheet.create({
   },
   timeTextContainer: {
     flex: 4,
-    alignItems: 'center',
-    color: colors.finalColor
+    alignItems: 'center'
   },
   timeTextStyle: {
     fontSize: 16,
@@ -84,9 +81,7 @@ const styles = StyleSheet.create({
   },
   favoriteIconContainer: {
     flex: 1,
-    fontSize: 19,
-    alignItems: 'center',
-    color: colors.finalColor
+    alignItems: 'center'
   },
   favoriteIconStyle: {
     fontSize: 24,
