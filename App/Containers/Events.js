@@ -4,6 +4,7 @@ import { SectionList, Text, Image, View, ListView, StyleSheet } from 'react-nati
 import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import EventCard from '../Components/EventCard'
+import EventCategoryCard from '../Components/EventCategoryCard'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
@@ -73,10 +74,7 @@ export default class Events extends Component {
     return <EventCard event={event.item} />
   }
   renderHeader (title) {
-    const event = {
-      title: title.section.key
-    }
-    return <EventCard event={event} />
+    return <EventCategoryCard title={title} />
   }
 
   render () {
