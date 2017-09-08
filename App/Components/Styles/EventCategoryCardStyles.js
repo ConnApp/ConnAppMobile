@@ -6,10 +6,10 @@ import { Fonts, Colors, Metrics } from '../../Themes/'
 export default StyleSheet.create({
   contentContainer: {
     height: 40,
-    margin: 10,
+    marginBottom: 5,
     padding: 10,
     elevation: 3,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
   },
   title: {
     flex: 1,

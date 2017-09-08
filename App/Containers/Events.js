@@ -43,6 +43,14 @@ const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: '#efefef'
   },
+  category: {
+    borderTopColor: '#efefef',
+    borderLeftColor: '#efefef',
+    borderRightColor: '#efefef',
+    borderTopWidth: 5,
+    borderLeftWidth: 5,
+    borderRightWidth: 5,
+  },
   header: {
     flex: 2,
     alignItems: 'center',
@@ -74,16 +82,20 @@ export default class Events extends Component {
     return <EventCard event={event.item} />
   }
   renderHeader (title) {
-    return <EventCategoryCard title={title} />
+    return (
+      <View style={styles.category}>
+        <EventCategoryCard title={title} />
+      </View>
+    )
   }
 
   render () {
     return (
       <View contentContainerStyle={styles.contentContainer}>
         <SectionList
+          keyExtractor={(item, index) => index}
           stickySectionHeadersEnabled={true}
           renderItem={this.renderCard}
-          keyExtractor={(item, index) => index}
           renderSectionHeader={this.renderHeader}
           contentContainerStyle={styles.scrollView}
           sections={events}

@@ -4,11 +4,9 @@ import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-nativ
 
 import styles from './Styles/EventCategoryCardStyles'
 
-
 // <View style={styles.}></View>
 export default class EventCategoryCard extends Component {
   render () {
-    console.log(this.props.title.section.key)
     return (
       <View style={styles.contentContainer}>
         <View style={styles.title}>
