@@ -13,9 +13,9 @@ export default class EventCard extends Component {
     // console.log(this.props.event)
     return (
       <View style={styles.contentContainer}>
-        <View style={styles.title}>
-          <Text style={styles.titleText}>
-            {this.props.event.title}
+        <View style={styles.name}>
+          <Text style={styles.nameText}>
+            {this.props.event.name}
             </Text>
         </View>
         <View style={styles.place}>
