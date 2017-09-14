@@ -5,34 +5,14 @@ import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import EventCard from '../Components/EventCard'
 import EventCategoryCard from '../Components/EventCategoryCard'
+import Mongoose from '../Datastore'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
+let mongo = new Mongoose(['events'])
 
 const events = [{
-  key: 'Categoria 1',
-  data: [
-    { title: 'Palestra teste', place: 'Lírio - 1', start: '11:15', end: '11:55', likes: 'Sala Teste'},
-    { title: 'Test Tile2', place: 'Place 2', start: '12:15', end: '12:55', likes: 'Sala Teste'},
-    { title: 'Test Tile3', place: 'Place 3', start: '13:15', end: '13:55', likes: 'Sala Teste'},
-    { title: 'Test Tile3', place: 'Place 3', start: '13:15', end: '13:55', likes: 'Sala Teste'},
-    { title: 'Test Tile3', place: 'Place 3', start: '13:15', end: '13:55', likes: 'Sala Teste'},
-    { title: 'Test Tile3', place: 'Place 3', start: '13:15', end: '13:55', likes: 'Sala Teste'},
-    { title: 'Test Tile3', place: 'Place 3', start: '13:15', end: '13:55', likes: 'Sala Teste'},
-    { title: 'Test Tile3', place: 'Place 3', start: '13:15', end: '13:55', likes: 'Sala Teste'},
-  ],
-}, {
-  key: 'Categoria 2',
-  data: [
-    { title: 'Test Tile4', place: 'Place 4', start: '14:15', end: '14:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-    { title: 'Test Tile5', place: 'Place 5', start: '15:15', end: '15:55', likes: 'Sala Teste'},
-  ],
+  key:  '',
+  data: [],
 }]
 
 const styles = StyleSheet.create({
@@ -68,14 +48,73 @@ export default class Events extends Component {
   constructor () {
     super()
     this.state = {
-      events: ds.cloneWithRows(events)
+      events: [{
+        key:  '',
+        data: [],
+      }]
     }
   }
 
   componentWillMount() {
-    // Find mongo this.props.navigation.state.routeName
-    console.log('-----------------------------------')
-    // console.log(this.props.navigation.state.routeName)
+    mongo.db.events.on('insert', (data) => {
+      // console.log(data)
+    })
+
+    mongo.db.events.on('update', (data) => {
+
+    })
+    const today = parseInt(this.props.navigation.state.key.split(' ')[1])
+
+    const queryTest = {
+      dateQuery: this.getTodayFilter()
+    }
+
+    mongo.db.events.sync(queryTest)
+      .then(dbEvents => {
+        console.log(dbEvents)
+        this.groupByLocal(dbEvents)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  getTodayFilter() {
+    const day = parseInt(this.props.navigation.state.key.split(' ')[1])
+    return {
+      start: { $gt: new Date(2017, 9, day, 0, 0, 0) },
+      end: { $lt: new Date(2017, 9, day + 1, 0, 0, 0)}
+    }
+  }
+
+  groupByLocal(dbEvents) {
+    let eventsArray = []
+    let cacheIndex = {}
+    dbEvents.forEach(event => {
+      let data = { name: event.name, start: event.start, end: event.end }
+      if (!(cacheIndex[event.local] || {}).index) {
+        eventsArray.push({
+          key: event.local,
+          data: [data]
+        })
+        cacheIndex[event.local] = { index: eventsArray.length, data: {} }
+        cacheIndex[event.local].data[event._id] = 1
+      } else {
+        let keyIndex = cacheIndex[event.local].index - 1
+        if (cacheIndex[event.local].data[event._id]) {
+          let dataIndex = cacheIndex[event.local].data[event._id] - 1
+          eventsArray[keyIndex].data[dataIndex] = data
+        } else {
+          eventsArray[keyIndex].data.push(data)
+          cacheIndex[event.local].data[event._id] = eventsArray[keyIndex].data.length
+        }
+      }
+    })
+
+    this.setState({
+      events: eventsArray
+    })
+    // console.log(this.state.events)
   }
 
   renderCard (event) {
@@ -98,7 +137,7 @@ export default class Events extends Component {
           renderItem={this.renderCard}
           renderSectionHeader={this.renderHeader}
           contentContainerStyle={styles.scrollView}
-          sections={events}
+          sections={this.state.events}
         />
       </View>
     )
