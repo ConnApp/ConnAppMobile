@@ -56,7 +56,7 @@ export default class Collection {
       this
       .find({ query, getAll })
       .then(results => {
-        console.log(results.length)
+        // console.log(results.length)
 
         if (dateQuery) {
           results = results.filter(res => {
@@ -67,7 +67,7 @@ export default class Collection {
           })
         }
 
-        console.log(results.length)
+        // console.log(results.length)
 
         let ids = results.length? results.map(res => res._id) : []
 
@@ -192,7 +192,7 @@ export default class Collection {
           }
 
           // Mounts array for publishing insert routes
-          console.log(result)
+          // console.log(result)
           // Dispatch event to updated screen
           this.event.emit('insert', result)
 
