@@ -21,7 +21,7 @@ const Tabs = TabNavigator(
     }
   },
   {
-    lazy:true,
+    // lazy:true,
     tabBarOptions: {
       style: {
         backgroundColor: '#054D73',
