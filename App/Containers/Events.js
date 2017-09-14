@@ -49,7 +49,7 @@ export default class Events extends Component {
     super()
     this.state = {
       events: [{
-        key:  '',
+        key:  'Carregando...',
         data: [],
       }]
     }
@@ -71,11 +71,11 @@ export default class Events extends Component {
 
     mongo.db.events.sync(queryTest)
       .then(dbEvents => {
-        console.log(dbEvents)
+        // console.log(dbEvents)
         this.groupByLocal(dbEvents)
       })
       .catch(err => {
-        console.log(err)
+        // console.log(err)
       })
   }
 
