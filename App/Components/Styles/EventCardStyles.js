@@ -5,19 +5,19 @@ import { Fonts, Colors, Metrics } from '../../Themes/'
 
 export default StyleSheet.create({
   contentContainer: {
-    height: 100,
+    height: 130,
     margin: 10,
     padding: 10,
     elevation: 3,
     backgroundColor: 'white'
   },
-  title: {
-    flex: 1,
+  name: {
+    flex: 3,
     justifyContent: 'center'
   },
-  titleText: {
-    fontFamily: Fonts.type.bold,
-    fontSize: Fonts.size.input,
+  nameText: {
+    fontFamily: Fonts.type.normal,
+    fontSize: 16,
     fontWeight: 'bold',
   },
   place: {
