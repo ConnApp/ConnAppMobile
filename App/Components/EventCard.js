@@ -9,6 +9,23 @@ import styles from './Styles/EventCardStyles'
 
 // <View style={styles.}></View>
 export default class EventCard extends Component {
+  getHourFromTimeStamp (timeStamp) {
+    const time = new Date(timeStamp)
+    let hours = time.getHours()
+    let minutes = time.getMinutes()
+    if (hours < 10) hours = `0${hours}`
+    if (minutes < 10) minutes = `0${minutes}`
+
+    return `${hours}:${minutes}`
+  }
+
+  getDurantion() {
+    const start = this.getHourFromTimeStamp(this.props.event.start)
+    const end = this.getHourFromTimeStamp(this.props.event.end)
+    console.log(`${start} - ${end}`)
+    return `${start} - ${end}`
+  }
+
   render () {
     // console.log(this.props.event)
     return (
@@ -32,7 +49,7 @@ export default class EventCard extends Component {
               </View>
               <View style={styles.timeTextContainer}>
                 <Text style={styles.timeTextStyle}>
-                  {`${this.props.event.start} - ${this.props.event.end}`}
+                  {this.getDurantion()}
                 </Text>
               </View>
 
