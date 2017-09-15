@@ -11,7 +11,7 @@ import styles from './Styles/EventCardStyles'
 export default class EventCard extends Component {
   getHourFromTimeStamp (timeStamp) {
     const time = new Date(timeStamp)
-    let hours = time.getHours()
+    let hours = time.getHours() + 3 // Timezone offset. Brazil is GMT+3, hence 3
     let minutes = time.getMinutes()
     if (hours < 10) hours = `0${hours}`
     if (minutes < 10) minutes = `0${minutes}`
