@@ -35,9 +35,9 @@ export default class EventCard extends Component {
             {this.props.event.name}
             </Text>
         </View>
-        <View style={styles.place}>
-          <Text style={styles.placeText}>
-            {this.props.event.place}
+        <View style={styles.eventType}>
+          <Text style={styles.eventTypeText}>
+            {this.props.event.eventType.split(' - ')[0]}
           </Text>
         </View>
         <View style={styles.timeContainer}>

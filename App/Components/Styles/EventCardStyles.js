@@ -12,7 +12,7 @@ export default StyleSheet.create({
     backgroundColor: 'white'
   },
   name: {
-    flex: 3,
+    flex: 2,
     justifyContent: 'center'
   },
   nameText: {
@@ -20,11 +20,11 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  place: {
-    flex: 2,
+  eventType: {
+    flex: 3,
     justifyContent: 'center'
   },
-  placeText: {
+  eventTypeText: {
     fontFamily: Fonts.type.base,
     fontSize: Fonts.size.medium,
     fontWeight: 'normal',
