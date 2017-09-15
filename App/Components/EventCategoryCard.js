@@ -11,7 +11,7 @@ export default class EventCategoryCard extends Component {
       <View style={styles.contentContainer}>
         <View style={styles.title}>
           <Text style={styles.titleText}>
-            {this.props.title.section.key}
+            {this.props.title.section.key.split(' - ')[0]}
           </Text>
         </View>
       </View>
