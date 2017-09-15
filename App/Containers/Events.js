@@ -3,14 +3,17 @@ import { SectionList, Text, Image, View, ListView, StyleSheet } from 'react-nati
 
 import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
+
 import EventCard from '../Components/EventCard'
 import EventCategoryCard from '../Components/EventCategoryCard'
 import Mongoose from '../Datastore'
+
 import { groupBy } from '../Helpers'
+
 import styles from './Styles/EventsStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
-let mongo = new Mongoose(['events', 'locals'])
+const mongo = new Mongoose(['events', 'locals', 'eventtypes'])
 
 const events = [{
   key:  'Carregando...',
@@ -23,6 +26,9 @@ export default class Events extends Component {
     this.state = {
       events: events
     }
+    this.events = []
+    this.eventtypes = []
+    this.locals = []
   }
 
   insertLocal (local) {
@@ -51,12 +57,9 @@ export default class Events extends Component {
   updateEvent (newEvent) {
     this.events = this.events.map(event => {
       if (event.key.split(' - ')[1] == newEvent.local) {
-        event.data = event.data.map(ev => {
-          if (ev._id == newEvent._id) {
-            ev = newEvent
-          }
-          return ev
-        })
+        event.data = event.data.map(ev =>
+          ev._id == newEvent._id? newEvent : ev
+        )
       }
       return event
     })
@@ -66,17 +69,21 @@ export default class Events extends Component {
 
   componentWillMount() {
 
-    mongo.db.events.on('insert',this.insertEvent)
-
     mongo.db.locals.on('insert', this.insertLocal)
 
-    mongo.db.events.on('update', this.updateEvent)
-
     mongo.db.locals.on('update', this.updateLocal)
+
+    mongo.db.events.on('insert',this.insertEvent)
+
+    mongo.db.events.on('update', this.updateEvent)
 
     mongo.db.events.find({ dateQuery: this.getTodayFilter() })
       .then(dbEvents => {
         this.events = [...dbEvents]
+        return mongo.db.eventtypes.find({})
+      })
+      .then(eventTypes => {
+        this.eventTypes = [...eventTypes]
         return mongo.db.locals.find({})
       })
       .then(locals => {
@@ -89,19 +96,22 @@ export default class Events extends Component {
   }
 
   setNewEventsState () {
-    this.locals = this.mapLocalToId(this.locals)
+    this.locals = this.reduceToId(this.locals)
+    this.eventTypes = this.reduceToId(this.eventTypes)
+
     this.events = this.events.map(event => {
       event.local = this.locals[event.local]
+      event.eventType = this.eventTypes[event.eventType]
       return event
     })
 
     this.groupEventsByLocal()
   }
 
-  mapLocalToId (locals) {
-    return locals.reduce((localHashTable, local) => {
-      localHashTable[local._id] = `${local.name} - ${local._id}`
-      return localHashTable
+  reduceToId (docs) {
+    return docs.reduce((docHashTable, doc) => {
+      docHashTable[doc._id] = `${doc.name} - ${doc._id}`
+      return docHashTable
     }, {})
   }
 
@@ -139,7 +149,6 @@ export default class Events extends Component {
     this.setState({
       events: eventsArray
     })
-
     // console.log(this.state.events)
   }
 
