@@ -5,17 +5,10 @@ import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import Gradient from '../Gradient'
 import Mongoose from '../Datastore'
+import { styles, colorGradient, colors } from './Styles/LaunchScreenStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 let mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
-
-const colors = {
-  initialColor: Colors.primary,
-  finalColor: Colors.primaryLight,
-  steps: 6
-}
-
-const colorGradient = new Gradient(colors)
 
 const navigationItems = [
   { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1]  },
@@ -25,44 +18,7 @@ const navigationItems = [
   { categoria: '2', title: 'Notas',       navKey: 'Events', bg: colorGradient[5]  }
 ]
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: colorGradient[0]
-  },
-  header: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  headerImage: {
-    flex: 1,
-    marginTop: 0,
-    width: 300,
-    resizeMode: 'contain'
-  },
-  menuList: {
-    flex: 4,
-    marginLeft: -15,
-    marginRight: -15
-  },
-  menuButtonView: {
-    flex: 1
-  },
-  menuButton: {
-    flex: 1
-  }
-})
-
-// Hack to hide navigation bar
-const style = StyleSheet.create({ hideText:{ display:"none" } })
-
 export default class LaunchScreen extends Component {
-
-  static navigationOptions = {
-    header: <Text style={style.hideText} ></Text>
-  }
 
   constructor () {
     super()
