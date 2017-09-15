@@ -22,7 +22,7 @@ export default class EventCard extends Component {
   getDurantion() {
     const start = this.getHourFromTimeStamp(this.props.event.start)
     const end = this.getHourFromTimeStamp(this.props.event.end)
-    console.log(`${start} - ${end}`)
+    // console.log(`${start} - ${end}`)
     return `${start} - ${end}`
   }
 

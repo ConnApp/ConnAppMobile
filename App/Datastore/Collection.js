@@ -51,21 +51,14 @@ export default class Collection {
     this.sockets.forEach(socket => socket.close())
   }
 
-  sync ({query = {}, getAll = true, dateQuery = null}) {
+  sync ({ query = {}, getAll = true }) {
     return new Promise((resolve, reject) => {
       this
       .find({ query, getAll })
       .then(results => {
         // console.log(results.length)
 
-        if (dateQuery) {
-          results = results.filter(res => {
-            let startDate = new Date(res.start).getTime()
-            let endDate = new Date(res.end).getTime()
 
-            return dateQuery.start.$gt.getTime() < startDate && dateQuery.end.$lt.getTime() > endDate
-          })
-        }
 
         // console.log(results.length)
 
@@ -74,7 +67,7 @@ export default class Collection {
         let pubArray = [
           {
             uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
-            data: {argsList: ids, argsDict: Object.assign(query, dateQuery)}
+            data: {argsList: ids, argsDict: query}
           }
         ]
 
@@ -93,7 +86,8 @@ export default class Collection {
   }
 
   // find function wrapped in a promise
-  find({ query = {}, project = {}, skip = undefined, sort = { createdAt: -1 }, limit = undefined , getAll = false}) {
+  find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false}) {
+    console.log('Collection Name: ' + this.name)
     return new Promise((resolve, reject) => {
       // Defines Query object
       let Find = this.dataStore.find(query, project)
@@ -115,6 +109,15 @@ export default class Collection {
       return Find.exec((err, result) => {
         // rejects the error, if any
         if (err) return reject(err)
+
+        if (dateQuery) {
+          result = result.filter(res => {
+            let startDate = new Date(res.start).getTime()
+            let endDate = new Date(res.end).getTime()
+
+            return dateQuery.start.$gt.getTime() < startDate && dateQuery.end.$lt.getTime() > endDate
+          })
+        }
 
         // Mounts array for subscribing to fetch routes
         let subArray = result.map(item => ({

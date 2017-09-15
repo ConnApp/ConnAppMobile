@@ -11,8 +11,15 @@ class Mongoose {
       }, {})
   }
 
+  syncAll () {
+    return Promise.all(Object.keys(this.db).map(collectionName => {
+      let collection = this.db[collectionName]
+      return collection.sync({})
+    }))
+  }
+
   closeAllSockets () {
-    Object.keys(this.db).forEach(collectionName => {
+    Object.keys(this.db).reduce(collectionName => {
       let collection = this.db[collectionName]
       collection.closeSockets()
     })

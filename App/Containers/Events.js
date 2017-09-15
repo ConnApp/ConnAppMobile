@@ -6,43 +6,16 @@ import { Button } from 'react-native-elements'
 import EventCard from '../Components/EventCard'
 import EventCategoryCard from '../Components/EventCategoryCard'
 import Mongoose from '../Datastore'
+import styles from './Styles/EventsStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
-let mongo = new Mongoose(['events'])
+let mongo = new Mongoose(['events', 'locals'])
 
 const events = [{
   key:  '',
   data: [],
 }]
 
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  scrollView: {
-    backgroundColor: '#efefef'
-  },
-  category: {
-    borderTopColor: '#efefef',
-    borderLeftColor: '#efefef',
-    borderRightColor: '#efefef',
-    borderTopWidth: 5,
-    borderLeftWidth: 5,
-    borderRightWidth: 5,
-  },
-  header: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  headerImage: {
-    flex: 1,
-    marginTop: 0,
-    width: 300,
-    resizeMode: 'contain'
-  },
-})
 
 export default class Events extends Component {
   constructor () {
@@ -56,27 +29,53 @@ export default class Events extends Component {
   }
 
   componentWillMount() {
+    const queryTest = {
+      dateQuery: this.getTodayFilter()
+    }
+
     mongo.db.events.on('insert', (data) => {
-      // console.log(data)
+      console.log('event inser')
     })
 
     mongo.db.events.on('update', (data) => {
 
     })
-    const today = parseInt(this.props.navigation.state.key.split(' ')[1])
 
-    const queryTest = {
-      dateQuery: this.getTodayFilter()
-    }
+    mongo.db.locals.on('insert', local => {
+      // this.updateLocalView(local)
+    })
 
-    mongo.db.events.sync(queryTest)
+    mongo.db.locals.on('update', local => {
+      // this.updateLocalView(local)
+    })
+
+    mongo.db.events.find(queryTest)
       .then(dbEvents => {
-        // console.log(dbEvents)
-        this.groupByLocal(dbEvents)
+        this.events = [...dbEvents]
+        return mongo.db.locals.find({})
+      })
+      .then(locals => {
+        locals = locals.reduce((localHashTable, local) => {
+          localHashTable[local._id] = local.name
+          return localHashTable
+        }, {})
+
+        this.events = this.events.map(event => {
+          event.local = locals[event.local]
+          return event
+        })
+
+        this.groupByLocal(this.events)
       })
       .catch(err => {
         // console.log(err)
       })
+  }
+
+  sortByRoom (sectionA, sectionB) {
+    sectionA = sectionA.key.toUpperCase();
+    sectionB = sectionB.key.toUpperCase();
+    return (sectionA < sectionB) ? -1 : (sectionA > sectionB) ? 1 : 0;
   }
 
   getTodayFilter() {
@@ -87,9 +86,11 @@ export default class Events extends Component {
     }
   }
 
-  groupByLocal(dbEvents) {
+  groupByLocal(dbEvents, sortFunction) {
     let eventsArray = []
     let cacheIndex = {}
+    if (!sortFunction) sortFunction = this.sortByRoom
+
     dbEvents.forEach(event => {
       let data = { name: event.name, start: event.start, end: event.end }
       if (!(cacheIndex[event.local] || {}).index) {
@@ -110,7 +111,7 @@ export default class Events extends Component {
         }
       }
     })
-
+    eventsArray = eventsArray.sort(sortFunction)
     this.setState({
       events: eventsArray
     })

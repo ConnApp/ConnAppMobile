@@ -7,7 +7,7 @@ import Gradient from '../Gradient'
 import Mongoose from '../Datastore'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
-let mongo = new Mongoose(['events', 'locals'])
+let mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
 
 const colors = {
   initialColor: Colors.primary,
@@ -72,7 +72,7 @@ export default class LaunchScreen extends Component {
   }
 
   componentWillMount() {
-    mongo.db.syncAll()
+    mongo.syncAll()
       .then(res => {
         console.log('All data synced')
       })
