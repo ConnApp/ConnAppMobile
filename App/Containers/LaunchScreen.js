@@ -4,8 +4,10 @@ import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-nativ
 import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import Gradient from '../Gradient'
+import Mongoose from '../Datastore'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
+let mongo = new Mongoose(['events', 'locals'])
 
 const colors = {
   initialColor: Colors.primary,
@@ -67,6 +69,16 @@ export default class LaunchScreen extends Component {
     this.state = {
       dataSource: ds.cloneWithRows(navigationItems)
     }
+  }
+
+  componentWillMount() {
+    mongo.db.syncAll()
+      .then(res => {
+        console.log('All data synced')
+      })
+      .catch(err => {
+        throw new Error(err)
+      })
   }
 
   goToEvents() {
