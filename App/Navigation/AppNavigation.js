@@ -39,6 +39,9 @@ const Tabs = TabNavigator(
 const PrimaryNav = StackNavigator({
   LaunchScreen: {
     screen: LaunchScreen,
+    navigationOptions: {
+      header: null,
+    }
   },
   Events: {
     screen: Tabs,
