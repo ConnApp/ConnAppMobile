@@ -16,8 +16,13 @@ const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow !=
 const mongo = new Mongoose(['events', 'locals', 'eventtypes'])
 
 const events = [{
-  key:  'Carregando...',
-  data: [],
+  key:  'Carregando Salas',
+  data: [{
+    name: 'Carregando eventos',
+    eventType: '',
+    start: undefined,
+    end: undefined
+  }],
 }]
 
 export default class Events extends Component {
@@ -31,14 +36,28 @@ export default class Events extends Component {
     this.locals = []
   }
 
+  setNewEventsState () {
+    this.locals = this.reduceToId(this.locals)
+    this.eventTypes = this.reduceToId(this.eventTypes)
+
+    this.events = this.events.map(event => {
+      event.local = this.locals[event.local]
+      event.eventType = this.eventTypes[event.eventType]
+      return event
+    })
+
+    this.groupEventsByLocal()
+  }
+
   insertLocal (local) {
-    this.locals = [...this.locals, local]
+    this.locals = this.locals? [...this.locals, local] : [local]
 
     this.setNewEventsState()
   }
 
+
   updateLocal (newLocal) {
-    this.locals = this.locals.map(local => {
+    this.locals = (this.locals || [newLocal]).map(local => {
       if (local._id == newLocal._id) {
         local = newLocal
       }
@@ -49,13 +68,13 @@ export default class Events extends Component {
   }
 
   insertEvent (event) {
-    this.events = [...this.events, event]
+    this.events = this.events? [...this.events, event] : [event]
 
     this.setNewEventsState()
   }
 
   updateEvent (newEvent) {
-    this.events = this.events.map(event => {
+    this.events = (this.events || [newEvent]).map(event => {
       if (event.key.split(' - ')[1] == newEvent.local) {
         event.data = event.data.map(ev =>
           ev._id == newEvent._id? newEvent : ev
@@ -67,15 +86,15 @@ export default class Events extends Component {
     this.setNewEventsState()
   }
 
-  componentWillMount() {
+  componentDidMount() {
 
-    mongo.db.locals.on('insert', this.insertLocal)
+    mongo.db.locals.on('insert', this.insertLocal.bind(this))
 
-    mongo.db.locals.on('update', this.updateLocal)
+    mongo.db.locals.on('update', this.updateLocal.bind(this))
 
-    mongo.db.events.on('insert',this.insertEvent)
+    mongo.db.events.on('insert', this.insertEvent.bind(this))
 
-    mongo.db.events.on('update', this.updateEvent)
+    mongo.db.events.on('update', this.updateEvent.bind(this))
 
     mongo.db.events.find({ dateQuery: this.getTodayFilter() })
       .then(dbEvents => {
@@ -93,19 +112,6 @@ export default class Events extends Component {
       .catch(err => {
         // console.log(err)
       })
-  }
-
-  setNewEventsState () {
-    this.locals = this.reduceToId(this.locals)
-    this.eventTypes = this.reduceToId(this.eventTypes)
-
-    this.events = this.events.map(event => {
-      event.local = this.locals[event.local]
-      event.eventType = this.eventTypes[event.eventType]
-      return event
-    })
-
-    this.groupEventsByLocal()
   }
 
   reduceToId (docs) {

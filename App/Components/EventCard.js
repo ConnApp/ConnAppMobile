@@ -19,11 +19,21 @@ export default class EventCard extends Component {
     return `${hours}:${minutes}`
   }
 
-  getDurantion() {
-    const start = this.getHourFromTimeStamp(this.props.event.start)
-    const end = this.getHourFromTimeStamp(this.props.event.end)
-    // console.log(`${start} - ${end}`)
+  getDurantion(event) {
+    if (!event.start || !event.end) return ''
+    
+    const start = this.getHourFromTimeStamp(event.start)
+    const end = this.getHourFromTimeStamp(event.end)
+
     return `${start} - ${end}`
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return (
+      nextProps.event.name != this.props.event.name &&
+      nextProps.event.eventType != this.props.event.eventType &&
+      getDurantion(nextProps.event) != getDurantion(this.props.event)
+    )
   }
 
   render () {
@@ -49,7 +59,7 @@ export default class EventCard extends Component {
               </View>
               <View style={styles.timeTextContainer}>
                 <Text style={styles.timeTextStyle}>
-                  {this.getDurantion()}
+                  {this.getDurantion(this.props.event)}
                 </Text>
               </View>
 

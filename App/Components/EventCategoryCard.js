@@ -6,6 +6,15 @@ import styles from './Styles/EventCategoryCardStyles'
 
 // <View style={styles.}></View>
 export default class EventCategoryCard extends Component {
+  shouldComponentUpdate (nextProps, nextState) {
+    const oldCategoryName = this.props.title.section.key.split(' - ')
+    const newCategoryName = nextProps.title.section.key.split(' - ')
+    return (
+      oldCategoryName[0] != newCategoryName[0] ||
+      oldCategoryName[1] != newCategoryName[1]
+    )
+  }
+
   render () {
     return (
       <View style={styles.contentContainer}>
