@@ -1,4 +1,5 @@
 import Collection from './Collection.js'
+const keys = Object.keys
 
 class Mongoose {
   constructor(collections = ['Default']) {
@@ -12,14 +13,26 @@ class Mongoose {
   }
 
   syncAll () {
-    return Promise.all(Object.keys(this.db).map(collectionName => {
+    return Promise.all(keys(this.db).map(collectionName =>
+      new Promise((resolve, reject) => {
+        let collection = this.db[collectionName]
+        collection.sync({})
+        collection.on('sync', data => {
+          resolve(collectionName)
+        })
+      })
+    ))
+  }
+
+  removeAll () {
+    return Promise.all(keys(this.db).map(collectionName => {
       let collection = this.db[collectionName]
-      return collection.sync({})
+      return collection.remove({query: {}})
     }))
   }
 
   closeAllSockets () {
-    Object.keys(this.db).reduce(collectionName => {
+    keys(this.db).reduce(collectionName => {
       let collection = this.db[collectionName]
       collection.closeSockets()
     })

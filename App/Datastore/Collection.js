@@ -7,6 +7,8 @@ export default class Collection {
     // Defines filename for the collection
     const filename = `${collectionName}File`
 
+    this.isSync = false
+
     // Defines event emitter
     this.event = new EventEmitter()
 
@@ -25,14 +27,16 @@ export default class Collection {
 
       const subArray = [{
         uri: `connapp.app.${this.name.toLowerCase()}.insert`,
-        cb: data => {
+        cb: remoteData => {
           // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
           const fromRemote = true
-          data = data[0]
+          data = remoteData[0]
+          // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
           // console.log(`${data}  to be inserted`)
           this.insert({ data, fromRemote })
             .then(res => {
-              // console.log(`${res._id} inserted successfully`)
+
+              console.log(`${this.name.toLowerCase()} - ${res.name} inserted successfully`)
             })
             .catch(err => {
               throw err
@@ -47,8 +51,23 @@ export default class Collection {
     })
   }
 
+  checkSync (remoteCount = 0) {
+    this
+      .count({})
+      .then( count => {
+        this.isSync = (count == remoteCount)
+        if (this.isSync) {
+          this.event.emit('sync', this.isSync)
+        }
+      })
+  }
+
   closeSockets () {
     this.sockets.forEach(socket => socket.close())
+  }
+
+  initialSync () {
+
   }
 
   sync ({ query = {}, getAll = true }) {
@@ -57,9 +76,6 @@ export default class Collection {
       .find({ query, getAll })
       .then(results => {
         // console.log(results.length)
-
-
-
         // console.log(results.length)
 
         let ids = results.length? results.map(res => res._id) : []
@@ -162,6 +178,70 @@ export default class Collection {
     })
   }
 
+  save ({ data = {}, options = {}, fromRemote = false }) {
+    options.upsert = true
+    return new Promise((resolve, reject) => {
+      // Defines err variable
+      let err = {
+        list: []
+      }
+
+      let query = {}
+
+      // Check if data is defined
+      if (!data) err.list.push(new Error(`No data provided!`))
+
+      // If data or query was not defined
+      if (err.list.length) return reject(err)
+
+      options.returnUpdatedDocs = true
+      options.upsert = true
+      options.multi = true
+
+      // Update is a set, to update only matched fields
+      const setData = {
+        $set: data
+      }
+      let isInsert = !!data._id
+
+      // is insert
+      if (isInsert) {
+        query = {
+          _id: data._id
+        }
+      } else {
+        query = data
+      }
+
+      // console.log(`------- UPDATE ---------`)
+      // console.log(query, data)
+      // Update data in the collection and return promise
+      return this.dataStore
+        .update(query, setData, options, (err, result, newDocs) => {
+          if (err) return reject(err)
+
+          if (!Array.isArray(newDocs)) newDocs = [newDocs]
+
+          // If the update was triggered by the server or not
+          if (!fromRemote) {
+            // Dispatch WAMP route here to update remote database
+            let pubArray = newDocs.map(item => ({
+              uri: `connapp.server.${this.name.toLowerCase()}.update`,
+              data: item
+            }))
+
+            // Dispatch WAMP route here to update remote database.
+            this.sockets.push( new WAMP({ pubArray }) )
+          }
+
+          // Dispatch redux route to updated screen
+          this.event.emit('save', newDocs)
+
+          return resolve({newDocs, result})
+        })
+    })
+  }
+
   // Insert function wrapped in a promise
   insert({ data = undefined, fromRemote = false }) {
     return new Promise((resolve, reject) => {
@@ -246,6 +326,7 @@ export default class Collection {
       if (err.list.length) return reject(err)
 
       options.returnUpdatedDocs = true
+      options.upsert = true
 
       // Update is a set, to update only matched fields
       const setData = {
@@ -281,7 +362,7 @@ export default class Collection {
   }
 
   // Count function wrapped in a promise
-  count({ query }) {
+  count({ query = {} }) {
     return new Promise((resolve, reject) => {
       // Count data in the collection and return promise
       return this.dataStore
@@ -294,10 +375,12 @@ export default class Collection {
     // Remove data from the collection and return promise
     return new Promise((resolve, reject) => {
       // validate query object
-      if (!query) {
+      if (typeof query == 'undefined') {
         let err = new Error(`Insert query not provided`)
         return reject({err})
       }
+
+      options.multi = true
 
       return this.dataStore
         .remove(query, options, (err, result) => {

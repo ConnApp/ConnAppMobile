@@ -37,8 +37,10 @@ export default class LaunchScreen extends Component {
 
   componentWillMount() {
     mongo.syncAll()
+      // .then(res => mongo.syncAll())
       .then(res => {
         console.log('All data synced')
+        console.log(res)
       })
       .catch(err => {
         throw new Error(err)
