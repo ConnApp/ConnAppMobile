@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     resizeMode: 'contain'
   },
   menuList: {
-    flex: 4,
+    flex: 8,
     marginLeft: -15,
     marginRight: -15
   },

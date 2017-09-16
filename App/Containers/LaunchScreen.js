@@ -1,5 +1,13 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  Image,
+  View,
+  ListView,
+  StyleSheet,
+  NetInfo
+} from 'react-native'
 
 import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
