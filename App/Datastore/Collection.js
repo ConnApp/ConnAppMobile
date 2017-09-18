@@ -33,10 +33,10 @@ export default class Collection {
           data = remoteData[0]
           // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
           // console.log(`${data}  to be inserted`)
-          this.checkSync(remoteData[1])
           this.insert({ data, fromRemote })
             .then(res => {
-              console.log(`Inserted successfully`)
+              this.checkSync(remoteData[1])
+              // console.log(`Inserted successfully`)
             })
             .catch(err => {
               throw err
@@ -54,8 +54,9 @@ export default class Collection {
   checkSync (remoteCount = 0) {
     this
       .count({})
-      .then( count => {
+      .then(count => {
         this.isSync = (count == remoteCount)
+        console.log(`${this.name}: Syncing ${count} of ${remoteCount}`)
         if (this.isSync) {
           this.event.emit('sync', this.isSync)
         }
@@ -180,68 +181,68 @@ export default class Collection {
     })
   }
 
-  save ({ data = {}, options = {}, fromRemote = false }) {
-    return new Promise((resolve, reject) => {
-      // Defines err variable
-      let err = {
-        list: []
-      }
-
-      let query = {}
-
-      // Check if data is defined
-      if (!data) err.list.push(new Error(`No data provided!`))
-
-      // If data or query was not defined
-      if (err.list.length) return reject(err)
-
-      options.returnUpdatedDocs = true
-      options.upsert = true
-
-      // Update is a set, to update only matched fields
-      const setData = {
-        $set: data
-      }
-      let isInsert = !!data._id
-
-      // is insert
-      if (isInsert) {
-        query = {
-          _id: data._id
-        }
-      } else {
-        query = data
-      }
-
-      // console.log(`------- UPDATE ---------`)
-      // console.log(query, data)
-      // Update data in the collection and return promise
-      return this.dataStore
-        .update(query, setData, options, (err, result, newDocs) => {
-          if (err) return reject(err)
-
-          // Just handles multiples, if any
-          if (!Array.isArray(newDocs)) newDocs = [newDocs]
-
-          // If the update was triggered by the server or not
-          if (!fromRemote) {
-            // Dispatch WAMP route here to update remote database
-            let pubArray = newDocs.map(item => ({
-              uri: `connapp.server.${this.name.toLowerCase()}.${isInsert? 'insert' : 'update'}`,
-              data: item
-            }))
-
-            // Dispatch WAMP route here to update remote database.
-            this.sockets.push( new WAMP({ pubArray }) )
-          }
-
-          // Dispatch redux route to updated screen
-          this.event.emit('save', newDocs)
-
-          return resolve({newDocs, result})
-        })
-    })
-  }
+  // save ({ data = {}, options = {}, fromRemote = false }) {
+  //   return new Promise((resolve, reject) => {
+  //     // Defines err variable
+  //     let err = {
+  //       list: []
+  //     }
+  //
+  //     let query = {}
+  //
+  //     // Check if data is defined
+  //     if (!data) err.list.push(new Error(`No data provided!`))
+  //
+  //     // If data or query was not defined
+  //     if (err.list.length) return reject(err)
+  //
+  //     options.returnUpdatedDocs = true
+  //     options.upsert = true
+  //
+  //     // Update is a set, to update only matched fields
+  //     const setData = {
+  //       $set: data
+  //     }
+  //     let isInsert = !!data._id
+  //
+  //     // is insert
+  //     if (isInsert) {
+  //       query = {
+  //         _id: data._id
+  //       }
+  //     } else {
+  //       query = data
+  //     }
+  //
+  //     // console.log(`------- UPDATE ---------`)
+  //     // console.log(query, data)
+  //     // Update data in the collection and return promise
+  //     return this.dataStore
+  //       .update(query, setData, options, (err, result, newDocs) => {
+  //         if (err) return reject(err)
+  //
+  //         // Just handles multiples, if any
+  //         if (!Array.isArray(newDocs)) newDocs = [newDocs]
+  //
+  //         // If the update was triggered by the server or not
+  //         if (!fromRemote) {
+  //           // Dispatch WAMP route here to update remote database
+  //           let pubArray = newDocs.map(item => ({
+  //             uri: `connapp.server.${this.name.toLowerCase()}.${isInsert? 'insert' : 'update'}`,
+  //             data: item
+  //           }))
+  //
+  //           // Dispatch WAMP route here to update remote database.
+  //           this.sockets.push( new WAMP({ pubArray }) )
+  //         }
+  //
+  //         // Dispatch redux route to updated screen
+  //         this.event.emit('save', newDocs)
+  //
+  //         return resolve({newDocs, result})
+  //       })
+  //   })
+  // }
 
   // Insert function wrapped in a promise
   insert({ data = undefined, fromRemote = false }) {
