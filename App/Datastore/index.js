@@ -1,19 +1,21 @@
 import Collection from './Collection.js'
+import LocalStorage from './LocalStorage.js'
 const keys = Object.keys
 
 class Mongoose {
-  constructor(collections = ['Default']) {
+  constructor(collections = ['Default'], isLocal = false) {
     // Builds database file for each collection
+    this.isLocal = isLocal
     this.db = collections
-      .map(collection => new Collection(collection))
+      .map(collection => isLocal? new Collection(collection) : new LocalStorage(collection))
       .reduce((finalObj, current) => {
         finalObj[current.name] = current
         return finalObj
       }, {})
   }
-
+  
   checkIfAllSync() {
-
+    if (this.isLocal) return false
     const isNotSynced = keys(this.db).some(collection => {
       try {
         throw new Error()
@@ -29,9 +31,10 @@ class Mongoose {
   }
 
   initSyncAll () {
+    if (this.isLocal) return false
     return new Promise((resolve, reject) => {
       this.removeAll()
-      .then(res => 
+      .then(res =>
         Promise.all(
           keys(this.db).map(collection => this.db[collection].sync({}))
         )
@@ -42,6 +45,7 @@ class Mongoose {
   }
 
   removeAll () {
+    if (this.isLocal) return false
     return Promise.all(
       keys(this.db).map(
         collection => this.db[collection].remove({query: {}})
@@ -50,6 +54,7 @@ class Mongoose {
   }
 
   closeAllSockets () {
+    if (this.isLocal) return false
     keys(this.db).reduce(collection => this.db[collection].closeSockets())
   }
 }

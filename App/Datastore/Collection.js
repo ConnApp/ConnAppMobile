@@ -21,28 +21,38 @@ export default class Collection {
     // Collection name
     this.name = collectionName
 
+    this.session = `${Math.round(1000*Math.random())}${new Date().getTime()}`
+
     // Loads collection object
     this.dataStore.loadDatabase(err => {
       if (err) throw err
 
-      const subArray = [{
-        uri: `connapp.app.${this.name.toLowerCase()}.insert`,
-        cb: remoteData => {
-          // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
-          const fromRemote = true
-          data = remoteData[0]
-          // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
-          // console.log(`${data}  to be inserted`)
-          this.insert({ data, fromRemote })
-            .then(res => {
-              this.checkSync(remoteData[1])
-              // console.log(`Inserted successfully`)
-            })
-            .catch(err => {
-              throw err
-            })
-        }
-      }]
+      const insertFunction = (remoteData) => {
+        // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
+        const fromRemote = true
+        data = remoteData[0]
+        // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
+        // console.log(`${data}  to be inserted`)
+        this.insert({ data, fromRemote })
+          .then(res => {
+            this.checkSync(remoteData[1])
+            // console.log(`Inserted successfully`)
+          })
+          .catch(err => {
+            throw err
+          })
+      }
+    }
+      const subArray = [
+        {
+          uri: `connapp.app.${this.name.toLowerCase()}.insert`,
+          cb: insertFunction
+        },
+        {
+          uri: `connapp.app.${this.session}.${this.name.toLowerCase()}.insert`,
+          cb: insertFunction
+        },
+      ]
 
       // console.log(subArray)
       this.sockets.push( new WAMP({ subArray }) )
@@ -70,7 +80,7 @@ export default class Collection {
   sync ({ query = {}, getAll = true }) {
     return new Promise((resolve, reject) => {
       this
-      .find({ query, getAll })
+      .find({ query, getAll, isSync: true})
       .then(results => {
         // console.log(results.length)
         // console.log(results.length)
@@ -80,7 +90,7 @@ export default class Collection {
         let pubArray = [
           {
             uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
-            data: {argsList: ids, argsDict: query}
+            data: {argsList: ids, argsDict: {query, session: this.session}}
           }
         ]
 
@@ -105,7 +115,7 @@ export default class Collection {
   }
 
   // find function wrapped in a promise
-  find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false}) {
+  find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false, isSync = false}) {
     console.log('Collection Name: ' + this.name)
     return new Promise((resolve, reject) => {
       // Defines Query object
@@ -137,10 +147,13 @@ export default class Collection {
             return dateQuery.start.$gt.getTime() < startDate && dateQuery.end.$lt.getTime() > endDate
           })
         }
+        const uri = isSync?
+          `connapp.app.${this.session}.${this.name.toLowerCase()}.update.${item._id}` :
+          `connapp.app.${this.name.toLowerCase()}.update.${item._id}`
 
         // Mounts array for subscribing to fetch routes
         let subArray = result.map(item => ({
-          uri: `connapp.app.${this.name.toLowerCase()}.update.${item._id}`,
+          uri,
           cb: data => {
             // console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
             data = data[0]

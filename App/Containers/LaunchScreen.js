@@ -17,6 +17,7 @@ import { styles, colorGradient, colors } from './Styles/LaunchScreenStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 let mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
+let localStorage = new Mongoose(['credentials'])
 
 const navigationItems = [
   { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1]  },
