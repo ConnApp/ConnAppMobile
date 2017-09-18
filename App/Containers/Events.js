@@ -40,47 +40,44 @@ export default class Events extends Component {
     let locals = this.reduceToId(this.locals)
     let eventTypes = this.reduceToId(this.eventTypes)
 
-    this.events = this.events.map(event => {
+    let events = this.events.map(eventRef => {
+      let event = {...eventRef}
       event.local = locals[event.local]
       event.eventType = eventTypes[event.eventType]
       return event
     })
 
-    this.groupEventsByLocal()
+    this.groupEventsByLocal(events)
   }
 
   insertLocal (local) {
+    if (this.isArray(local)) local =  local[0]
     this.locals = this.locals? [...this.locals, local] : [local]
 
     this.setNewEventsState()
   }
 
   updateLocal (newLocal) {
-    this.locals = (this.locals || [newLocal]).map(local => {
-      if (local._id == newLocal._id) {
-        local = newLocal
-      }
-      return local
-    })
+    if (this.isArray(newLocal)) newLocal =  newLocal[0]
+    this.locals = (this.locals || [newLocal]).map(local =>
+      local._id == newLocal._id ? {...newLocal} : {...local}
+    )
 
     this.setNewEventsState()
   }
 
   insertEvent (event) {
+    if (this.isArray(event)) event =  event[0]
     this.events = this.events? [...this.events, event] : [event]
 
     this.setNewEventsState()
   }
 
   updateEvent (newEvent) {
-    this.events = (this.events || [newEvent]).map(event => {
-      if (event.key.split(' - ')[1] == newEvent.local) {
-        event.data = event.data.map(ev =>
-          ev._id == newEvent._id? newEvent : ev
-        )
-      }
-      return event
-    })
+    if (this.isArray(newEvent)) newEvent =  newEvent[0]
+    this.events = (this.events || [newEvent]).map(event =>
+      event._id == newEvent._id ? {...newEvent} : {...event}
+    )
 
     this.setNewEventsState()
   }
@@ -113,6 +110,10 @@ export default class Events extends Component {
       })
   }
 
+  isArray(element) {
+    return Array.isArray(element)
+  }
+
   reduceToId (docs) {
     console.log(docs)
     return !docs? [] : docs.reduce((docHashTable, doc) => {
@@ -141,10 +142,10 @@ export default class Events extends Component {
     return (sectionA < sectionB) ? -1 : (sectionA > sectionB) ? 1 : 0;
   }
 
-  groupEventsByLocal(sectionSort = this.sortByRoom, sortEvents = this.sortByStart) {
+  groupEventsByLocal(events, sectionSort = this.sortByRoom, sortEvents = this.sortByStart) {
 
     let eventsArray =
-      groupBy(this.events, 'local')
+      groupBy(events, 'local')
       .map(event => ({
         ...event,
         data: event.data.sort(sortEvents)
