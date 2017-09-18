@@ -22,7 +22,7 @@ export default class Collection {
     this.name = collectionName
 
     // Loads collection object
-    this.dataStore.loadDatabase((err) => {
+    this.dataStore.loadDatabase(err => {
       if (err) throw err
 
       const subArray = [{
@@ -33,10 +33,10 @@ export default class Collection {
           data = remoteData[0]
           // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
           // console.log(`${data}  to be inserted`)
+          this.checkSync(remoteData[1])
           this.insert({ data, fromRemote })
             .then(res => {
-
-              console.log(`${this.name.toLowerCase()} - ${res.name} inserted successfully`)
+              console.log(`Inserted successfully`)
             })
             .catch(err => {
               throw err
@@ -66,10 +66,6 @@ export default class Collection {
     this.sockets.forEach(socket => socket.close())
   }
 
-  initialSync () {
-
-  }
-
   sync ({ query = {}, getAll = true }) {
     return new Promise((resolve, reject) => {
       this
@@ -90,7 +86,13 @@ export default class Collection {
         // Dispatch WAMP route here to sync with remote database.
         this.sockets.push( new WAMP({ pubArray }) )
 
-        resolve(results.filter(res => res.active))
+        if (!this.isSync) {
+          this.on('sync', () => {
+            resolve(this.isSync)
+          })
+        } else {
+          resolve(results.filter(res => res.active))
+        }
       })
       .catch(reject)
     })
@@ -179,7 +181,6 @@ export default class Collection {
   }
 
   save ({ data = {}, options = {}, fromRemote = false }) {
-    options.upsert = true
     return new Promise((resolve, reject) => {
       // Defines err variable
       let err = {
@@ -196,7 +197,6 @@ export default class Collection {
 
       options.returnUpdatedDocs = true
       options.upsert = true
-      options.multi = true
 
       // Update is a set, to update only matched fields
       const setData = {
@@ -220,13 +220,14 @@ export default class Collection {
         .update(query, setData, options, (err, result, newDocs) => {
           if (err) return reject(err)
 
+          // Just handles multiples, if any
           if (!Array.isArray(newDocs)) newDocs = [newDocs]
 
           // If the update was triggered by the server or not
           if (!fromRemote) {
             // Dispatch WAMP route here to update remote database
             let pubArray = newDocs.map(item => ({
-              uri: `connapp.server.${this.name.toLowerCase()}.update`,
+              uri: `connapp.server.${this.name.toLowerCase()}.${isInsert? 'insert' : 'update'}`,
               data: item
             }))
 
