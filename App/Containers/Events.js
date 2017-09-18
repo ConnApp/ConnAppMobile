@@ -37,9 +37,8 @@ export default class Events extends Component {
   }
 
   setNewEventsState () {
-    let locals = this.reduceToId(this.locals)
     let eventTypes = this.reduceToId(this.eventTypes)
-
+    let locals = this.reduceToId(this.locals)
     let events = this.events.map(eventRef => {
       let event = {...eventRef}
       event.local = locals[event.local]
@@ -50,59 +49,48 @@ export default class Events extends Component {
     this.groupEventsByLocal(events)
   }
 
-  insertLocal (local) {
-    if (this.isArray(local)) local =  local[0]
-    this.locals = this.locals? [...this.locals, local] : [local]
+  insertIntoList (item = undefined, list = undefined) {
+    if (!list || !item) throw new Error('Provide list and item')
+
+    if (this.isArray(item)) item =  item[0]
+    this[list] = this[list]? [...this[list], {...item}] : [{...item}]
 
     this.setNewEventsState()
   }
 
-  updateLocal (newLocal) {
-    if (this.isArray(newLocal)) newLocal =  newLocal[0]
-    let shouldChangeState = false
+  updateListItem (item = undefined, list = undefined) {
+    if (!list || !item) throw new Error('Provide list and item')
 
-    this.locals = (this.locals || [newLocal]).map(local => {
-      if (local._id == newLocal._id) {
-        shouldChangeState = true
-        return {...newLocal}
-      }
-      return {...local}
-    })
+    if (this.isArray(item)) item =  item[0]
 
-    if (shouldChangeState) this.setNewEventsState()
-  }
-
-  insertEvent (event) {
-    if (this.isArray(event)) event =  event[0]
-    this.events = this.events? [...this.events, {...event}] : [{...event}]
+    this[list] = (this[list] || [item]).map(listItem =>
+      listItem._id == item._id ? {...item} : {...listItem}
+    )
 
     this.setNewEventsState()
-  }
-
-  updateEvent (newEvent) {
-    if (this.isArray(newEvent)) newEvent =  newEvent[0]
-    let shouldChangeState = false
-
-    this.events = (this.events || [newEvent]).map(event =>{
-      if (event._id == newEvent._id) {
-        shouldChangeState = true
-        return {...newEvent}
-      }
-      return {...event}
-    })
-
-    if (shouldChangeState) this.setNewEventsState()
   }
 
   componentDidMount() {
 
-    mongo.db.locals.on('insert', this.insertLocal.bind(this))
+    mongo.db.locals.on('insert', newLocal => {
+      this.insertIntoList(newLocal, 'locals')
+    })
 
-    mongo.db.locals.on('update', this.updateLocal.bind(this))
+    mongo.db.events.on('insert', newEvent => {
+      this.insertIntoList(newEvent, 'events')
+    })
 
-    mongo.db.events.on('insert', this.insertEvent.bind(this))
+    mongo.db.locals.on('update', newLocal => {
+      this.updateListItem(newLocal, 'locals')
+    })
 
-    mongo.db.events.on('update', this.updateEvent.bind(this))
+    mongo.db.events.on('update', newEvent => {
+      this.updateListItem(newEvent, 'events')
+    })
+
+    mongo.db.eventtypes.on('update', newEventType => {
+      this.updateListItem(newEventType, 'eventTypes')
+    })
 
     mongo.db.events.find({ dateQuery: this.getTodayFilter() })
       .then(dbEvents => {
