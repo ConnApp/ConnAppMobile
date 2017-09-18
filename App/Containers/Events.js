@@ -59,27 +59,39 @@ export default class Events extends Component {
 
   updateLocal (newLocal) {
     if (this.isArray(newLocal)) newLocal =  newLocal[0]
-    this.locals = (this.locals || [newLocal]).map(local =>
-      local._id == newLocal._id ? {...newLocal} : {...local}
-    )
+    let shouldChangeState = false
 
-    this.setNewEventsState()
+    this.locals = (this.locals || [newLocal]).map(local => {
+      if (local._id == newLocal._id) {
+        shouldChangeState = true
+        return {...newLocal}
+      }
+      return {...local}
+    })
+
+    if (shouldChangeState) this.setNewEventsState()
   }
 
   insertEvent (event) {
     if (this.isArray(event)) event =  event[0]
-    this.events = this.events? [...this.events, event] : [event]
+    this.events = this.events? [...this.events, {...event}] : [{...event}]
 
     this.setNewEventsState()
   }
 
   updateEvent (newEvent) {
     if (this.isArray(newEvent)) newEvent =  newEvent[0]
-    this.events = (this.events || [newEvent]).map(event =>
-      event._id == newEvent._id ? {...newEvent} : {...event}
-    )
+    let shouldChangeState = false
 
-    this.setNewEventsState()
+    this.events = (this.events || [newEvent]).map(event =>{
+      if (event._id == newEvent._id) {
+        shouldChangeState = true
+        return {...newEvent}
+      }
+      return {...event}
+    })
+
+    if (shouldChangeState) this.setNewEventsState()
   }
 
   componentDidMount() {
