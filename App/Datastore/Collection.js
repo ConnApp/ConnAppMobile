@@ -4,6 +4,7 @@ import WAMP from '../WAMP'
 
 export default class Collection {
   constructor (collectionName = 'Default') {
+
     // Defines filename for the collection
     const filename = `${collectionName}File`
 
@@ -31,18 +32,21 @@ export default class Collection {
         // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
         const fromRemote = true
         data = remoteData[0]
+
         // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
         // console.log(`${data}  to be inserted`)
         this.insert({ data, fromRemote })
           .then(res => {
-            this.checkSync(remoteData[1])
-            // console.log(`Inserted successfully`)
+            console.log(`Inserted successfully`)
+            setTimeout(() => {
+              if (!this.isSync) this.checkSync(remoteData[1])
+            }, 1000)
           })
           .catch(err => {
             throw err
           })
       }
-    }
+
       const subArray = [
         {
           uri: `connapp.app.${this.name.toLowerCase()}.insert`,
@@ -51,10 +55,10 @@ export default class Collection {
         {
           uri: `connapp.app.${this.session}.${this.name.toLowerCase()}.insert`,
           cb: insertFunction
-        },
+        }
       ]
 
-      // console.log(subArray)
+        // console.log(subArray)
       this.sockets.push( new WAMP({ subArray }) )
 
       // console.log(`${collectionName} loaded successfully`)
@@ -65,8 +69,11 @@ export default class Collection {
     this
       .count({})
       .then(count => {
+        if (this.isSync) return false
+
         this.isSync = (count == remoteCount)
-        console.log(`${this.name}: Syncing ${count} of ${remoteCount}`)
+        console.log(this.name, this.isSync? 'has synced' : 'not synced yet')
+        // console.log(`${this.name}: Syncing ${count} of ${remoteCount}`)
         if (this.isSync) {
           this.event.emit('sync', this.isSync)
         }
@@ -77,7 +84,7 @@ export default class Collection {
     this.sockets.forEach(socket => socket.close())
   }
 
-  sync ({ query = {}, getAll = true }) {
+  sync ({ query = {}, getAll = true, fetchAll = false }) {
     return new Promise((resolve, reject) => {
       this
       .find({ query, getAll, isSync: true})
@@ -90,7 +97,7 @@ export default class Collection {
         let pubArray = [
           {
             uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
-            data: {argsList: ids, argsDict: {query, session: this.session}}
+            data: {argsList: ids, argsDict: {query, fetchAll, session: this.session}}
           }
         ]
 
@@ -99,6 +106,7 @@ export default class Collection {
 
         if (!this.isSync) {
           this.on('sync', () => {
+            console.log('DONE sync ' + this.name)
             resolve(this.isSync)
           })
         } else {
@@ -147,7 +155,7 @@ export default class Collection {
             return dateQuery.start.$gt.getTime() < startDate && dateQuery.end.$lt.getTime() > endDate
           })
         }
-        const uri = isSync?
+        const uri = (item) => isSync?
           `connapp.app.${this.session}.${this.name.toLowerCase()}.update.${item._id}` :
           `connapp.app.${this.name.toLowerCase()}.update.${item._id}`
 

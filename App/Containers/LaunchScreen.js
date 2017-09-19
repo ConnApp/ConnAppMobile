@@ -16,16 +16,15 @@ import Mongoose from '../Datastore'
 import { styles, colorGradient, colors } from './Styles/LaunchScreenStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
-let mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
-let localStorage = new Mongoose(['credentials'])
 
 const navigationItems = [
-  { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1]  },
-  { categoria: '1', title: 'Agenda',      navKey: 'Events', bg: colorGradient[2]  },
-  { categoria: '2', title: 'Informações', navKey: 'Events', bg: colorGradient[3]  },
-  { categoria: '2', title: 'Notícias',    navKey: 'Events', bg: colorGradient[4]  },
-  { categoria: '2', title: 'Notas',       navKey: 'Events', bg: colorGradient[5]  }
+  { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1] },
+  { categoria: '1', title: 'Agenda',      navKey: 'Events', bg: colorGradient[2] },
+  { categoria: '2', title: 'Informações', navKey: 'Events', bg: colorGradient[3] },
+  { categoria: '2', title: 'Notícias',    navKey: 'Events', bg: colorGradient[4] },
+  { categoria: '2', title: 'Notas',       navKey: 'Events', bg: colorGradient[5] }
 ]
+
 
 export default class LaunchScreen extends Component {
 
@@ -36,20 +35,32 @@ export default class LaunchScreen extends Component {
     }
   }
 
-  componentWillMount() {
-    mongo.initSyncAll()
-      // .then(res => mongo.syncAll())
+  componentDidMount() {
+    this.mongo = new Mongoose(['locals', 'eventtypes', 'speakers', 'events'])
+    this.mongo.db.events.sync({fetchAll: true})
       .then(res => {
-        console.log(res + ' All data synced')
+        console.log('DONE SYNC events')
+        return this.mongo.db.eventtypes.sync({fetchAll: true})
       })
-      .catch(err => {
-        throw new Error(err)
+      .then(res => {
+        console.log('DONE SYNC eventtypes')
+        return this.mongo.db.locals.sync({fetchAll: true})
       })
+      .then(res => {
+        console.log('DONE SYNC locals')
+        return this.mongo.db.speakers.sync({fetchAll: true})
+      })
+      .then(res => {
+        console.log('DONE SYNC speakers')
+        console.log('DONE ALL SYNC')
+      })
+
   }
 
   goToEvents() {
     this.props.navigation.navigate('Events')
   }
+
   render () {
     return (
       <View style={styles.container}>

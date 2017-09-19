@@ -13,15 +13,14 @@ import { groupBy } from '../Helpers'
 import styles from './Styles/EventsStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
-const mongo = new Mongoose(['events', 'locals', 'eventtypes'])
 
 const events = [{
   key:  'Carregando Salas',
   data: [{
     name: 'Carregando eventos',
     eventType: '',
-    start: undefined,
-    end: undefined
+    start: new Date(),
+    end: new Date()
   }],
 }]
 
@@ -31,6 +30,7 @@ export default class Events extends Component {
     this.state = {
       events: events
     }
+    this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
     this.events = []
     this.eventtypes = []
     this.locals = []
@@ -72,34 +72,34 @@ export default class Events extends Component {
 
   componentDidMount() {
 
-    mongo.db.locals.on('insert', newLocal => {
+    this.mongo.db.locals.on('insert', newLocal => {
       this.insertIntoList(newLocal, 'locals')
     })
 
-    mongo.db.events.on('insert', newEvent => {
+    this.mongo.db.events.on('insert', newEvent => {
       this.insertIntoList(newEvent, 'events')
     })
 
-    mongo.db.locals.on('update', newLocal => {
+    this.mongo.db.locals.on('update', newLocal => {
       this.updateListItem(newLocal, 'locals')
     })
 
-    mongo.db.events.on('update', newEvent => {
+    this.mongo.db.events.on('update', newEvent => {
       this.updateListItem(newEvent, 'events')
     })
 
-    mongo.db.eventtypes.on('update', newEventType => {
+    this.mongo.db.eventtypes.on('update', newEventType => {
       this.updateListItem(newEventType, 'eventTypes')
     })
 
-    mongo.db.events.find({ dateQuery: this.getTodayFilter() })
+    this.mongo.db.events.find({ dateQuery: this.getTodayFilter() })
       .then(dbEvents => {
         this.events = [...dbEvents]
-        return mongo.db.eventtypes.find({})
+        return this.mongo.db.eventtypes.find({})
       })
       .then(eventTypes => {
         this.eventTypes = [...eventTypes]
-        return mongo.db.locals.find({})
+        return this.mongo.db.locals.find({})
       })
       .then(locals => {
         this.locals = [...locals]
