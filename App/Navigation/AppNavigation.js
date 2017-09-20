@@ -4,7 +4,6 @@ import Events from '../Containers/Events'
 
 import styles from './Styles/NavigationStyles'
 
-
 const Tabs = TabNavigator(
   {
     'Ter 10': {
@@ -44,11 +43,10 @@ const PrimaryNav = StackNavigator({
     }
   },
   Events: {
-    screen: Tabs,
     navigationOptions: {
       title: 'Programação',
-      backBehavior: 'none'
-    }
+    },
+    screen: Tabs
   },
 
 }, {

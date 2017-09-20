@@ -1,5 +1,5 @@
 const wampConfig = {
-  url: 'ws://10.0.0.4:8080/ws',
+  url: 'ws://104.236.15.64:8080/ws',
   realm: 'realm1'
 }
 

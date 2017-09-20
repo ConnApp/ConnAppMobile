@@ -30,4 +30,17 @@ export default StyleSheet.create({
     width: 300,
     resizeMode: 'contain'
   },
+  searchBar: {
+    width: 200,
+    height: 50,
+    padding: 10,
+    margin: 5,
+    marginRight: 15,
+    fontSize: 12,
+    borderRadius: 10,
+    color: 'white',
+    fontSize: 16,
+    textAlign: "center",
+    textAlignVertical: "center"
+  },
 })

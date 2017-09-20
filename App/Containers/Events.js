@@ -1,5 +1,13 @@
 import React, { Component } from 'react'
-import { SectionList, Text, Image, View, ListView, StyleSheet } from 'react-native'
+import {
+  SectionList,
+  Text,
+  Image,
+  View,
+  ListView,
+  StyleSheet,
+  TextInput
+} from 'react-native'
 
 import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
@@ -19,10 +27,30 @@ const events = [{
   data: [{
     name: 'Carregando eventos',
     eventType: '',
-    start: new Date(),
-    end: new Date()
+    start: '',
+    end: ''
   }],
 }]
+
+class SearchBar extends Component {
+  constructor(props) {
+    super()
+  }
+
+  render() {
+    return (
+      <TextInput
+        onChangeText={text => {
+          this.props.filter.filterEventsBy({text})
+        }}
+        style={styles.searchBar}
+        selectionColor="#FFFFFFD5"
+        underlineColorAndroid="#FFFFFFD5"
+        placeholderTextColor="#FFFFFF60"
+        placeholder="Filtrar Eventos" />
+    )
+  }
+}
 
 export default class Events extends Component {
   constructor () {
@@ -36,7 +64,32 @@ export default class Events extends Component {
     this.locals = []
   }
 
-  setNewEventsState () {
+  componentWillMount(){
+    const {setParams} = this.props.navigation;
+    setParams({
+      filterEventsBy: ({text}) => {
+        this.filterBy({text})
+      }
+    })
+  }
+
+  filterBy({text = ''}) {
+    const query = {
+      name: text
+    }
+    this.fetchEvents({query})
+  }
+
+  static navigationOptions = ({ navigation  }) => {
+    const {state} = navigation
+    if(state.params != undefined){
+      return {
+        headerRight: <SearchBar filter={state.params}/>
+      }
+    }
+  }
+
+  setNewEventsState (query = undefined) {
     let eventTypes = this.reduceToId(this.eventTypes)
     let locals = this.reduceToId(this.locals)
     let events = this.events.map(eventRef => {
@@ -45,6 +98,14 @@ export default class Events extends Component {
       event.eventType = eventTypes[event.eventType]
       return event
     })
+
+    if ((query || {}).name) {
+      events = events.filter(event => {
+        const hasEventType = event.eventType.toLowerCase().indexOf(query.name.toLowerCase()) > -1
+        const hasEventName = event.name.toLowerCase().indexOf(query.name.toLowerCase()) > -1
+        return hasEventName || hasEventType
+      })
+    }
 
     this.groupEventsByLocal(events)
   }
@@ -70,7 +131,12 @@ export default class Events extends Component {
     this.setNewEventsState()
   }
 
+
   componentDidMount() {
+    this.fetchEvents({})
+  }
+
+  fetchEvents ({query = undefined}) {
 
     this.mongo.db.locals.on('insert', newLocal => {
       this.insertIntoList(newLocal, 'locals')
@@ -103,7 +169,7 @@ export default class Events extends Component {
       })
       .then(locals => {
         this.locals = [...locals]
-        this.setNewEventsState()
+        this.setNewEventsState(query)
       })
       .catch(err => {
         // console.log(err)
