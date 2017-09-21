@@ -3,7 +3,7 @@ import { NetInfo } from 'react-native'
 import wamp from 'wamp.js2'
 
 class WAMP {
-  constructor({subArray = [], pubArray = []}) {
+  constructor({subArray = [], pubArray = [], throttle = 1000}) {
     NetInfo.isConnected.fetch().then(isConnected => {
       console.log(`Internet is ${isConnected? 'Connected' : 'Disconnected'}`)
       if (isConnected) {
@@ -44,7 +44,9 @@ class WAMP {
               }
 
               try {
-                session.publish(pub.uri, [pub.data], {data: pub.data})
+                setTimeout(() => {
+                  session.publish(pub.uri, [pub.data], {data: pub.data})
+                }, throttle)
               } catch(e) {
                 status = e
               }

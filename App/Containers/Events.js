@@ -133,11 +133,6 @@ export default class Events extends Component {
 
 
   componentDidMount() {
-    this.fetchEvents({})
-  }
-
-  fetchEvents ({query = undefined}) {
-
     this.mongo.db.locals.on('insert', newLocal => {
       this.insertIntoList(newLocal, 'locals')
     })
@@ -157,6 +152,11 @@ export default class Events extends Component {
     this.mongo.db.eventtypes.on('update', newEventType => {
       this.updateListItem(newEventType, 'eventTypes')
     })
+
+    this.fetchEvents({})
+  }
+
+  fetchEvents ({query = undefined}) {
 
     this.mongo.db.events.find({ dateQuery: this.getTodayFilter() })
       .then(dbEvents => {

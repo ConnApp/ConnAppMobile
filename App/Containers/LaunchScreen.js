@@ -35,26 +35,24 @@ export default class LaunchScreen extends Component {
     }
   }
 
-  componentDidMount() {
+  componentWillMount() {
     this.mongo = new Mongoose(['locals', 'eventtypes', 'speakers', 'events'])
+  }
+
+  componentDidMount() {
     this.mongo.db.events.sync({fetchAll: true})
       .then(res => {
-        console.log('DONE SYNC events')
         return this.mongo.db.eventtypes.sync({fetchAll: true})
       })
       .then(res => {
-        console.log('DONE SYNC eventtypes')
         return this.mongo.db.locals.sync({fetchAll: true})
       })
       .then(res => {
-        console.log('DONE SYNC locals')
         return this.mongo.db.speakers.sync({fetchAll: true})
       })
       .then(res => {
-        console.log('DONE SYNC speakers')
         console.log('DONE ALL SYNC')
-      })
-
+    })
   }
 
   goToEvents() {
