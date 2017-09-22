@@ -1,6 +1,7 @@
 import { StackNavigator, TabNavigator } from 'react-navigation'
 import LaunchScreen from '../Containers/LaunchScreen'
 import Events from '../Containers/Events'
+import EventDetails from '../Containers/EventDetails'
 
 import styles from './Styles/NavigationStyles'
 
@@ -48,7 +49,12 @@ const PrimaryNav = StackNavigator({
     },
     screen: Tabs
   },
-
+  EventDetails: {
+    navigationOptions: {
+      title: 'Carregando Evento',
+    },
+    screen: EventDetails
+  },
 }, {
   // Default config for all screens
   initialRouteName: 'LaunchScreen',
