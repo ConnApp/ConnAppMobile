@@ -19,7 +19,7 @@ const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow !=
 
 const navigationItems = [
   { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1] },
-  { categoria: '1', title: 'Agenda',      navKey: 'Events', bg: colorGradient[2] },
+  { categoria: '1', title: 'Agenda',      navKey: 'Agenda', bg: colorGradient[2] },
   // { categoria: '2', title: 'Informações', navKey: 'Events', bg: colorGradient[3] },
   // { categoria: '2', title: 'Notícias',    navKey: 'Events', bg: colorGradient[4] },
   // { categoria: '2', title: 'Notas',       navKey: 'Events', bg: colorGradient[5] }
@@ -55,8 +55,26 @@ export default class LaunchScreen extends Component {
     })
   }
 
+  handlePress(navKey) {
+    let that = this
+    switch (navKey) {
+      case 'Events':
+        that.goToEvents()
+        break;
+      case 'Agenda':
+        that.goToAgenda()
+        break;
+      default:
+
+    }
+  }
+
   goToEvents() {
     this.props.navigation.navigate('Events')
+  }
+
+  goToAgenda() {
+    this.props.navigation.navigate('Events', {fetchOnlyAgenda: true})
   }
 
   render () {
@@ -72,7 +90,7 @@ export default class LaunchScreen extends Component {
           {navigationItems.map((item, key) => (
             <Button
               key={key}
-              onPress={() => this.goToEvents(item.navKey)}
+              onPress={() => this.handlePress(item.navKey)}
               containerViewStyle={styles.menuButtonView}
               buttonStyle={styles.menuButton}
               backgroundColor={item.bg}

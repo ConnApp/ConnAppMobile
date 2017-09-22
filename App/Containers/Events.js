@@ -15,8 +15,9 @@ import { Button } from 'react-native-elements'
 import EventCard from '../Components/EventCard'
 import EventCategoryCard from '../Components/EventCategoryCard'
 import Mongoose from '../Datastore'
+import LocalStorage from '../Datastore/LocalStorage'
 
-import { groupBy } from '../Helpers'
+import { groupBy, toMongoIdObject } from '../Helpers'
 
 import styles from './Styles/EventsStyles'
 
@@ -59,6 +60,7 @@ export default class Events extends Component {
       events: events
     }
     this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
+    this.localAgendaStorage = new LocalStorage('agenda')
     this.events = []
     this.eventtypes = []
     this.locals = []
@@ -83,23 +85,27 @@ export default class Events extends Component {
   static navigationOptions = ({ navigation  }) => {
     const {state} = navigation
     if(state.params != undefined){
+      let title = state.params.fetchOnlyAgenda? 'Minha Agenda' : 'Programação'
       return {
+        headerTitle: title,
         headerRight: <SearchBar filter={state.params}/>
       }
     }
   }
 
-  setNewEventsState (query = undefined) {
+  setNewEventsState (query = {}) {
     let eventTypes = this.reduceToId(this.eventTypes)
     let locals = this.reduceToId(this.locals)
+    let localAgendaIds = this.localAgenda.map(res => res.value)
     let events = this.events.map(eventRef => {
       let event = {...eventRef}
+      event.isAgenda = localAgendaIds.indexOf(event._id) > -1
       event.local = locals[event.local]
       event.eventType = eventTypes[event.eventType]
       return event
     })
 
-    if ((query || {}).name) {
+    if (query.name) {
       events = events.filter(event => {
         const hasEventType = event.eventType.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         const hasEventName = event.name.toLowerCase().indexOf(query.name.toLowerCase()) > -1
@@ -156,9 +162,21 @@ export default class Events extends Component {
     this.fetchEvents({})
   }
 
-  fetchEvents ({query = undefined}) {
+  fetchEvents ({ query = {} }) {
+    const { state } = this.props.navigation
+    let mQuery = { dateQuery: this.getTodayFilter() }
+    this.localAgendaStorage.find({})
+      .then(localAgenda => {
+        this.localAgenda = [...localAgenda]
 
-    this.mongo.db.events.find({ dateQuery: this.getTodayFilter() })
+        if ((state.params || {}).fetchOnlyAgenda === true) {
+          mQuery.query = {
+            $or: this.localAgenda.length? this.localAgenda.map(res => res.event) : []
+          }
+        }
+
+        return this.mongo.db.events.find(mQuery)
+      })
       .then(dbEvents => {
         this.events = [...dbEvents]
         return this.mongo.db.eventtypes.find({})

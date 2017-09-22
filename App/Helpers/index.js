@@ -35,3 +35,7 @@ export function getDurationFromEvent(event) {
 
   return `${start} - ${end}`
 }
+
+export function toMongoIdObject(item) {
+  return { _id: item._id }
+}

@@ -44,14 +44,10 @@ const PrimaryNav = StackNavigator({
     }
   },
   Events: {
-    navigationOptions: {
-      title: 'Programação',
-    },
     screen: Tabs
   },
   EventDetails: {
-    navigationOptions: {
-    },
+    navigationOptions: {},
     screen: EventDetails
   },
 }, {
