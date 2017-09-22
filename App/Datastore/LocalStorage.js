@@ -9,16 +9,14 @@ export default class LocalStorage {
     // Defines event emitter
     this.event = new EventEmitter()
 
+    // Defines object of WAMP connection
+    this.sockets = []
+
     // Creates collection Object
-    this.dataStore = new Datastore({ filename })
+    this.dataStore = new Datastore({ filename, autoload: true})
 
     // Collection name
     this.name = collectionName
-
-    // Loads collection object
-    this.dataStore.loadDatabase(err => {
-      if (err) throw err
-    })
   }
 
   on (action, callback) {
@@ -27,8 +25,8 @@ export default class LocalStorage {
   }
 
   // find function wrapped in a promise
-  find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false}) {
-    console.log('Collection Name: ' + this.name)
+  find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false, isSync = false}) {
+    console.log(`Initiating Find for ${this.name}`)
     return new Promise((resolve, reject) => {
       // Defines Query object
       let Find = this.dataStore.find(query, project)
@@ -50,8 +48,9 @@ export default class LocalStorage {
       return Find.exec((err, result) => {
         // rejects the error, if any
         if (err) return reject(err)
-
+        console.log(`Found ${result.length} items on ${this.name}`)
         if (dateQuery) {
+          console.log(`Has dateQuery, preparing to filter`)
           result = result.filter(res => {
             let startDate = new Date(res.start).getTime()
             let endDate = new Date(res.end).getTime()
@@ -66,7 +65,7 @@ export default class LocalStorage {
   }
 
   // Insert function wrapped in a promise
-  insert({ data = undefined }) {
+  insert({ data = undefined, fromRemote = false }) {
     return new Promise((resolve, reject) => {
       // Validates data argument
       if (!data) {
@@ -77,25 +76,48 @@ export default class LocalStorage {
         return reject({err})
       }
 
+      // Make sure data is array
+      if (!Array.isArray(data)) data = [data]
+
+      const query = {
+        $or: data.map(res => ({_id: res._id})).filter(res => res._id)
+      }
+      console.log(query)
       // Insert data into the collection and return promise
-      return this.dataStore
-        .insert(data, (err, result) => {
+      this.dataStore.find(query, (err, foundData) => {
+        // Map found array to id. To compare data sets easily
+        const idArray = foundData.map(res => res._id)
+        console.log('Found: ' + foundData.length + ' items')
+        // Filter data to insert
+        const dataToInsert = data.filter(res => {
+          // Check if data fromm server is also on local db. Will update, not insert
+          const index = idArray.indexOf(res._id)
+          if (index == -1) {
+            return true
+          } else {
+            // Update existing data
+            this.update({ query: {_id: res._id}, data: res, fromRemote })
+            return false
+          }
+        })
+
+        console.log(dataToInsert.length + ' items are being inserted to ' + this.name)
+        // Insert new data
+        this.dataStore.insert(dataToInsert, (err, result) => {
           // if there is error, reject
           if (err) return reject(err)
 
-          // Mounts array for publishing insert routes
-          // console.log(result)
-          // Dispatch event to updated screen
           this.event.emit('insert', result)
 
           // Resolves result
           return resolve(result)
         })
+      })
     })
   }
 
   // Remove function wrapped in a promise
-  logicalRemove({ query = undefined }) {
+  logicalRemove({ query = undefined, fromRemote = false }) {
     // console.log(`Logical remove initated`)
     return new Promise((resolve, reject) => {
       if (!query) {
@@ -118,7 +140,7 @@ export default class LocalStorage {
   }
 
   // Updated function wrapped in a promise
-  update({ query = undefined, data = undefined, options = {} }) {
+  update({ query = undefined, data = undefined, options = {}, fromRemote = false }) {
     return new Promise((resolve, reject) => {
       // Defines err variable
       let err = {
@@ -168,7 +190,7 @@ export default class LocalStorage {
   }
 
   // Remove function wrapped in a promise
-  remove({ query = undefined, options = {} }) {
+  remove({ query = undefined, options = {}, fromRemote = false }) {
     // Remove data from the collection and return promise
     return new Promise((resolve, reject) => {
       // validate query object
@@ -200,5 +222,4 @@ export default class LocalStorage {
         .ensureIndex(options, (err, result) => err? reject(err) : resolve(result))
     })
   }
-
 }
