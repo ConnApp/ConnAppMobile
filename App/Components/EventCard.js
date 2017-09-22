@@ -68,8 +68,8 @@ export default class EventCard extends Component {
     })
   }
 
-  testClick() {
-    console.log('test')
+  openEventDetail() {
+    this.props.navigation.navigate('EventDetails', {event: this.props.event})
   }
 
   render () {
@@ -116,13 +116,13 @@ export default class EventCard extends Component {
     )
     if (Platform.OS === 'android') {
       return (
-        <TouchableNativeFeedback onPress={() => this.testClick()}>
+        <TouchableNativeFeedback onPress={() => this.openEventDetail()}>
           {mainView}
         </TouchableNativeFeedback>
       )
     } else {
        return (
-        <TouchableHighlight onPress={() => this.testClick()}>
+        <TouchableHighlight onPress={() => this.openEventDetail()}>
           {mainView}
         </TouchableHighlight>
       )
