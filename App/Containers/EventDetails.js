@@ -15,7 +15,7 @@ import { Button } from 'react-native-elements'
 
 import Mongoose from '../Datastore'
 
-import { flatten, capitalize } from '../Helpers'
+import { flatten, capitalize, getDurationFromEvent } from '../Helpers'
 
 import TextCard from '../Components/TextCard'
 import styles from './Styles/EventDetailsStyles'
@@ -54,6 +54,22 @@ export default class EventDetails extends Component {
     }
   }
 
+  updateEvent() {
+    let { local, event, eventType, speakers } = this
+
+    event.local = local.name
+    event.eventType = eventType.name
+    event.speakers = [...speakers].map(speaker => speaker.name)
+    event.duration = getDurationFromEvent(event)
+
+    this.setState({
+      ...this.state,
+      event,
+      dataOrder: this.dataOrder,
+      eventData: ds.cloneWithRows(this.getEventDataSet(event, this.dataOrder))
+    })
+  }
+
   getEventDataSet(event, dataOrder) {
     const array = dataOrder.map(eventName => {
       let data = event[eventName] || eventName
@@ -66,11 +82,72 @@ export default class EventDetails extends Component {
   }
 
   componentWillMount(){
-
+    this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
   }
 
   componentDidMount() {
 
+    this.mongo.db.locals.on('update', newLocal => {
+      this.local = {...newLocal}
+      this.updateEvent()
+    })
+
+    this.mongo.db.events.on('update', newEvent => {
+      this.event = {...newEvent}
+      this.updateEvent()
+    })
+
+    this.mongo.db.eventtypes.on('update', newEventType => {
+      this.eventType = {...newEventType}
+      this.updateEvent()
+    })
+
+    this.mongo.db.speakers.on('update', newSpeaker => {
+      const idArray = this.speakers.map(speaker => speaker._id)
+
+      this.speakers = this.speakers.map(oldSpeaker => {
+        let speaker = {...oldSpeaker}
+        const index = idArray.indexOf(speaker._id)
+        if (index > -1) {
+          speaker = {...newSpeaker}
+        }
+        return speaker
+      })
+
+      this.updateEvent()
+    })
+
+    const eventQuery = { query: { _id: this.state.event._id } }
+
+    this.mongo.db.events.find(eventQuery)
+      .then(dbEvents => {
+        this.event = [...dbEvents][0]
+        const query = {
+          _id: this.event.eventType
+        }
+        return this.mongo.db.eventtypes.find({ query })
+      })
+      .then(eventTypes => {
+        this.eventType = [...eventTypes][0]
+        const query = {
+          $or: this.event.speakers.map(speaker => ({ _id: speaker }))
+        }
+        return this.mongo.db.speakers.find({query})
+      })
+      .then(speakers => {
+        this.speakers = [...speakers]
+        const query = {
+          _id: this.event.local
+        }
+        return this.mongo.db.locals.find({ query })
+      })
+      .then(locals => {
+        this.local = [...locals][0]
+        this.updateEvent()
+      })
+      .catch(err => {
+        // console.log(err)
+      })
   }
 
   reduceToList(data) {
