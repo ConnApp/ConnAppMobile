@@ -7,8 +7,11 @@ import {
   View,
   ListView,
   StyleSheet,
-  TouchableHighlight
+  Platform,
+  TouchableHighlight,
+  TouchableNativeFeedback,
 } from 'react-native'
+import { Button } from 'react-native-elements'
 import { Fonts, Colors, Metrics } from '../Themes/'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -65,46 +68,64 @@ export default class EventCard extends Component {
     })
   }
 
-  render () {
-    return (
-        <View style={styles.contentContainer}>
-          <View style={styles.name}>
-            <Text style={styles.nameText}>
-              {this.props.event.name}
-              </Text>
-          </View>
-          <View style={styles.eventType}>
-            <Text style={styles.eventTypeText}>
-              {this.props.event.eventType.split(' - ')[0] + ' ' + (this.props.event.order || '')}
-            </Text>
-          </View>
-          <View style={styles.timeContainer}>
-            <View style={styles.time}>
+  testClick() {
+    console.log('test')
+  }
 
-              <View style={styles.timeStamp}>
-                <View style={styles.timeStampIconContainer}>
-                  <Icon style={styles.timeStampIconStyle} name="clock-o" />
-                </View>
-                <View style={styles.timeTextContainer}>
-                  <Text style={styles.timeTextStyle}>
-                    {this.getDurantion(this.props.event)}
-                  </Text>
-                </View>
+  render () {
+    const mainView = (
+      <View style={styles.contentContainer}>
+        <View style={styles.name}>
+          <Text style={styles.nameText}>
+            {this.props.event.name}
+            </Text>
+        </View>
+        <View style={styles.eventType}>
+          <Text style={styles.eventTypeText}>
+            {this.props.event.eventType.split(' - ')[0] + ' ' + (this.props.event.order || '')}
+          </Text>
+        </View>
+        <View style={styles.timeContainer}>
+          <View style={styles.time}>
+
+            <View style={styles.timeStamp}>
+              <View style={styles.timeStampIconContainer}>
+                <Icon style={styles.timeStampIconStyle} name="clock-o" />
               </View>
-              <View style={styles.favorite}>
+              <View style={styles.timeTextContainer}>
+                <Text style={styles.timeTextStyle}>
+                  {this.getDurantion(this.props.event)}
+                </Text>
+              </View>
+            </View>
+            <TouchableHighlight
+              underlayColor="#d7d7d7"
+              onPress={() => this.favoritePress()}
+              style={styles.favorite}>
                 <View style={styles.favoriteIconContainer}>
                   <Icon
-                    onPress={() => this.favoritePress()}
                     style={styles.timeStampIconStyle}
                     name={(() => this.getIcon())()}
                   />
                 </View>
-              </View>
-            </View>
-            <View style={styles.like}></View>
+            </TouchableHighlight>
           </View>
-
+          <View style={styles.like}></View>
         </View>
+      </View>
     )
+    if (Platform.OS === 'android') {
+      return (
+        <TouchableNativeFeedback onPress={() => this.testClick()}>
+          {mainView}
+        </TouchableNativeFeedback>
+      )
+    } else {
+       return (
+        <TouchableHighlight onPress={() => this.testClick()}>
+          {mainView}
+        </TouchableHighlight>
+      )
+    }
   }
 }
