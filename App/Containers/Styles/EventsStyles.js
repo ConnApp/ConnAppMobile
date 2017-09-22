@@ -31,7 +31,7 @@ export default StyleSheet.create({
     resizeMode: 'contain'
   },
   searchBar: {
-    width: 200,
+    width: 150,
     height: 50,
     padding: 10,
     margin: 5,
