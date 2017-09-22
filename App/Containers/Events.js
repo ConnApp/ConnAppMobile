@@ -226,8 +226,9 @@ export default class Events extends Component {
   }
 
   renderCard (event) {
-    return <EventCard event={event.item} />
+    return <EventCard navigation={this.props.navigation} event={event.item} />
   }
+
   renderHeader (title) {
     return (
       <View style={styles.category}>
@@ -242,8 +243,8 @@ export default class Events extends Component {
         <SectionList
           keyExtractor={(item, index) => index}
           stickySectionHeadersEnabled={true}
-          renderItem={this.renderCard}
-          renderSectionHeader={this.renderHeader}
+          renderItem={this.renderCard.bind(this)}
+          renderSectionHeader={this.renderHeader.bind(this)}
           contentContainerStyle={styles.scrollView}
           sections={this.state.events}
         />
