@@ -51,7 +51,7 @@ export default class LaunchScreen extends Component {
         return this.mongo.db.speakers.sync({fetchAll: true})
       })
       .then(res => {
-        console.log('DONE ALL SYNC')
+        // console.log('DONE ALL SYNC')
     })
   }
 

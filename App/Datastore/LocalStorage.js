@@ -20,13 +20,13 @@ export default class LocalStorage {
   }
 
   on (action, callback) {
-    // console.log(`listenting to ${action}`)
+    // // console.log(`listenting to ${action}`)
     this.event.addListener(action, callback)
   }
 
   // find function wrapped in a promise
   find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false, isSync = false}) {
-    console.log(`Initiating Find for ${this.name}`)
+    // console.log(`Initiating Find for ${this.name}`)
     return new Promise((resolve, reject) => {
       // Defines Query object
       let Find = this.dataStore.find(query, project)
@@ -40,17 +40,13 @@ export default class LocalStorage {
       // If limit is defined, use limit
       if (limit) Find = Find.limit(limit)
 
-      if (!getAll) {
-        query.active = true
-      }
-
       // Executes the query
       return Find.exec((err, result) => {
         // rejects the error, if any
         if (err) return reject(err)
-        console.log(`Found ${result.length} items on ${this.name}`)
+        // console.log(`Found ${result.length} items on ${this.name}`)
         if (dateQuery) {
-          console.log(`Has dateQuery, preparing to filter`)
+          // console.log(`Has dateQuery, preparing to filter`)
           result = result.filter(res => {
             let startDate = new Date(res.start).getTime()
             let endDate = new Date(res.end).getTime()
@@ -82,12 +78,12 @@ export default class LocalStorage {
       const query = {
         $or: data.map(res => ({_id: res._id})).filter(res => res._id)
       }
-      console.log(query)
+      // console.log(query)
       // Insert data into the collection and return promise
       this.dataStore.find(query, (err, foundData) => {
         // Map found array to id. To compare data sets easily
         const idArray = foundData.map(res => res._id)
-        console.log('Found: ' + foundData.length + ' items')
+        // console.log('Found: ' + foundData.length + ' items')
         // Filter data to insert
         const dataToInsert = data.filter(res => {
           // Check if data fromm server is also on local db. Will update, not insert
@@ -101,7 +97,7 @@ export default class LocalStorage {
           }
         })
 
-        console.log(dataToInsert.length + ' items are being inserted to ' + this.name)
+        // console.log(dataToInsert.length + ' items are being inserted to ' + this.name)
         // Insert new data
         this.dataStore.insert(dataToInsert, (err, result) => {
           // if there is error, reject
@@ -118,7 +114,7 @@ export default class LocalStorage {
 
   // Remove function wrapped in a promise
   logicalRemove({ query = undefined, fromRemote = false }) {
-    // console.log(`Logical remove initated`)
+    // // console.log(`Logical remove initated`)
     return new Promise((resolve, reject) => {
       if (!query) {
         // Defines error variable object
@@ -146,7 +142,7 @@ export default class LocalStorage {
       let err = {
         list: []
       }
-      // console.log(!query)
+      // // console.log(!query)
       // Check if query is defined
       if (!query) err.list.push(new Error(`No query provided!`))
 
@@ -163,8 +159,8 @@ export default class LocalStorage {
       const setData = {
         $set: data
       }
-      // console.log(`------- UPDATE ---------`)
-      // console.log(query, data)
+      // // console.log(`------- UPDATE ---------`)
+      // // console.log(query, data)
       // Update data in the collection and return promise
       return this.dataStore
         .update(query, setData, options, (err, result, newDocs) => {

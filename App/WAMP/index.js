@@ -5,7 +5,7 @@ import wamp from 'wamp.js2'
 class WAMP {
   constructor({subArray = [], pubArray = [], throttle = 1000}) {
     NetInfo.isConnected.fetch().then(isConnected => {
-      console.log(`Internet is ${isConnected? 'Connected' : 'Disconnected'}`)
+      // console.log(`Internet is ${isConnected? 'Connected' : 'Disconnected'}`)
       if (isConnected) {
         // Builds conenction object
         this.Connection = new wamp.Connection(wampConfig)
@@ -16,7 +16,7 @@ class WAMP {
         // Open connection handler
         this.Connection.onopen = (session) => {
           // If array subs exists, subscribe to each
-          // console.log('connection open')
+          // // console.log('connection open')
           if (subArray.length) {
             this.subStats = subArray.map(sub => {
               let status = true
@@ -25,7 +25,7 @@ class WAMP {
               } catch(e) {
                 status = e
               }
-              // console.log(`Subscribed to ${sub.uri}`)
+              // // console.log(`Subscribed to ${sub.uri}`)
               return {
                 sub: sub,
                 status: status
@@ -34,7 +34,7 @@ class WAMP {
           }
 
           // If array subs exists, subscribe to each
-          // console.log(pubArray.length)
+          // // console.log(pubArray.length)
           if (pubArray.length) {
             this.pubStats = pubArray.map(pub => {
               let status = true
@@ -51,7 +51,7 @@ class WAMP {
                 status = e
               }
 
-              // console.log(`Published ${pub.data} to ${pub.uri}`)
+              // // console.log(`Published ${pub.data} to ${pub.uri}`)
 
               return {
                 pub: pub,
@@ -75,7 +75,7 @@ class WAMP {
 
   // Listens for connection close
   onclose() {
-    // console.log('WAMP connection closed')
+    // // console.log('WAMP connection closed')
   }
 
   // Listens for status change method

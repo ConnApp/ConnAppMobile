@@ -36,7 +36,7 @@ export default class EventDetails extends Component {
 
     const { event } = props.navigation.state.params
     const eventData = this.getEventDataSet(event, this.dataOrder)
-    console.log(event)
+    // console.log(event)
     this.state = {
       event,
       dataOrder: this.dataOrder,
@@ -46,7 +46,7 @@ export default class EventDetails extends Component {
 
   static navigationOptions = ({ navigation  }) => {
     const {state} = navigation
-    console.log(state)
+    // console.log(state)
     if(state.params != undefined){
       return {
         title: `${state.params.event.name}`
@@ -146,7 +146,7 @@ export default class EventDetails extends Component {
         this.updateEvent()
       })
       .catch(err => {
-        // console.log(err)
+        // // console.log(err)
       })
   }
 
@@ -158,7 +158,7 @@ export default class EventDetails extends Component {
   }
 
   translateRowName (rowName) {
-    console.log(rowName)
+    // console.log(rowName)
     let name
     switch (rowName) {
       case 'Duration':

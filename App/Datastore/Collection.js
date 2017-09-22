@@ -26,20 +26,20 @@ export default class Collection {
     this.session = `${Math.round(1000*Math.random())}${new Date().getTime()}`
 
     const insertFunction = (remoteData) => {
-      // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
+      // // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
       const fromRemote = true
       data = remoteData[0]
 
-      // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
-      console.log(`${data.length} ${this.name} to be inserted`)
+      // // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
+      // console.log(`${data.length} ${this.name} to be inserted`)
       this.insert({ data, fromRemote })
         .then(res => {
-          console.log(`Inserted successfully`)
+          // console.log(`Inserted successfully`)
           this.checkSync(remoteData[1])
         })
         .catch(err => {
-          console.log('There was an error inserting ' + this.name)
-          console.log(err)
+          // console.log('There was an error inserting ' + this.name)
+          // console.log(err)
         })
     }
 
@@ -54,15 +54,15 @@ export default class Collection {
       }
     ]
 
-      // console.log(subArray)
+      // // console.log(subArray)
     this.sockets.push( new WAMP({ subArray }) )
 
   }
 
   checkSync (remoteCount = 0) {
-    console.log('Checking if is synced already')
+    // console.log('Checking if is synced already')
     if (this.isSync) return true
-    console.log(`Not synced, scheduling verifying task ${this.name}`)
+    // console.log(`Not synced, scheduling verifying task ${this.name}`)
     setTimeout(() => {
       this
         .count({})
@@ -70,8 +70,8 @@ export default class Collection {
           if (this.isSync) return false
 
           this.isSync = (count == remoteCount)
-          console.log(`${this.name} ${this.isSync? 'has synced' : 'not synced yet'}`)
-          // console.log(`${this.name}: Syncing ${count} of ${remoteCount}`)
+          // console.log(`${this.name} ${this.isSync? 'has synced' : 'not synced yet'}`)
+          // // console.log(`${this.name}: Syncing ${count} of ${remoteCount}`)
           if (this.isSync) {
             this.event.emit('sync', this.isSync)
           }
@@ -84,16 +84,16 @@ export default class Collection {
   }
 
   sync ({ query = {}, getAll = true, fetchAll = false }) {
-    console.log(`Initiating sync for ${this.name}`)
+    // console.log(`Initiating sync for ${this.name}`)
     return new Promise((resolve, reject) => {
       this
       .find({ query, getAll, isSync: true})
       .then(results => {
-        // console.log(results.length)
-        // console.log(results.length)
+        // // console.log(results.length)
+        // // console.log(results.length)
 
         let ids = results.length? results.map(res => res._id) : []
-        console.log(`${this.session} : ${ids.length} items found. Preparing to fecth ${this.name}`)
+        // console.log(`${this.session} : ${ids.length} items found. Preparing to fecth ${this.name}`)
         let pubArray = [
           {
             uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
@@ -104,13 +104,13 @@ export default class Collection {
         this.sockets.push( new WAMP({ pubArray }) )
 
         if (!this.isSync) {
-          console.log('Not synced yet, adding sync listener')
+          // console.log('Not synced yet, adding sync listener')
           this.on('sync', () => {
-            console.log('DONE Sync for' + this.name)
+            // console.log('DONE Sync for' + this.name)
             resolve(this.isSync)
           })
         } else {
-          console.log(`${this.name} is already synced`)
+          // console.log(`${this.name} is already synced`)
           resolve(results.filter(res => res.active))
         }
       })
@@ -119,13 +119,13 @@ export default class Collection {
   }
 
   on (action, callback) {
-    // console.log(`listenting to ${action}`)
+    // // console.log(`listenting to ${action}`)
     this.event.addListener(action, callback)
   }
 
   // find function wrapped in a promise
   find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false, isSync = false}) {
-    console.log(`Initiating Find for ${this.name}`)
+    // console.log(`Initiating Find for ${this.name}`)
     return new Promise((resolve, reject) => {
       // Defines Query object
       let Find = this.dataStore.find(query, project)
@@ -147,9 +147,9 @@ export default class Collection {
       return Find.exec((err, result) => {
         // rejects the error, if any
         if (err) return reject(err)
-        console.log(`Found ${result.length} items on ${this.name}`)
+        // console.log(`Found ${result.length} items on ${this.name}`)
         if (dateQuery) {
-          console.log(`Has dateQuery, preparing to filter`)
+          // console.log(`Has dateQuery, preparing to filter`)
           result = result.filter(res => {
             let startDate = new Date(res.start).getTime()
             let endDate = new Date(res.end).getTime()
@@ -157,7 +157,7 @@ export default class Collection {
             return dateQuery.start.$gt.getTime() < startDate && dateQuery.end.$lt.getTime() > endDate
           })
         }
-        console.log(`Building ${isSync? 'sync' : 'regular'} WAMP URI for update`)
+        // console.log(`Building ${isSync? 'sync' : 'regular'} WAMP URI for update`)
         const uri = (item) => isSync?
           `connapp.app.${this.session}.${this.name.toLowerCase()}.update.${item._id}` :
           `connapp.app.${this.name.toLowerCase()}.update.${item._id}`
@@ -166,30 +166,30 @@ export default class Collection {
         let subArray = result.map(item => ({
           uri,
           cb: data => {
-            // console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
+            // // console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
             data = data[0]
-            // console.log(data)
+            // // console.log(data)
             const query = { _id: data._id }
             const fromRemote = true
-            console.log(`Update triggerd for a document on ${this.name}`)
+            // console.log(`Update triggerd for a document on ${this.name}`)
             if (data.active) {
-              console.log(`Data is active, will update on ${this.name}`)
-              // console.log(`Performing regular update remove on ${query._id}`)
+              // console.log(`Data is active, will update on ${this.name}`)
+              // // console.log(`Performing regular update remove on ${query._id}`)
               this.update({ query, data, fromRemote })
                 .then(res => {
-                  console.log(`${query._id} updated with success`)
+                  // console.log(`${query._id} updated with success`)
                 })
                 .catch(err => {
-                  console.log(err)
+                  // console.log(err)
                 })
             } else {
-              console.log(`Data in not active. Will perform Logical Remove on ${this.name}`)
+              // console.log(`Data in not active. Will perform Logical Remove on ${this.name}`)
               this.logicalRemove({ query, fromRemote })
                 .then(res => {
-                  console.log(`${query._id} removed with success`)
+                  // console.log(`${query._id} removed with success`)
                 })
                 .catch(err => {
-                  console.log(err)
+                  // console.log(err)
                 })
             }
           }
@@ -224,12 +224,12 @@ export default class Collection {
       const query = {
         $or: data.map(res => ({_id: res._id})).filter(res => res._id)
       }
-      console.log(query)
+      // console.log(query)
       // Insert data into the collection and return promise
       this.dataStore.find(query, (err, foundData) => {
         // Map found array to id. To compare data sets easily
         const idArray = foundData.map(res => res._id)
-        console.log('Found: ' + foundData.length + ' items')
+        // console.log('Found: ' + foundData.length + ' items')
         // Filter data to insert
         const dataToInsert = data.filter(res => {
           // Check if data fromm server is also on local db. Will update, not insert
@@ -243,7 +243,7 @@ export default class Collection {
           }
         })
 
-        console.log(dataToInsert.length + ' items are being inserted to ' + this.name)
+        // console.log(dataToInsert.length + ' items are being inserted to ' + this.name)
         // Insert new data
         this.dataStore.insert(dataToInsert, (err, result) => {
           // if there is error, reject
@@ -274,7 +274,7 @@ export default class Collection {
 
   // Remove function wrapped in a promise
   logicalRemove({ query = undefined, fromRemote = false }) {
-    // console.log(`Logical remove initated`)
+    // // console.log(`Logical remove initated`)
     return new Promise((resolve, reject) => {
       if (!query) {
         // Defines error variable object
@@ -302,7 +302,7 @@ export default class Collection {
       let err = {
         list: []
       }
-      // console.log(!query)
+      // // console.log(!query)
       // Check if query is defined
       if (!query) err.list.push(new Error(`No query provided!`))
 
@@ -319,8 +319,8 @@ export default class Collection {
       const setData = {
         $set: data
       }
-      // console.log(`------- UPDATE ---------`)
-      // console.log(query, data)
+      // // console.log(`------- UPDATE ---------`)
+      // // console.log(query, data)
       // Update data in the collection and return promise
       return this.dataStore
         .update(query, setData, options, (err, result, newDocs) => {

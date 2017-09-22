@@ -171,7 +171,8 @@ export default class Events extends Component {
 
         if ((state.params || {}).fetchOnlyAgenda === true) {
           mQuery.query = {
-            $or: this.localAgenda.length? this.localAgenda.map(res => res.event) : []
+            $or: this.localAgenda.length?
+              this.localAgenda.map(res => ({_id: res.value})) : []
           }
         }
 
@@ -190,7 +191,7 @@ export default class Events extends Component {
         this.setNewEventsState(query)
       })
       .catch(err => {
-        // console.log(err)
+        // // console.log(err)
       })
   }
 
@@ -199,7 +200,7 @@ export default class Events extends Component {
   }
 
   reduceToId (docs) {
-    console.log(docs)
+    // console.log(docs)
     return !docs? [] : docs.reduce((docHashTable, doc) => {
       docHashTable[doc._id] = `${doc.name} - ${doc._id}`
       return docHashTable
@@ -240,11 +241,11 @@ export default class Events extends Component {
     this.setState({
       events: eventsArray
     })
-    // console.log(this.state.events)
+    // // console.log(this.state.events)
   }
 
   renderCard (event) {
-    return <EventCard navigation={this.props.navigation} event={event.item} />
+    return <EventCard updateParent={() => this.fetchEvents({})} navigation={this.props.navigation} event={event.item} />
   }
 
   renderHeader (title) {

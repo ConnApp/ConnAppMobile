@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { getDurationFromEvent } from '../Helpers'
 import styles from './Styles/EventCardStyles'
+import LocalStorage from '../Datastore/LocalStorage'
 
 
 // <View style={styles.}></View>
@@ -26,9 +27,7 @@ export default class EventCard extends Component {
   constructor(props) {
     super()
     this.state = {
-      isFavorite: false,
-    }
-    this.state = {
+      isAgenda: false,
       event: {
         ...props.event,
         local: (props.event.local || '').split(' - ')[0],
@@ -38,9 +37,13 @@ export default class EventCard extends Component {
     }
   }
 
+  componentWillMount() {
+    this.localAgendaStorage = new LocalStorage('agenda')
+  }
+
   shouldComponentUpdate (nextProps, nextState) {
     return (
-      nextState.isFavorite != this.state.isFavorite ||
+      nextState.event.isAgenda != this.state.event.isAgenda ||
       nextProps.event.name != this.state.event.name ||
       nextProps.event.eventType != this.state.event.eventType ||
       getDurationFromEvent(nextProps.event) != getDurationFromEvent(this.state.event)
@@ -48,15 +51,47 @@ export default class EventCard extends Component {
   }
 
   getIcon() {
-    return this.state.isFavorite? 'check' : 'plus'
+    return this.state.event.isAgenda? 'check' : 'plus'
   }
 
   favoritePress() {
-    const nextState = !this.state.isFavorite
-    // console.log(nextState)
-    this.setState({
-      isFavorite: nextState
+    const nextState = !this.state.event.isAgenda
+
+    const data = {
+      value: this.state.event._id
+    }
+
+    const query = {
+      value: this.state.event._id
+    }
+
+    this.localAgendaStorage.on('remove', numRemoved => {
+      setTimeout(() => {
+        this.props.updateParent()
+      }, 1000)
     })
+
+    let promise = nextState?
+      this.localAgendaStorage.insert({ data }) :
+      this.localAgendaStorage.remove({ query })
+
+
+    promise
+      .then(res => {
+        // console.log(res)
+        this.setState({
+          ...this.state,
+          event: {
+            ...this.state.event,
+            isAgenda: nextState
+          }
+        })
+
+      })
+      .catch(err => {
+        // console.log(err)
+      })
+
   }
 
   openEventDetail() {

@@ -18,10 +18,10 @@ class Mongoose {
       try {
         throw new Error()
       } catch(e) {
-        console.log(e)
+        // console.log(e)
       }
 
-      console.log('check if is sync for each')
+      // console.log('check if is sync for each')
       collection = this.db[collection]
       return !collection.isSync
     })

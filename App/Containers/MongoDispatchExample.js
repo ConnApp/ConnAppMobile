@@ -34,8 +34,8 @@ export default class LaunchScreen extends Component {
     // beforehand to update the screen correctly
     mongo.db.fakenews.sync()
       .then(news => {
-        // console.log('-----News synced')
-        // console.log(news)
+        // // console.log('-----News synced')
+        // // console.log(news)
         this.setNews(news)
       })
       .catch(err => {
@@ -43,7 +43,7 @@ export default class LaunchScreen extends Component {
       })
   }
   insertNews (newFakewnews) {
-    // console.log('Insert insert stuff')
+    // // console.log('Insert insert stuff')
 
     const news = [newFakewnews, ...this.state.news]
 
@@ -56,9 +56,9 @@ export default class LaunchScreen extends Component {
   }
 
   updateNew (newNews) {
-    // console.log('Update Stuff')
-    // console.log(newNews)
-    // console.log('Update Stuff')
+    // // console.log('Update Stuff')
+    // // console.log(newNews)
+    // // console.log('Update Stuff')
 
     if (newNews[0]) newNews = newNews[0]
 
