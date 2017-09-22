@@ -21,10 +21,18 @@ import styles from './Styles/EventCardStyles'
 // <View style={styles.}></View>
 export default class EventCard extends Component {
 
-  constructor() {
+  constructor(props) {
     super()
     this.state = {
       isFavorite: false,
+    }
+    this.state = {
+      event: {
+        ...props.event,
+        local: (props.event.local || '').split(' - ')[0],
+        eventType: (props.event.eventType || '').split(' - ')[0],
+        duration: this.getDurantion(props.event)
+      }
     }
   }
 
@@ -50,9 +58,9 @@ export default class EventCard extends Component {
   shouldComponentUpdate (nextProps, nextState) {
     return (
       nextState.isFavorite != this.state.isFavorite ||
-      nextProps.event.name != this.props.event.name ||
-      nextProps.event.eventType != this.props.event.eventType ||
-      this.getDurantion(nextProps.event) != this.getDurantion(this.props.event)
+      nextProps.event.name != this.state.event.name ||
+      nextProps.event.eventType != this.state.event.eventType ||
+      this.getDurantion(nextProps.event) != this.getDurantion(this.state.event)
     )
   }
 
@@ -69,7 +77,7 @@ export default class EventCard extends Component {
   }
 
   openEventDetail() {
-    this.props.navigation.navigate('EventDetails', {event: this.props.event})
+    this.props.navigation.navigate('EventDetails', {event: this.state.event})
   }
 
   render () {
@@ -77,12 +85,12 @@ export default class EventCard extends Component {
       <View style={styles.contentContainer}>
         <View style={styles.name}>
           <Text style={styles.nameText}>
-            {this.props.event.name}
-            </Text>
+            {this.state.event.name}
+          </Text>
         </View>
         <View style={styles.eventType}>
           <Text style={styles.eventTypeText}>
-            {this.props.event.eventType.split(' - ')[0] + ' ' + (this.props.event.order || '')}
+            {this.state.event.eventType + ' ' + (this.state.event.order || '')}
           </Text>
         </View>
         <View style={styles.timeContainer}>
@@ -94,7 +102,7 @@ export default class EventCard extends Component {
               </View>
               <View style={styles.timeTextContainer}>
                 <Text style={styles.timeTextStyle}>
-                  {this.getDurantion(this.props.event)}
+                  {this.state.event.duration}
                 </Text>
               </View>
             </View>

@@ -51,7 +51,6 @@ const PrimaryNav = StackNavigator({
   },
   EventDetails: {
     navigationOptions: {
-      title: 'Carregando Evento',
     },
     screen: EventDetails
   },
