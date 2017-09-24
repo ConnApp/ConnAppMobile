@@ -4,7 +4,7 @@ import {
   Image,
   View,
   StyleSheet,
-  NetInfo
+  ActivityIndicator
 } from 'react-native'
 
 import { Images, Colors } from '../Themes'
@@ -30,6 +30,7 @@ export default class Splash extends Component {
           style={styles.splashImage}
           source={Images.enegepLogo}
         />
+        <ActivityIndicator style={styles.spinner} />
       </View>
     )
   }

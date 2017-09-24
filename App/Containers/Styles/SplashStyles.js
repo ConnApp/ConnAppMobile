@@ -23,6 +23,11 @@ const commonStyle = {
     flex: 1,
     width: 300,
     resizeMode: 'contain',
+  },
+  spinner: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   }
 }
 
