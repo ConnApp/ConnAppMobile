@@ -4,6 +4,7 @@ import {
   Image,
   View,
   StyleSheet,
+  Text,
   ActivityIndicator
 } from 'react-native'
 
@@ -19,7 +20,9 @@ export default class Splash extends Component {
   constructor () {
     super()
     this.state = {
-      canContinue: false
+      canContinue: false,
+      buttonBackground: 'gray',
+      statusText: 'Carregando Eventos!'
     }
   }
 
@@ -30,7 +33,10 @@ export default class Splash extends Component {
           style={styles.splashImage}
           source={Images.enegepLogo}
         />
-        <ActivityIndicator style={styles.spinner} />
+        <ActivityIndicator style={styles.spinner}/>
+        <View style={styles.statusTextContainer}>
+          <Text style={styles.statusText}>Carregando Eventos!</Text>
+        </View>
       </View>
     )
   }

@@ -20,14 +20,20 @@ const commonStyle = {
     backgroundColor: colorGradient[0],
   },
   splashImage: {
-    flex: 1,
+    flex: 5,
     width: 300,
     resizeMode: 'contain',
   },
   spinner: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flex: 5,
+  },
+  statusTextContainer: {
+    flex: 3,
+    justifyContent: 'center',
+  },
+  statusText: {
+    color: 'white',
+    fontSize: 24,
   }
 }
 
