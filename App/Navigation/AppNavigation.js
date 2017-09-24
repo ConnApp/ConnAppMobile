@@ -12,6 +12,7 @@ import {
 } from 'react-native'
 
 import LaunchScreen from '../Containers/LaunchScreen'
+import Splash from '../Containers/Splash'
 import Events from '../Containers/Events'
 import EventDetails from '../Containers/EventDetails'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -100,6 +101,12 @@ const Tabs = TabNavigator(
 
 // Manifest of possible screens
 const PrimaryNav = StackNavigator({
+  Splash: {
+    screen: Splash,
+    navigationOptions: {
+      header: null,
+    }
+  },
   LaunchScreen: {
     screen: LaunchScreen,
     navigationOptions: {
@@ -115,7 +122,7 @@ const PrimaryNav = StackNavigator({
   },
 }, {
   // Default config for all screens
-  initialRouteName: 'LaunchScreen',
+  initialRouteName: 'Splash',
   navigationOptions: {
     headerStyle: styles.header,
     headerTintColor: 'white',
