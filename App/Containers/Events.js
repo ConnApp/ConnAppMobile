@@ -24,7 +24,12 @@ import styles from './Styles/EventsStyles'
 
 const device = Platform.OS
 
-const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
+const listOptions = {
+  rowHasChanged: (r1, r2) => r1 !== r2,
+  sectionHeaderHasChanged: (s1, s2) => s1 !== s2
+}
+
+const ds = new ListView.DataSource(listOptions)
 
 const events = [{
   key:  'Carregando Salas',
@@ -265,16 +270,20 @@ export default class Events extends Component {
   }
 
   render () {
+    const ListItems = (
+      <SectionList
+        keyExtractor={(item, index) => index}
+        stickySectionHeadersEnabled={true}
+        renderItem={this.renderCard.bind(this)}
+        renderSectionHeader={this.renderHeader}
+        contentContainerStyle={styles.scrollView}
+        sections={this.state.events}
+      />
+    )
+
     return (
       <View contentContainerStyle={styles.contentContainer}>
-        <SectionList
-          keyExtractor={(item, index) => index}
-          stickySectionHeadersEnabled={true}
-          renderItem={this.renderCard.bind(this)}
-          renderSectionHeader={this.renderHeader}
-          contentContainerStyle={styles.scrollView}
-          sections={this.state.events}
-        />
+        {ListItems}
       </View>
     )
   }
