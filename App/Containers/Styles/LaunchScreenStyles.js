@@ -56,7 +56,7 @@ const iOSStyle = StyleSheet.create({
 const andoidStyle = StyleSheet.create({
   ...commonStyle,
   menuList: {
-    flex: 8,
+    flex: 3,
     marginLeft: -15,
     marginRight: -15
   },
