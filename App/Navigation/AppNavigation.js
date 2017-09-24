@@ -22,12 +22,11 @@ import styles from './Styles/NavigationStyles'
 const device = Platform.OS
 
 const days = [
-  {date: 10, name: 'Terça-Feira'},
+  {date: 10, name: 'Terça-Feira' },
   {date: 11, name: 'Quarta-Feira'},
   {date: 12, name: 'Quinta-Feira'},
-  {date: 13, name: 'Sexta-Feira'},
+  {date: 13, name: 'Sexta-Feira' },
 ]
-
 
 const buildDayTabs = (tabs, day) => {
   const sortName = day.name.substring(0, 3)
