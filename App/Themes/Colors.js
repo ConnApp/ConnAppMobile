@@ -1,6 +1,7 @@
 const colors = {
   background: '#054D73',
   primaryLight: '#5FA7CD',
+  iOSInactive: '#B0BEC5',
   primary: '#054D73',
   clear: 'rgba(0,0,0,0)',
   facebook: '#3b5998',
