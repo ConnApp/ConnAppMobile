@@ -11,7 +11,7 @@ import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import Gradient from '../Gradient'
 import Mongoose from '../Datastore'
-import { styles, colorGradient, colors } from './Styles/LaunchScreenStyles'
+import { styles, colorGradient, colors } from './Styles/SplashStyles'
 
 
 export default class Splash extends Component {
@@ -19,33 +19,17 @@ export default class Splash extends Component {
   constructor () {
     super()
     this.state = {
-      dataSource: ds.cloneWithRows(navigationItems)
+      canContinue: false
     }
   }
-
-
 
   render () {
     return (
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Image
-            style={styles.headerImage}
-            source={Images.enegepLogo}
-          />
-        </View>
-        <View style={styles.menuList}>
-          {navigationItems.map((item, key) => (
-            <Button
-              key={key}
-              onPress={() => this.handlePress(item.navKey)}
-              containerViewStyle={styles.menuButtonView}
-              buttonStyle={styles.menuButton}
-              backgroundColor={item.bg}
-              title={item.title}
-            />
-          ))}
-        </View>
+        <Image
+          style={styles.splashImage}
+          source={Images.enegepLogo}
+        />
       </View>
     )
   }
