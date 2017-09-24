@@ -6,7 +6,8 @@ import {
   View,
   ListView,
   StyleSheet,
-  TextInput
+  TextInput,
+  Platform
 } from 'react-native'
 
 import { Images, Colors } from '../Themes'
@@ -20,6 +21,8 @@ import LocalStorage from '../Datastore/LocalStorage'
 import { groupBy, toMongoIdObject } from '../Helpers'
 
 import styles from './Styles/EventsStyles'
+
+const device = Platform.OS
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
@@ -84,13 +87,18 @@ export default class Events extends Component {
 
   static navigationOptions = ({ navigation  }) => {
     const {state} = navigation
-    if(state.params != undefined){
-      let title = state.params.fetchOnlyAgenda? 'Minha Agenda' : 'Programação'
-      return {
-        headerTitle: title,
-        headerRight: <SearchBar filter={state.params}/>
-      }
+
+    let title = (state.params || {}).fetchOnlyAgenda? 'Minha Agenda' : 'Programação'
+
+    let navItems = {
+      headerTitle: title,
     }
+
+    if ( state.params != undefined && device == 'android' ){
+      navItems.headerRight = <SearchBar filter={state.params}/>
+    }
+
+    return navItems
   }
 
   setNewEventsState (query = {}) {
