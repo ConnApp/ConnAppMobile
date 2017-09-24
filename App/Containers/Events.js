@@ -263,7 +263,7 @@ export default class Events extends Component {
           keyExtractor={(item, index) => index}
           stickySectionHeadersEnabled={true}
           renderItem={this.renderCard.bind(this)}
-          renderSectionHeader={this.renderHeader.bind(this)}
+          renderSectionHeader={this.renderHeader}
           contentContainerStyle={styles.scrollView}
           sections={this.state.events}
         />
