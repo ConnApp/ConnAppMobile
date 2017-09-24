@@ -10,7 +10,11 @@ class RootContainer extends Component {
   render () {
     return (
       <View style={styles.applicationView}>
-        <StatusBar backgroundColor="#054D73" />
+        <StatusBar
+          backgroundColor="#054D73"
+          barStyle="light-content"
+          networkActivityIndicatorVisible={true}
+        />
         <AppNavigation />
       </View>
     )
