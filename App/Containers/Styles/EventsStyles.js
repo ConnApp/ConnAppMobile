@@ -21,9 +21,12 @@ const searchBar = device == 'android' ?
   } :
   {
     width: 350,
-    height: 30,
-    padding: 10,
-    margin: 5,
+    height: 35,
+    padding: 0,
+    marginTop: 10,
+    marginBottom: 5,
+    marginRight: 5,
+    marginLeft: 5,
     fontSize: 12,
     borderRadius: 10,
     fontSize: 16,

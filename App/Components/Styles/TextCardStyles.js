@@ -11,6 +11,13 @@ export default StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 10,
     elevation: 3,
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      width: 1,
+      height: 2
+    },
+    shadowRadius: 2,
     backgroundColor: 'white'
   }
 })

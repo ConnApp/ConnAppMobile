@@ -27,6 +27,7 @@ export default class EventDetails extends Component {
   constructor (props) {
     super()
     this.dataOrder = [
+      'name',
       'duration',
       'description',
       'local',
@@ -55,7 +56,7 @@ export default class EventDetails extends Component {
   }
 
   updateEvent() {
-    let { local, event, eventType, speakers } = this
+    let { name, local, event, eventType, speakers } = this
 
     event.local = local.name
     event.eventType = eventType.name
@@ -74,7 +75,16 @@ export default class EventDetails extends Component {
     const array = dataOrder.map(eventName => {
       let data = event[eventName] || eventName
       let isArray = Array.isArray(data)
-      eventName = capitalize(eventName)
+      let isName = eventName == 'name'
+
+      if (isName) {
+        eventName = data
+        data = 'nill'
+      } else {
+        eventName = capitalize(eventName)
+      }
+
+
       return !isArray? {eventName, data} : {eventName, data: this.reduceToList(data)}
     }).filter(info => info.data)
 
@@ -161,6 +171,9 @@ export default class EventDetails extends Component {
     // console.log(rowName)
     let name
     switch (rowName) {
+      case 'Name':
+        name =  'Título'
+        break;
       case 'Duration':
         name =  'Horário'
         break;
@@ -177,6 +190,7 @@ export default class EventDetails extends Component {
         name =  'Palestrantes'
         break;
       default:
+        name = rowName
     }
 
     return name

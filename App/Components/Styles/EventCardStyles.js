@@ -9,6 +9,13 @@ export default StyleSheet.create({
     margin: 10,
     padding: 10,
     elevation: 3,
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      width: 1,
+      height: 2
+    },
+    shadowRadius: 2,
     backgroundColor: 'white'
   },
   name: {
@@ -41,7 +48,7 @@ export default StyleSheet.create({
   timeStamp: {
     flex: 4,
     marginRight: 1,
-    paddingRight: 5, 
+    paddingRight: 5,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E9E9EE',

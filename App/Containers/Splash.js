@@ -72,13 +72,19 @@ export default class Splash extends Component {
     })
   }
 
+  navigateTo(screen) {
+    setTimeout(() => {
+      this.props.navigation.navigate(screen)
+    }, 1000)
+  }
+
   componentDidMount() {
     this.shouldSyncFromCloud()
       .then(itShould => {
         return itShould? true : this.syncLocalFiles()
       })
       .then(res => {
-        if (res) this.props.navigation.navigate('LaunchScreen')
+        if (res) this.navigateTo('LaunchScreen')
       })
       .catch(err => {
         console.log(err)

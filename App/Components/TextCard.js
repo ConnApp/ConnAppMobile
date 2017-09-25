@@ -19,11 +19,29 @@ import styles from './Styles/TextCardStyles'
 
 // <View style={styles.}></View>
 export default class TextCard extends Component {
+  constructor(props) {
+    super()
+    let { text, title } = props
+
+    if (text == 'nill') {
+      text = ''
+    }
+
+    if (title == 'nill') {
+      title = ''
+    }
+
+    this.state = {
+      text,
+      title
+    }
+  }
+
   render () {
     return (
       <View contentContainerStyle={styles.contentContainer}>
         <Markdown style={styles.markdownStyle}>
-          {this.props.title+'\n\n' + this.props.text || ''}
+          {this.state.title+'\n\n' + this.state.text || 's'}
         </Markdown>
       </View>
     )

@@ -148,7 +148,9 @@ export default class EventCard extends Component {
       )
     } else {
        return (
-        <TouchableHighlight onPress={() => this.openEventDetail()}>
+        <TouchableHighlight
+          underlayColor='#00000010'
+          onPress={() => this.openEventDetail()}>
           {mainView}
         </TouchableHighlight>
       )
