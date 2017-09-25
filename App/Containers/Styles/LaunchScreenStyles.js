@@ -48,7 +48,7 @@ const iOSStyle = StyleSheet.create({
     flex: 1
   },
   menuButton: {
-    height: 230,
+    height: 60,
     width: 700
   },
 })
