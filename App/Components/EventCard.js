@@ -98,12 +98,21 @@ export default class EventCard extends Component {
     this.props.navigation.navigate('EventDetails', {event: this.state.event})
   }
 
+  formatTitle(title) {
+    const limit = 64
+    if (title.length >= limit + 3) {
+      title = `${title.substring(0, limit)}...`
+    }
+
+    return title
+  }
+
   render () {
     const mainView = (
       <View style={styles.contentContainer}>
         <View style={styles.name}>
           <Text style={styles.nameText}>
-            {this.state.event.name}
+            {this.formatTitle(this.state.event.name)}
           </Text>
         </View>
         <View style={styles.eventType}>
