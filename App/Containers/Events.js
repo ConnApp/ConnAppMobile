@@ -33,12 +33,7 @@ const ds = new ListView.DataSource(listOptions)
 
 const events = [{
   key:  'Carregando Salas',
-  data: [{
-    name: 'Carregando eventos',
-    eventType: '',
-    start: '',
-    end: ''
-  }],
+  data: [],
 }]
 
 class SearchBar extends Component {
@@ -65,7 +60,7 @@ export default class Events extends Component {
   constructor () {
     super()
     this.state = {
-      events: events
+      events: []
     }
     this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
     this.localAgendaStorage = new LocalStorage('agenda')
@@ -122,7 +117,8 @@ export default class Events extends Component {
       events = events.filter(event => {
         const hasEventType = event.eventType.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         const hasEventName = event.name.toLowerCase().indexOf(query.name.toLowerCase()) > -1
-        return hasEventName || hasEventType
+        const hasEventLocal = event.local.toLowerCase().indexOf(query.name.toLowerCase()) > -1
+        return hasEventName || hasEventType || hasEventLocal
       })
     }
 
@@ -257,7 +253,13 @@ export default class Events extends Component {
   }
 
   renderCard (event) {
-    return <EventCard updateParent={() => this.fetchEvents({})} navigation={this.props.navigation} event={event.item} />
+    return (
+      <EventCard
+        updateParent={() => this.fetchEvents({})}
+        navigation={this.props.navigation}
+        event={event.item}
+      />
+    )
   }
 
   renderHeader (title) {
@@ -271,9 +273,9 @@ export default class Events extends Component {
   render () {
     const ListItems = (
       <SectionList
-        keyExtractor={(item, index) => index}
-        stickySectionHeadersEnabled={true}
+        keyExtractor={(item, index) => item._id}
         renderItem={this.renderCard.bind(this)}
+        stickySectionHeadersEnabled={true}
         renderSectionHeader={this.renderHeader}
         contentContainerStyle={styles.scrollView}
         sections={this.state.events}
