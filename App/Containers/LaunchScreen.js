@@ -20,9 +20,9 @@ const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow !=
 const navigationItems = [
   { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1] },
   { categoria: '1', title: 'Agenda',      navKey: 'Agenda', bg: colorGradient[2] },
-  { categoria: '2', title: 'Informações', navKey: 'Events', bg: colorGradient[3] },
-  { categoria: '2', title: 'Notícias',    navKey: 'Events', bg: colorGradient[4] },
-  { categoria: '2', title: 'Notas',       navKey: 'Events', bg: colorGradient[5] }
+  // { categoria: '2', title: 'Informações', navKey: 'Events', bg: colorGradient[3] },
+  // { categoria: '2', title: 'Notícias',    navKey: 'Events', bg: colorGradient[4] },
+  // { categoria: '2', title: 'Notas',       navKey: 'Events', bg: colorGradient[5] }
 ]
 
 

@@ -20,6 +20,10 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { Images, Colors, Fonts } from '../Themes'
 import styles from './Styles/NavigationStyles'
 
+setTimeout(() => {
+  initialScreen = 'LaunchScreen'
+}, 10000)
+
 const device = Platform.OS
 
 const days = [
