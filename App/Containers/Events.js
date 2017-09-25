@@ -55,8 +55,8 @@ class SearchBar extends Component {
         style={styles.searchBar}
         selectionColor="#FFFFFFD5"
         underlineColorAndroid="#FFFFFFD5"
-        placeholderTextColor="#FFFFFF60"
-        placeholder="Filtrar Eventos" />
+        placeholderTextColor="gray"
+        placeholder="Buscar Eventos" />
     )
   }
 }
@@ -100,7 +100,7 @@ export default class Events extends Component {
     }
 
     if ( state.params != undefined && device == 'android' ){
-      navItems.headerRight = <SearchBar filter={state.params}/>
+      navItems.headerRight = <SearchBar filter={state.params} />
     }
 
     return navItems
@@ -149,7 +149,6 @@ export default class Events extends Component {
 
     this.setNewEventsState()
   }
-
 
   componentDidMount() {
     this.mongo.db.locals.on('insert', newLocal => {
@@ -281,10 +280,15 @@ export default class Events extends Component {
       />
     )
 
-    return (
-      <View contentContainerStyle={styles.contentContainer}>
+    const finalView = (device == 'android') ?
+      (<View contentContainerStyle={styles.contentContainer}>
         {ListItems}
-      </View>
-    )
+      </View>) :
+      (<View contentContainerStyle={styles.contentContainer}>
+        <SearchBar filter={this.props.navigation.state.params} />
+        {ListItems}
+      </View>)
+
+    return finalView
   }
 }
