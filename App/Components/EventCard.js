@@ -100,6 +100,7 @@ export default class EventCard extends Component {
 
   formatTitle(title) {
     const limit = 64
+
     if (title.length >= limit + 3) {
       title = `${title.substring(0, limit)}...`
     }
