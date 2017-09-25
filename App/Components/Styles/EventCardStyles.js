@@ -35,15 +35,16 @@ export default StyleSheet.create({
     flexDirection: 'row'
   },
   time: {
-    flex: 2,
+    flex: 4,
     flexDirection: 'row'
   },
   timeStamp: {
     flex: 4,
     marginRight: 1,
+    paddingRight: 5, 
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F2F2F2',
+    backgroundColor: '#E9E9EE',
     borderRadius: 4
   },
   timeStampIconContainer: {
@@ -67,7 +68,7 @@ export default StyleSheet.create({
     marginLeft: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F2F2F2',
+    backgroundColor: '#E9E9EE',
     borderRadius: 4
   },
   favoriteIconContainer: {

@@ -40,12 +40,12 @@ export default StyleSheet.create({
     flexDirection: 'column',
   },
   scrollView: {
-    backgroundColor: '#efefef'
+    backgroundColor: '#E9E9EE'
   },
   category: {
-    borderTopColor: '#efefef',
-    borderLeftColor: '#efefef',
-    borderRightColor: '#efefef',
+    borderTopColor: '#E9E9EE',
+    borderLeftColor: '#E9E9EE',
+    borderRightColor: '#E9E9EE',
     borderTopWidth: 5,
     borderLeftWidth: 5,
     borderRightWidth: 5,
