@@ -86,7 +86,22 @@ export default StyleSheet.create({
     fontSize: 24,
     color: Colors.primaryLight
   },
-  like: {
+  likeWrapper: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
     flex: 2
+  },
+  like: {
+    height: 40,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  likeIconStyle: {
+    fontSize: 24,
+  },
+  likeTextStyle: {
+    fontSize: 16,
+    marginRight: 8,
   },
 })

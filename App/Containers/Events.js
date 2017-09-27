@@ -64,6 +64,7 @@ export default class Events extends Component {
     }
     this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
     this.localAgendaStorage = new LocalStorage('agenda')
+    this.localLikesStorage = new LocalStorage('likes')
     this.events = []
     this.eventtypes = []
     this.locals = []

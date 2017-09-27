@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { getDurationFromEvent } from '../Helpers'
 import styles from './Styles/EventCardStyles'
 import LocalStorage from '../Datastore/LocalStorage'
+import Datastore from '../Datastore'
 
 
 // <View style={styles.}></View>
@@ -30,6 +31,8 @@ export default class EventCard extends Component {
       isAgenda: false,
       event: {
         ...props.event,
+        likes: props.event.likes? props.event.likes : 0,
+        likeColor: props.event.isLiked? Colors.primary : 'gray',
         local: (props.event.local || '').split(' - ')[0],
         eventType: (props.event.eventType || '').split(' - ')[0],
         duration: getDurationFromEvent(props.event)
@@ -39,10 +42,13 @@ export default class EventCard extends Component {
 
   componentWillMount() {
     this.localAgendaStorage = new LocalStorage('agenda')
+    this.localLikesStorage = new LocalStorage('likes')
+    this.mongo = new Datastore(['events'])
   }
 
   shouldComponentUpdate (nextProps, nextState) {
     return (
+      nextState.event.isLiked != this.state.event.isLiked ||
       nextState.event.isAgenda != this.state.event.isAgenda ||
       nextProps.event.name != this.state.event.name ||
       nextProps.event.eventType != this.state.event.eventType ||
@@ -52,6 +58,61 @@ export default class EventCard extends Component {
 
   getIcon() {
     return this.state.event.isAgenda? 'check' : 'plus'
+  }
+
+  likePress() {
+    let { event } = this.state
+
+    const nextState = !event.isLiked
+
+    const data = {
+      value: event._id
+    }
+
+    const query = {
+      value: event._id
+    }
+
+    this.localLikesStorage.on('remove', numRemoved => {
+      setTimeout(() => {
+        this.props.updateParent()
+      }, 1000)
+    })
+
+    let promise = nextState?
+      this.localLikesStorage.insert({ data }) :
+      this.localLikesStorage.remove({ query })
+
+    promise
+      .then(res => {
+
+        const query = {
+          _id: event._id
+        }
+
+        const data = {
+          likes: nextState? event.likes + 1 : event.likes - 1
+        }
+
+        return this.mongo.db.events.update({ query, data })
+      })
+      .then(res => {
+        // console.log(res)
+        this.setState({
+          ...this.state,
+          event: {
+            ...event,
+            likes: res.newDocs[0].likes,
+            likeColor: nextState? Colors.primaryLight : 'gray',
+            isLiked: nextState
+          }
+        })
+
+      })
+      .catch(err => {
+        // console.log(err)
+      })
+
   }
 
   favoritePress() {
@@ -67,7 +128,7 @@ export default class EventCard extends Component {
 
     this.localAgendaStorage.on('remove', numRemoved => {
       setTimeout(() => {
-        this.props.updateParent()
+        // this.props.updateParent()
       }, 1000)
     })
 
@@ -78,7 +139,7 @@ export default class EventCard extends Component {
 
     promise
       .then(res => {
-        // console.log(res)
+
         this.setState({
           ...this.state,
           event: {
@@ -97,6 +158,8 @@ export default class EventCard extends Component {
   openEventDetail() {
     this.props.navigation.navigate('EventDetails', {event: this.state.event})
   }
+
+
 
   formatTitle(title) {
     const limit = 64
@@ -146,7 +209,31 @@ export default class EventCard extends Component {
                 </View>
             </TouchableHighlight>
           </View>
-          <View style={styles.like}></View>
+          <View style={styles.likeWrapper}>
+            <TouchableHighlight
+              underlayColor="#d7d7d700"
+              onPress={() => this.likePress()}
+            >
+              <View
+                style={styles.like}>
+                <Text
+                  style={[
+                    styles.likeTextStyle,
+                    {color: this.state.event.likeColor}
+                  ]}
+                >
+                  {this.state.event.likes || 0}
+                </Text>
+                <Icon
+                  style={[
+                    styles.likeIconStyle,
+                    {color: this.state.event.likeColor}
+                  ]}
+                  name='thumbs-o-up'
+                />
+              </View>
+            </TouchableHighlight>
+          </View>
         </View>
       </View>
     )
