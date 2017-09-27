@@ -18,7 +18,6 @@ class RootContainer extends Component {
       </View>
     )
   }
-
 }
 
 export default RootContainer
