@@ -1,10 +1,10 @@
 import wampConfig from './config.js'
-import { NetInfo } from 'react-native'
+import { isNetworkConnected } from '../Helpers'
 import wamp from 'wamp.js2'
 
 class WAMP {
   constructor({subArray = [], pubArray = [], throttle = 1000}) {
-    NetInfo.isConnected.fetch().then(isConnected => {
+    isNetworkConnected().then(isConnected => {
       // console.log(`Internet is ${isConnected? 'Connected' : 'Disconnected'}`)
       if (isConnected) {
         // Builds conenction object
@@ -68,7 +68,7 @@ class WAMP {
 
   // Close connection
   close() {
-    NetInfo.isConnected.fetch().then(isConnected => {
+    isNetworkConnected().then(isConnected => {
       if (isConnected) this.Connection.close()
     })
   }

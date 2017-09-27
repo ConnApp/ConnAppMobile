@@ -1,3 +1,5 @@
+import { Platform, NetInfo } from 'react-native'
+
 export function groupBy (dataSet, field) {
   const collectionObject = dataSet.reduce((finalGroup, data) => {
     (finalGroup[data[field]] = finalGroup[data[field]] || []).push(data);
@@ -38,4 +40,19 @@ export function getDurationFromEvent(event) {
 
 export function toMongoIdObject(item) {
   return { _id: item._id }
+}
+
+export function isNetworkConnected() {
+  if (Platform.OS === 'ios') {
+    return new Promise(resolve => {
+      const handleFirstConnectivityChangeIOS = isConnected => {
+        NetInfo.isConnected.removeEventListener('change', handleFirstConnectivityChangeIOS);
+        console.log(isConnected)
+        resolve(isConnected);
+      };
+      NetInfo.isConnected.addEventListener('change', handleFirstConnectivityChangeIOS);
+    });
+  }
+
+  return NetInfo.isConnected.fetch();
 }

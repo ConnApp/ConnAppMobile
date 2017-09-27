@@ -278,8 +278,7 @@ export default class Events extends Component {
         stickySectionHeadersEnabled={true}
         renderSectionHeader={this.renderHeader}
         contentContainerStyle={styles.scrollView}
-        sections={this.state.events}
-      />
+        sections={this.state.events} />
     )
 
     const finalView = (device == 'android') ?

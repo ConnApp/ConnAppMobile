@@ -13,7 +13,6 @@ class RootContainer extends Component {
         <StatusBar
           backgroundColor="#054D73"
           barStyle="light-content"
-          networkActivityIndicatorVisible={true}
         />
         <AppNavigation />
       </View>
