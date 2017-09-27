@@ -1,14 +1,10 @@
 import Datastore from 'react-native-local-mongodb'
 import EventEmitter from 'EventEmitter'
-import WAMP from '../WAMP'
 
-export default class Collection {
+export default class LocalStorage {
   constructor (collectionName = 'Default') {
-
     // Defines filename for the collection
-    const filename = `${collectionName}File`
-
-    this.isSync = false
+    const filename = `${collectionName}LocalFile`
 
     // Defines event emitter
     this.event = new EventEmitter()
@@ -21,101 +17,6 @@ export default class Collection {
 
     // Collection name
     this.name = collectionName
-
-    // sets session for this intance
-    this.session = `${Math.round(1000*Math.random())}${new Date().getTime()}`
-
-    const insertFunction = (remoteData) => {
-      // // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
-      const fromRemote = true
-      data = remoteData[0]
-
-      // // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
-      // console.log(`${data.length} ${this.name} to be inserted`)
-      this.insert({ data, fromRemote })
-        .then(res => {
-          // console.log(`Inserted successfully`)
-          this.checkSync(remoteData[1])
-        })
-        .catch(err => {
-          // console.log('There was an error inserting ' + this.name)
-          // console.log(err)
-        })
-    }
-
-    const subArray = [
-      {
-        uri: `connapp.app.${this.name.toLowerCase()}.insert`,
-        cb: insertFunction
-      },
-      {
-        uri: `connapp.app.${this.session}.${this.name.toLowerCase()}.insert`,
-        cb: insertFunction
-      }
-    ]
-
-      // // console.log(subArray)
-    this.sockets.push( new WAMP({ subArray }) )
-
-  }
-
-  checkSync (remoteCount = 0) {
-    // console.log('Checking if is synced already')
-    if (this.isSync) return true
-    // console.log(`Not synced, scheduling verifying task ${this.name}`)
-    setTimeout(() => {
-      this
-        .count({})
-        .then(count => {
-          if (this.isSync) return false
-
-          this.isSync = (count == remoteCount)
-          // console.log(`${this.name} ${this.isSync? 'has synced' : 'not synced yet'}`)
-          // // console.log(`${this.name}: Syncing ${count} of ${remoteCount}`)
-          if (this.isSync) {
-            this.event.emit('sync', this.isSync)
-          }
-        })
-    }, 1000)
-  }
-
-  closeSockets () {
-    this.sockets.forEach(socket => socket.close())
-  }
-
-  sync ({ query = {}, getAll = true, fetchAll = false }) {
-    // console.log(`Initiating sync for ${this.name}`)
-    return new Promise((resolve, reject) => {
-      this
-      .find({ query, getAll, isSync: true})
-      .then(results => {
-        // // console.log(results.length)
-        // // console.log(results.length)
-
-        let ids = results.length? results.map(res => res._id) : []
-        // console.log(`${this.session} : ${ids.length} items found. Preparing to fecth ${this.name}`)
-        let pubArray = [
-          {
-            uri: `connapp.server.${this.name.toLowerCase()}.fetch`,
-            data: {argsList: ids, argsDict: {query, fetchAll, session: this.session}}
-          }
-        ]
-
-        this.sockets.push( new WAMP({ pubArray }) )
-
-        if (!this.isSync) {
-          // console.log('Not synced yet, adding sync listener')
-          this.on('sync', () => {
-            // console.log('DONE Sync for' + this.name)
-            resolve(this.isSync)
-          })
-        } else {
-          // console.log(`${this.name} is already synced`)
-          resolve(results.filter(res => res.active))
-        }
-      })
-      .catch(reject)
-    })
   }
 
   on (action, callback) {
@@ -139,10 +40,6 @@ export default class Collection {
       // If limit is defined, use limit
       if (limit) Find = Find.limit(limit)
 
-      if (!getAll) {
-        query.active = true
-      }
-
       // Executes the query
       return Find.exec((err, result) => {
         // rejects the error, if any
@@ -157,49 +54,6 @@ export default class Collection {
             return dateQuery.start.$gt.getTime() < startDate && dateQuery.end.$lt.getTime() > endDate
           })
         }
-        // console.log(`Building ${isSync? 'sync' : 'regular'} WAMP URI for update`)
-        const uri = (item) => isSync?
-          `connapp.app.${this.session}.${this.name.toLowerCase()}.update.${item._id}` :
-          `connapp.app.${this.name.toLowerCase()}.update.${item._id}`
-
-        // Mounts array for subscribing to fetch routes
-        let subArray = result.map(item => ({
-          uri,
-          cb: data => {
-            // // console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
-            data = data[0]
-            // // console.log(data)
-            const query = { _id: data._id }
-            const fromRemote = true
-            // console.log(`Update triggerd for a document on ${this.name}`)
-            if (data.active) {
-              // console.log(`Data is active, will update on ${this.name}`)
-              // // console.log(`Performing regular update remove on ${query._id}`)
-              this.update({ query, data, fromRemote })
-                .then(res => {
-                  // console.log(`${query._id} updated with success`)
-                })
-                .catch(err => {
-                  // console.log(err)
-                })
-            } else {
-              // console.log(`Data in not active. Will perform Logical Remove on ${this.name}`)
-              this.logicalRemove({ query, fromRemote })
-                .then(res => {
-                  // console.log(`${query._id} removed with success`)
-                })
-                .catch(err => {
-                  // console.log(err)
-                })
-            }
-          }
-        }))
-
-        // Make sure is array
-        if (!Array.isArray(this.sockets['find'])) this.sockets['find'] = []
-
-        // Subscribe to fetch route and update sockets objects
-        this.sockets.push( new WAMP({ subArray }) )
 
         resolve(result)
       })
@@ -248,20 +102,6 @@ export default class Collection {
         this.dataStore.insert(dataToInsert, (err, result) => {
           // if there is error, reject
           if (err) return reject(err)
-
-          // If update was trigged by remote DB action, no need to notify remote
-          // again
-          if (!fromRemote) {
-            let pubArray = [
-              {
-                uri: `connapp.server.${this.name.toLowerCase()}.insert`,
-                data: result
-              }
-            ]
-
-            // Dispatch WAMP route here to update remote database.
-            this.sockets.push( new WAMP({ pubArray }) )
-          }
 
           this.event.emit('insert', result)
 
@@ -327,18 +167,6 @@ export default class Collection {
           if (err) return reject(err)
 
           if (!Array.isArray(newDocs)) newDocs = [newDocs]
-
-          // If the update was triggered by the server or not
-          if (!fromRemote) {
-            // Dispatch WAMP route here to update remote database
-            let pubArray = newDocs.map(item => ({
-              uri: `connapp.server.${this.name.toLowerCase()}.update`,
-              data: item
-            }))
-
-            // Dispatch WAMP route here to update remote database.
-            this.sockets.push( new WAMP({ pubArray }) )
-          }
 
           // Dispatch redux route to updated screen
           this.event.emit('update', newDocs)

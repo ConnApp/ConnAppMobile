@@ -5,7 +5,7 @@ import Gradient from '../../Gradient'
 export const colors =  {
   initialColor: Colors.primary,
   finalColor: Colors.primaryLight,
-  steps: 3
+  steps: 6
 }
 
 export const colorGradient= new Gradient(colors)
@@ -16,56 +16,33 @@ const commonStyle = {
   container: {
     flex: 1,
     flexDirection: 'column',
+    alignItems: 'center',
     backgroundColor: colorGradient[0],
   },
-  header: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerImage: {
-    flex: 1,
-    marginTop: 0,
+  splashImage: {
+    flex: 5,
     width: 300,
     resizeMode: 'contain',
+  },
+  spinner: {
+    flex: 5,
+  },
+  statusTextContainer: {
+    flex: 3,
+    justifyContent: 'center',
+  },
+  statusText: {
+    color: 'white',
+    fontSize: 24,
   }
 }
 
 const iOSStyle = StyleSheet.create({
   ...commonStyle,
-  headerImage: {
-    flex: 1,
-    marginTop: 30,
-    width: 300,
-    resizeMode: 'contain',
-  },
-  menuList: {
-    flex: 2,
-    justifyContent: 'space-around',
-    alignItems: 'center'
-  },
-  menuButtonView: {
-    flex: 1
-  },
-  menuButton: {
-    height: 60,
-    width: 700
-  },
 })
 
 const andoidStyle = StyleSheet.create({
   ...commonStyle,
-  menuList: {
-    flex: 3,
-    marginLeft: -15,
-    marginRight: -15
-  },
-  menuButtonView: {
-    flex: 1
-  },
-  menuButton: {
-    flex: 1
-  }
 })
 
 export const styles = deviceOs == 'android' ? andoidStyle : iOSStyle

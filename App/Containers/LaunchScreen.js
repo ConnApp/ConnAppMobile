@@ -1,68 +1,32 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, Image, View, ListView, StyleSheet } from 'react-native'
+import {
+  ScrollView,
+  Text,
+  Image,
+  View,
+  ListView,
+  StyleSheet,
+  NetInfo
+} from 'react-native'
 
-import { Images } from '../Themes'
+import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import Gradient from '../Gradient'
+import Mongoose from '../Datastore'
+import { styles, colorGradient, colors } from './Styles/LaunchScreenStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
-const colors = {
-  initialColor: '054D73',
-  finalColor: '5FA7CD',
-  steps: 6
-}
-
-const colorGradient = new Gradient(colors)
-
-console.log(colorGradient)
-
 const navigationItems = [
-  { title: 'Programação', navKey: 'Events', bg: colorGradient[1]  },
-  { title: 'Agenda',      navKey: 'Events', bg: colorGradient[2]  },
-  { title: 'Informações', navKey: 'Events', bg: colorGradient[3]  },
-  { title: 'Notícias',    navKey: 'Events', bg: colorGradient[4]  },
-  { title: 'Notas',       navKey: 'Events', bg: colorGradient[5]  }
+  { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1] },
+  { categoria: '1', title: 'Agenda',      navKey: 'Agenda', bg: colorGradient[2] },
+  // { categoria: '2', title: 'Informações', navKey: 'Events', bg: colorGradient[3] },
+  // { categoria: '2', title: 'Notícias',    navKey: 'Events', bg: colorGradient[4] },
+  // { categoria: '2', title: 'Notas',       navKey: 'Events', bg: colorGradient[5] }
 ]
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: colorGradient[0]
-  },
-  header: {
-    flex: 2,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  headerImage: {
-    flex: 1,
-    marginTop: 0,
-    width: 300,
-    resizeMode: 'contain'
-  },
-  menuList: {
-    flex: 4,
-    marginLeft: -15,
-    marginRight: -15
-  },
-  menuButtonView: {
-    flex: 1
-  },
-  menuButton: {
-    flex: 1
-  }
-})
-
-// Hack to hide navigation bar
-const style = StyleSheet.create({ hideText:{ display:"none" } })
 
 export default class LaunchScreen extends Component {
-
-  static navigationOptions = {
-    header: <Text style={style.hideText} ></Text>
-  }
 
   constructor () {
     super()
@@ -71,9 +35,48 @@ export default class LaunchScreen extends Component {
     }
   }
 
+  componentWillMount() {
+    this.mongo = new Mongoose(['locals', 'eventtypes', 'speakers', 'events'])
+  }
+
+  componentDidMount() {
+    this.mongo.db.events.sync({fetchAll: true})
+      .then(res => {
+        return this.mongo.db.eventtypes.sync({fetchAll: true})
+      })
+      .then(res => {
+        return this.mongo.db.locals.sync({fetchAll: true})
+      })
+      .then(res => {
+        return this.mongo.db.speakers.sync({fetchAll: true})
+      })
+      .then(res => {
+        console.log('DONE ALL SYNC')
+    })
+  }
+
+  handlePress(navKey) {
+    let that = this
+    switch (navKey) {
+      case 'Events':
+        that.goToEvents()
+        break;
+      case 'Agenda':
+        that.goToAgenda()
+        break;
+      default:
+
+    }
+  }
+
   goToEvents() {
     this.props.navigation.navigate('Events')
   }
+
+  goToAgenda() {
+    this.props.navigation.navigate('Events', {fetchOnlyAgenda: true})
+  }
+
   render () {
     return (
       <View style={styles.container}>
@@ -87,7 +90,7 @@ export default class LaunchScreen extends Component {
           {navigationItems.map((item, key) => (
             <Button
               key={key}
-              onPress={() => this.goToEvents(item.navKey)}
+              onPress={() => this.handlePress(item.navKey)}
               containerViewStyle={styles.menuButtonView}
               buttonStyle={styles.menuButton}
               backgroundColor={item.bg}
