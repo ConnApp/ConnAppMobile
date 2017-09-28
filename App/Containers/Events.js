@@ -24,13 +24,6 @@ import styles from './Styles/EventsStyles'
 
 const device = Platform.OS
 
-const listOptions = {
-  rowHasChanged: (r1, r2) => r1 !== r2,
-  sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-}
-
-const ds = new ListView.DataSource(listOptions)
-
 const events = [{
   key:  'Carregando Salas',
   data: [],
@@ -80,8 +73,9 @@ export default class Events extends Component {
   }
 
   filterBy({text = ''}) {
+    this.currentFilter = text
     const query = {
-      name: text
+      name: this.currentFilter
     }
     this.fetchEvents({query})
   }
@@ -106,9 +100,11 @@ export default class Events extends Component {
     let eventTypes = this.reduceToId(this.eventTypes)
     let locals = this.reduceToId(this.locals)
     let localAgendaIds = this.localAgenda.map(res => res.value)
+    let localLikesIds = this.localLikes.map(res => res.value)
     let events = this.events.map(eventRef => {
       let event = {...eventRef}
       event.isAgenda = localAgendaIds.indexOf(event._id) > -1
+      event.isLiked = localLikesIds.indexOf(event._id) > -1
       event.local = locals[event.local]
       event.eventType = eventTypes[event.eventType]
       return event
@@ -140,11 +136,16 @@ export default class Events extends Component {
 
     if (this.isArray(item)) item =  item[0]
 
-    this[list] = (this[list] || [item]).map(listItem =>
-      listItem._id == item._id ? {...item} : {...listItem}
-    )
+    this[list] = (this[list] || [item]).map(listItem => {
+      let isItem = listItem._id == item._id
+      return isItem ? {...item} : {...listItem}
+    })
 
-    this.setNewEventsState()
+    const query = {
+      name: this.currentFilter || ''
+    }
+    
+    this.setNewEventsState(query)
   }
 
   componentDidMount() {
@@ -171,12 +172,20 @@ export default class Events extends Component {
     this.fetchEvents({})
   }
 
+  fecthLocalData() {
+    return Promise.all([
+      this.localAgendaStorage.find({}),
+      this.localLikesStorage.find({}),
+    ])
+  }
+
   fetchEvents ({ query = {} }) {
     const { state } = this.props.navigation
     let mQuery = { dateQuery: this.getTodayFilter() }
-    this.localAgendaStorage.find({})
-      .then(localAgenda => {
-        this.localAgenda = [...localAgenda]
+    this.fecthLocalData()
+      .then(localData => {
+        this.localAgenda = [...localData[0]]
+        this.localLikes = [...localData[1]]
 
         if ((state.params || {}).fetchOnlyAgenda === true) {
           mQuery.query = {
@@ -253,7 +262,8 @@ export default class Events extends Component {
     // // console.log(this.state.events)
   }
 
-  renderCard (event) {
+  renderCard (event, test) {
+    console.log(test)
     return (
       <EventCard
         updateParent={() => this.fetchEvents({})}
@@ -279,7 +289,8 @@ export default class Events extends Component {
         stickySectionHeadersEnabled={true}
         renderSectionHeader={this.renderHeader}
         contentContainerStyle={styles.scrollView}
-        sections={this.state.events} />
+        sections={this.state.events}
+      />
     )
 
     const finalView = (device == 'android') ?

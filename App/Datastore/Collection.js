@@ -4,7 +4,6 @@ import WAMP from '../WAMP'
 
 export default class Collection {
   constructor (collectionName = 'Default') {
-
     // Defines filename for the collection
     const filename = `${collectionName}File`
 
@@ -23,7 +22,7 @@ export default class Collection {
     this.name = collectionName
 
     // sets session for this intance
-    this.session = `${Math.round(1000*Math.random())}${new Date().getTime()}`
+    this.session = `${Math.round(1000 * Math.random())}${new Date().getTime()}`
 
     const insertFunction = (remoteData) => {
       // // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
@@ -55,8 +54,7 @@ export default class Collection {
     ]
 
       // // console.log(subArray)
-    this.sockets.push( new WAMP({ subArray }) )
-
+    this.sockets.push(new WAMP({ subArray }))
   }
 
   checkSync (remoteCount = 0) {
@@ -92,7 +90,7 @@ export default class Collection {
         // // console.log(results.length)
         // // console.log(results.length)
 
-        let ids = results.length? results.map(res => res._id) : []
+        let ids = results.length ? results.map(res => res._id) : []
         // console.log(`${this.session} : ${ids.length} items found. Preparing to fecth ${this.name}`)
         let pubArray = [
           {
@@ -101,7 +99,7 @@ export default class Collection {
           }
         ]
 
-        this.sockets.push( new WAMP({ pubArray }) )
+        this.sockets.push(new WAMP({ pubArray }))
 
         if (!this.isSync) {
           // console.log('Not synced yet, adding sync listener')
@@ -124,7 +122,7 @@ export default class Collection {
   }
 
   // find function wrapped in a promise
-  find({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined , getAll = false, isSync = false}) {
+  find ({ dateQuery = null, query = {}, project = {}, skip = undefined, sort = undefined, limit = undefined, getAll = false, isSync = false}) {
     // console.log(`Initiating Find for ${this.name}`)
     return new Promise((resolve, reject) => {
       // Defines Query object
@@ -158,13 +156,13 @@ export default class Collection {
           })
         }
         // console.log(`Building ${isSync? 'sync' : 'regular'} WAMP URI for update`)
-        const uri = (item) => isSync?
+        const uri = (item) => isSync ?
           `connapp.app.${this.session}.${this.name.toLowerCase()}.update.${item._id}` :
           `connapp.app.${this.name.toLowerCase()}.update.${item._id}`
 
         // Mounts array for subscribing to fetch routes
         let subArray = result.map(item => ({
-          uri,
+          uri: uri(item),
           cb: data => {
             // // console.log(`connapp.app.${this.name.toLowerCase()}.update.${item._id} was called`)
             data = data[0]
@@ -199,7 +197,7 @@ export default class Collection {
         if (!Array.isArray(this.sockets['find'])) this.sockets['find'] = []
 
         // Subscribe to fetch route and update sockets objects
-        this.sockets.push( new WAMP({ subArray }) )
+        this.sockets.push(new WAMP({ subArray }))
 
         resolve(result)
       })
@@ -207,7 +205,7 @@ export default class Collection {
   }
 
   // Insert function wrapped in a promise
-  insert({ data = undefined, fromRemote = false }) {
+  insert ({ data = undefined, fromRemote = false }) {
     return new Promise((resolve, reject) => {
       // Validates data argument
       if (!data) {
@@ -255,12 +253,17 @@ export default class Collection {
             let pubArray = [
               {
                 uri: `connapp.server.${this.name.toLowerCase()}.insert`,
-                data: result
+                data: {
+                  argsList: [],
+                  argsDict: {
+                    data: result
+                  }
+                }
               }
             ]
 
             // Dispatch WAMP route here to update remote database.
-            this.sockets.push( new WAMP({ pubArray }) )
+            this.sockets.push(new WAMP({ pubArray }))
           }
 
           this.event.emit('insert', result)
@@ -273,7 +276,7 @@ export default class Collection {
   }
 
   // Remove function wrapped in a promise
-  logicalRemove({ query = undefined, fromRemote = false }) {
+  logicalRemove ({ query = undefined, fromRemote = false }) {
     // // console.log(`Logical remove initated`)
     return new Promise((resolve, reject) => {
       if (!query) {
@@ -285,18 +288,24 @@ export default class Collection {
       }
 
       const data = {
-        active:false
+        active: false
       }
 
       this
-        .update({query, data, fromRemote})
+        .update({ query, data, fromRemote })
         .then(resolve)
         .catch(reject)
     })
   }
 
   // Updated function wrapped in a promise
-  update({ query = undefined, data = undefined, options = {}, fromRemote = false }) {
+  update ({
+    query = undefined,
+    data = undefined,
+    setDataOver = undefined,
+    options = {},
+    fromRemote = false
+  }) {
     return new Promise((resolve, reject) => {
       // Defines err variable
       let err = {
@@ -316,7 +325,7 @@ export default class Collection {
       options.upsert = true
 
       // Update is a set, to update only matched fields
-      const setData = {
+      const setData = setDataOver || {
         $set: data
       }
       // // console.log(`------- UPDATE ---------`)
@@ -333,11 +342,17 @@ export default class Collection {
             // Dispatch WAMP route here to update remote database
             let pubArray = newDocs.map(item => ({
               uri: `connapp.server.${this.name.toLowerCase()}.update`,
-              data: item
+              data: {
+                argsList: [],
+                argsDict: {
+                  query,
+                  setData
+                }
+              }
             }))
 
             // Dispatch WAMP route here to update remote database.
-            this.sockets.push( new WAMP({ pubArray }) )
+            this.sockets.push(new WAMP({ pubArray }))
           }
 
           // Dispatch redux route to updated screen
@@ -349,20 +364,20 @@ export default class Collection {
   }
 
   // Count function wrapped in a promise
-  count({ query = {} }) {
+  count ({ query = {} }) {
     return new Promise((resolve, reject) => {
       // Count data in the collection and return promise
       return this.dataStore
-        .count(query, (err, result) => err? reject(err) : resolve(result))
+        .count(query, (err, result) => err ? reject(err) : resolve(result))
     })
   }
 
   // Remove function wrapped in a promise
-  remove({ query = undefined, options = {}, fromRemote = false }) {
+  remove ({ query = undefined, options = {}, fromRemote = false }) {
     // Remove data from the collection and return promise
     return new Promise((resolve, reject) => {
       // validate query object
-      if (typeof query == 'undefined') {
+      if (typeof query === 'undefined') {
         let err = new Error(`Insert query not provided`)
         return reject({err})
       }
@@ -381,13 +396,12 @@ export default class Collection {
     })
   }
 
-
   // Ensure Indexing function wrapped in a promise
-  ensureIndex({ collection = 'Default', options = {} }) {
+  ensureIndex ({ collection = 'Default', options = {} }) {
     return new Promise((resolve, reject) => {
       // Ensure Indexing from the collection and return promise
       return this.dataStore
-        .ensureIndex(options, (err, result) => err? reject(err) : resolve(result))
+        .ensureIndex(options, (err, result) => err ? reject(err) : resolve(result))
     })
   }
 }

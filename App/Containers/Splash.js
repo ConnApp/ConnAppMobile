@@ -50,19 +50,21 @@ export default class Splash extends Component {
   }
 
   syncLocalFiles() {
+    let { events, locals, speakers, eventtypes } = this.mongo.db
+    const fromRemote = true
     return new Promise((resolve, reject) => {
-      this.mongo.db.events.insert({ data: localEvents })
+      events.insert({ data: localEvents, fromRemote })
         .then(res => {
           console.log('Events inserted')
-          return this.mongo.db.locals.insert({ data: localLocals })
+          return locals.insert({ data: localLocals, fromRemote })
         })
         .then(res => {
           console.log('Locals inserted')
-          return this.mongo.db.speakers.insert({ data: localSpeakers })
+          return speakers.insert({ data: localSpeakers, fromRemote })
         })
         .then(res => {
           console.log('Speakers inserted')
-          return this.mongo.db.eventtypes.insert({ data: localEventtypes })
+          return eventtypes.insert({ data: localEventtypes, fromRemote })
         })
         .then(res => {
           console.log('EventTypes inserted')

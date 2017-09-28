@@ -29,10 +29,12 @@ export default class EventCard extends Component {
     super()
     this.state = {
       isAgenda: false,
+      likePressIsDone: true,
+      favoritePressIsDone: true,
       event: {
         ...props.event,
         likes: props.event.likes? props.event.likes : 0,
-        likeColor: props.event.isLiked? Colors.primary : 'gray',
+        likeColor: props.event.isLiked? Colors.primaryLight : 'gray',
         local: (props.event.local || '').split(' - ')[0],
         eventType: (props.event.eventType || '').split(' - ')[0],
         duration: getDurationFromEvent(props.event)
@@ -46,14 +48,29 @@ export default class EventCard extends Component {
     this.mongo = new Datastore(['events'])
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      ...this.state,
+      event: {
+        ...this.state.event,
+        likes: nextProps.event.likes? nextProps.event.likes : 0,
+        local: (nextProps.event.local || '').split(' - ')[0],
+        eventType: (nextProps.event.eventType || '').split(' - ')[0],
+        duration: getDurationFromEvent(nextProps.event)
+      }
+    })
+  }
+
   shouldComponentUpdate (nextProps, nextState) {
-    return (
-      nextState.event.isLiked != this.state.event.isLiked ||
+    let shouldUpdate =
+      nextProps.event.likes != this.state.event.likes ||
+      nextProps.event.isLiked != this.state.event.isLiked ||
       nextState.event.isAgenda != this.state.event.isAgenda ||
       nextProps.event.name != this.state.event.name ||
-      nextProps.event.eventType != this.state.event.eventType ||
+      nextProps.event.eventType.split(' - ')[0] != this.state.event.eventType ||
       getDurationFromEvent(nextProps.event) != getDurationFromEvent(this.state.event)
-    )
+
+    return shouldUpdate
   }
 
   getIcon() {
@@ -61,6 +78,13 @@ export default class EventCard extends Component {
   }
 
   likePress() {
+    if (!this.state.likePressIsDone) return false
+
+    this.setState({
+      ...this.state,
+      likePressIsDone: false
+    })
+
     let { event } = this.state
 
     const nextState = !event.isLiked
@@ -90,16 +114,19 @@ export default class EventCard extends Component {
           _id: event._id
         }
 
-        const data = {
-          likes: nextState? event.likes + 1 : event.likes - 1
+        const setDataOver = {
+          $inc: {
+            likes: nextState? 1 : -1
+          }
         }
 
-        return this.mongo.db.events.update({ query, data })
+        return this.mongo.db.events.update({ query, data, setDataOver })
       })
       .then(res => {
         // console.log(res)
         this.setState({
           ...this.state,
+          likePressIsDone: true,
           event: {
             ...event,
             likes: res.newDocs[0].likes,
@@ -116,6 +143,13 @@ export default class EventCard extends Component {
   }
 
   favoritePress() {
+    if (!this.state.favoritePressIsDone) return false
+
+    this.setState({
+      ...this.state,
+      favoritePressIsDone: false
+    })
+
     const nextState = !this.state.event.isAgenda
 
     const data = {
@@ -142,6 +176,7 @@ export default class EventCard extends Component {
 
         this.setState({
           ...this.state,
+          favoritePressIsDone: true,
           event: {
             ...this.state.event,
             isAgenda: nextState
