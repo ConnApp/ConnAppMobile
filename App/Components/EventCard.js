@@ -29,7 +29,6 @@ export default class EventCard extends Component {
     super()
     this.state = {
       isAgenda: false,
-      likePressIsDone: true,
       favoritePressIsDone: true,
       event: {
         ...props.event,
@@ -40,34 +39,39 @@ export default class EventCard extends Component {
         duration: getDurationFromEvent(props.event)
       }
     }
+    this.mongo = props.mongo
+    this.likePressIsDone = true
   }
 
   componentWillMount() {
     this.localAgendaStorage = new LocalStorage('agenda')
     this.localLikesStorage = new LocalStorage('likes')
-    this.mongo = new Datastore(['events'])
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      ...this.state,
-      event: {
-        ...this.state.event,
-        likes: nextProps.event.likes? nextProps.event.likes : 0,
-        local: (nextProps.event.local || '').split(' - ')[0],
-        eventType: (nextProps.event.eventType || '').split(' - ')[0],
-        duration: getDurationFromEvent(nextProps.event)
+  componentDidMount() {
+    this.mongo.db.events.on('update', newEvent => {
+      if (newEvent[0]._id == this.state.event._id) {
+        this.setState({
+          ...this.state,
+          event: {
+            ...this.state.event,
+            ...newEvent[0],
+            local: this.props.getLocalName(newEvent[0].local),
+            eventType: this.props.getEventtypeName(newEvent[0].eventType),
+            // local: this.props.getSpeakersName(newEvent[0].speakers)
+          }
+        })
       }
     })
   }
 
   shouldComponentUpdate (nextProps, nextState) {
     let shouldUpdate =
-      nextProps.event.likes != this.state.event.likes ||
-      nextProps.event.isLiked != this.state.event.isLiked ||
+      nextState.event.likes != this.state.event.likes ||
+      nextState.event.eventType != this.state.event.eventType ||
+      nextState.event.name != this.state.event.name ||
+      nextState.event.isLiked != this.state.event.isLiked ||
       nextState.event.isAgenda != this.state.event.isAgenda ||
-      nextProps.event.name != this.state.event.name ||
-      nextProps.event.eventType.split(' - ')[0] != this.state.event.eventType ||
       getDurationFromEvent(nextProps.event) != getDurationFromEvent(this.state.event)
 
     return shouldUpdate
@@ -78,12 +82,7 @@ export default class EventCard extends Component {
   }
 
   likePress() {
-    if (!this.state.likePressIsDone) return false
-
-    this.setState({
-      ...this.state,
-      likePressIsDone: false
-    })
+    if (!this.likePressIsDone) return false
 
     let { event } = this.state
 
@@ -96,12 +95,6 @@ export default class EventCard extends Component {
     const query = {
       value: event._id
     }
-
-    this.localLikesStorage.on('remove', numRemoved => {
-      setTimeout(() => {
-        this.props.updateParent()
-      }, 1000)
-    })
 
     let promise = nextState?
       this.localLikesStorage.insert({ data }) :
@@ -123,10 +116,8 @@ export default class EventCard extends Component {
         return this.mongo.db.events.update({ query, data, setDataOver })
       })
       .then(res => {
-        // console.log(res)
         this.setState({
           ...this.state,
-          likePressIsDone: true,
           event: {
             ...event,
             likes: res.newDocs[0].likes,
@@ -135,6 +126,7 @@ export default class EventCard extends Component {
           }
         })
 
+        this.likePressIsDone = true
       })
       .catch(err => {
         // console.log(err)
@@ -160,16 +152,9 @@ export default class EventCard extends Component {
       value: this.state.event._id
     }
 
-    this.localAgendaStorage.on('remove', numRemoved => {
-      setTimeout(() => {
-        // this.props.updateParent()
-      }, 1000)
-    })
-
     let promise = nextState?
       this.localAgendaStorage.insert({ data }) :
       this.localAgendaStorage.remove({ query })
-
 
     promise
       .then(res => {
@@ -193,8 +178,6 @@ export default class EventCard extends Component {
   openEventDetail() {
     this.props.navigation.navigate('EventDetails', {event: this.state.event})
   }
-
-
 
   formatTitle(title) {
     const limit = 64
