@@ -144,7 +144,7 @@ export default class Events extends Component {
     const query = {
       name: this.currentFilter || ''
     }
-    
+
     this.setNewEventsState(query)
   }
 
@@ -161,9 +161,9 @@ export default class Events extends Component {
       this.updateListItem(newLocal, 'locals')
     })
 
-    this.mongo.db.events.on('update', newEvent => {
-      this.updateListItem(newEvent, 'events')
-    })
+    // this.mongo.db.events.on('update', newEvent => {
+    //   this.updateListItem(newEvent, 'events')
+    // })
 
     this.mongo.db.eventtypes.on('update', newEventType => {
       this.updateListItem(newEventType, 'eventTypes')
@@ -262,10 +262,27 @@ export default class Events extends Component {
     // // console.log(this.state.events)
   }
 
-  renderCard (event, test) {
-    console.log(test)
+  getLocalName(localId) {
+    let locals = this.reduceToId(this.locals)
+    return locals[localId].split(' - ')[0]
+  }
+
+  getEventtypeName(eventtype) {
+    let eventtypes = this.reduceToId(this.eventTypes)
+    return eventtypes[eventtype].split(' - ')[0]
+  }
+
+  getSpeakersName(speakersIds) {
+
+  }
+
+  renderCard (event) {
+    // console.log(test)
     return (
       <EventCard
+        getLocalName={this.getLocalName.bind(this)}
+        getEventtypeName={this.getEventtypeName.bind(this)}
+        mongo={this.mongo}
         updateParent={() => this.fetchEvents({})}
         navigation={this.props.navigation}
         event={event.item}
