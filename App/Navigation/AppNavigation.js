@@ -13,16 +13,13 @@ import {
 
 import LaunchScreen from '../Containers/LaunchScreen'
 import Splash from '../Containers/Splash'
+import News from '../Containers/News'
 import Events from '../Containers/Events'
 import EventDetails from '../Containers/EventDetails'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { Images, Colors, Fonts } from '../Themes'
 import styles from './Styles/NavigationStyles'
-
-setTimeout(() => {
-  initialScreen = 'LaunchScreen'
-}, 10000)
 
 const device = Platform.OS
 
@@ -119,6 +116,9 @@ const PrimaryNav = StackNavigator({
   },
   Events: {
     screen: Tabs
+  },
+  News: {
+    screen: News
   },
   EventDetails: {
     navigationOptions: {},

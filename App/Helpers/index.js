@@ -26,7 +26,21 @@ export function getHourFromTimeStamp (timeStamp) {
   if (hours < 10) hours = `0${hours}`
   if (minutes < 10) minutes = `0${minutes}`
 
-  return `${hours}:${minutes}h`
+  return `${hours.toString()}:${minutes.toString()}h`
+}
+
+export function getDate(timeStamp) {
+  const time = new Date(timeStamp)
+  let day = time.getDate() + 3 // Timezone offset. Brazil is GMT+3, hence 3
+  let month = time.getMonth() + 1
+  if (day < 10) day = `0${day}`
+  if (month < 10) month = `0${month}`
+
+  return `${day.toString()}/${month.toString()}`
+}
+
+export function getCompleteDate(timeStamp) {
+  return getDate(timeStamp) + ' - ' + getHourFromTimeStamp(timeStamp)
 }
 
 export function getDurationFromEvent(event) {
