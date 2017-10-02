@@ -40,9 +40,10 @@ const searchBar = device == 'android' ?
 export default StyleSheet.create({
   contentContainer: {
     flex: 1,
-    flexDirection: 'column',
   },
   scrollView: {
+    paddingBottom: 45,
+    flexDirection: 'column',
     backgroundColor: '#E9E9EE'
   },
   category: {
