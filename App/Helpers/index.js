@@ -12,7 +12,7 @@ export function groupBy (dataSet, field) {
 }
 
 export function flatten(array) {
-    return Array.prototype.concat(...array)
+  return Array.prototype.concat(...array)
 }
 
 export function capitalize(string) {
@@ -31,7 +31,7 @@ export function getHourFromTimeStamp (timeStamp) {
 
 export function getDate(timeStamp) {
   const time = new Date(timeStamp)
-  let day = time.getDate() + 3 // Timezone offset. Brazil is GMT+3, hence 3
+  let day = time.getDate()
   let month = time.getMonth() + 1
   if (day < 10) day = `0${day}`
   if (month < 10) month = `0${month}`
