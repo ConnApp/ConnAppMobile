@@ -70,3 +70,10 @@ export function isNetworkConnected() {
 
   return NetInfo.isConnected.fetch();
 }
+
+export function reduceToMarkdownList(data) {
+  return data.reduce((finalArray, item) => {
+    finalArray.push(`* ${item}`)
+    return finalArray
+  }, []).join('\n')
+}

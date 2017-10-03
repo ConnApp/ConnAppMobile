@@ -13,7 +13,7 @@ import {
 } from 'react-native'
 
 import { Button } from 'react-native-elements'
-import { Fonts, Colors, Metrics } from '../Themes/'
+import { Fonts, Images, Colors, Metrics } from '../Themes/'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { getHourFromTimeStamp, getCompleteDate } from '../Helpers'
@@ -38,19 +38,31 @@ export default class NewsCard extends Component {
     this.mongo = new Datastore(['news'])
   }
 
-  componentDidMount() {
+  setNews(news) {
+    this.setState({
+      ...this.state,
+      news,
+    })
+  }
 
+  componentDidMount() {
+    this.mongo.db.news.on('update', newNews => {
+      if (newNews._id == this.state.news._id) {
+        this.setNews(newNews)
+      }
+    })
   }
 
   shouldComponentUpdate (nextProps, nextState) {
     return true
   }
+
   openNewsDetail() {
     // this.props.navigation.navigate('EventDetails', {event: this.state.event})
   }
 
   formatTitle(title, limit = 64) {
-
+    if (!title) return 'Sem título'
     if (title.length >= limit + 3) {
       title = `${title.substring(0, limit)}...`
     }
@@ -59,23 +71,36 @@ export default class NewsCard extends Component {
   }
 
   render () {
+
+    const coverImage = this.state.news.cover?
+      {uri: this.state.news.cover} : Images.enegepLogoOld
     const mainView = (
       <View style={styles.contentContainer}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>
-            {this.formatTitle(this.state.news.title)}
-          </Text>
+
+        <View style={styles.coverImageContainer}>
+          <Image
+            resizeMode="cover"
+            style={styles.coverImage}
+            source={coverImage}
+          />
         </View>
-        <View style={styles.newsTextContainer}>
-          <Text style={styles.newsText}>
-            {this.formatTitle(this.state.news.text, 200)}
-          </Text>
+
+        <View style={styles.bottomContainer}>
+
+          <View style={styles.titleContainer}>
+            <Text style={styles.titleText}>
+              {this.formatTitle(this.state.news.title)}
+            </Text>
+          </View>
+
+          <View style={styles.timeStampContainer}>
+            <Text style={styles.timeStampText}>
+              {getCompleteDate(this.state.news.createAt)}
+            </Text>
+          </View>
+
         </View>
-        <View style={styles.timeStampContainer}>
-          <Text style={styles.timeStampText}>
-            {getCompleteDate(this.state.news.time)}
-          </Text>
-        </View>
+
       </View>
     )
     if (Platform.OS === 'android') {

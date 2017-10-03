@@ -19,7 +19,8 @@ import {
   flatten,
   getCompleteDate,
   capitalize,
-  getDurationFromEvent
+  getDurationFromEvent,
+  reduceToMarkdownList,
 } from '../Helpers'
 import TextCard from '../Components/TextCard'
 import styles from './Styles/NewsDetailsStyles'
@@ -73,7 +74,7 @@ export default class NewsDetails extends Component {
       }
 
 
-      return !isArray? {newsName, data} : {newsName, data: this.reduceToList(data)}
+      return !isArray? {newsName, data} : {newsName, data: this.reduceToMarkdownList(data)}
     }).filter(info => info.data)
 
     return flatten(array)
@@ -99,13 +100,6 @@ export default class NewsDetails extends Component {
 
     const newsQuery = { query: { _id: this.state.news._id } }
 
-  }
-
-  reduceToList(data) {
-    return data.reduce((finalArray, item) => {
-      finalArray.push(`* ${item}`)
-      return finalArray
-    }, []).join('\n')
   }
 
   translateRowName (rowName) {

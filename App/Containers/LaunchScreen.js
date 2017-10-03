@@ -36,7 +36,7 @@ export default class LaunchScreen extends Component {
   }
 
   componentWillMount() {
-    this.mongo = new Mongoose(['locals', 'eventtypes', 'speakers', 'events'])
+    this.mongo = new Mongoose(['locals', 'eventtypes', 'speakers', 'events', 'news'])
   }
 
   componentDidMount() {
@@ -49,6 +49,9 @@ export default class LaunchScreen extends Component {
       })
       .then(res => {
         return this.mongo.db.speakers.sync({fetchAll: true})
+      })
+      .then(res => {
+        return this.mongo.db.news.sync({fetchAll: true})
       })
       .then(res => {
         console.log('DONE ALL SYNC')

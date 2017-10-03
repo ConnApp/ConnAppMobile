@@ -15,7 +15,12 @@ import { Button } from 'react-native-elements'
 
 import Mongoose from '../Datastore'
 
-import { flatten, capitalize, getDurationFromEvent } from '../Helpers'
+import {
+  flatten,
+  capitalize,
+  getDurationFromEvent,
+  reduceToMarkdownList,
+} from '../Helpers'
 
 import TextCard from '../Components/TextCard'
 import styles from './Styles/EventDetailsStyles'
@@ -85,7 +90,7 @@ export default class EventDetails extends Component {
       }
 
 
-      return !isArray? {eventName, data} : {eventName, data: this.reduceToList(data)}
+      return !isArray? {eventName, data} : {eventName, data: this.reduceToMarkdownList(data)}
     }).filter(info => info.data)
 
     return flatten(array)
@@ -158,13 +163,6 @@ export default class EventDetails extends Component {
       .catch(err => {
         // // console.log(err)
       })
-  }
-
-  reduceToList(data) {
-    return data.reduce((finalArray, item) => {
-      finalArray.push(`* ${item}`)
-      return finalArray
-    }, []).join('\n')
   }
 
   translateRowName (rowName) {

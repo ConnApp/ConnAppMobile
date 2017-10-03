@@ -5,9 +5,7 @@ import { Fonts, Colors, Metrics } from '../../Themes/'
 
 export default StyleSheet.create({
   contentContainer: {
-    height: 130,
     margin: 10,
-    padding: 10,
     elevation: 3,
     shadowColor: 'black',
     shadowOpacity: 0.2,
@@ -18,31 +16,35 @@ export default StyleSheet.create({
     shadowRadius: 2,
     backgroundColor: 'white'
   },
-  titleContainer: {
+  coverImageContainer: {
+    flex: 3,
+    alignItems: 'center',
+  },
+  coverImage: {
+    minHeight: 100
+  },
+  bottomContainer: {
     flex: 1,
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E9E9EE',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  titleContainer: {
+    maxWidth: 175,
     justifyContent: 'center'
   },
   titleText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  newsTextContainer: {
-    flex: 2,
-    paddingTop: 10,
-    paddingBottom: 10,
-    justifyContent: 'center'
-  },
-  newsText: {
+    fontFamily: Fonts.type.base,
+    fontSize: 14,
+    fontWeight: '600',
   },
   timeStampContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center'
   },
   timeStampText: {
     fontFamily: Fonts.type.base,
-    fontSize: 18,
-    alignSelf: 'flex-end',
+    fontSize: 14,
     fontWeight: '300',
   },
 })
