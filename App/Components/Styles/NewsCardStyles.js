@@ -23,17 +23,16 @@ export default StyleSheet.create({
     justifyContent: 'center'
   },
   titleText: {
-    fontFamily: Fonts.type.base,
     fontSize: 18,
     fontWeight: 'bold',
   },
   newsTextContainer: {
     flex: 2,
-    padding: 10,
+    paddingTop: 10,
+    paddingBottom: 10,
     justifyContent: 'center'
   },
   newsText: {
-    fontFamily: Fonts.type.base
   },
   timeStampContainer: {
     flex: 1,
