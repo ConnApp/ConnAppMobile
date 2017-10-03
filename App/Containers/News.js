@@ -35,7 +35,102 @@ export default class News extends Component {
             title: 'Lorem Ipsum',
             time: new Date().getTime(),
             text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
-          }
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
+          {
+            title: 'Lorem Ipsum',
+            time: new Date().getTime(),
+            text: 'dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
+          },
         ]
       }]
     }
@@ -69,7 +164,7 @@ export default class News extends Component {
   render () {
     return (
       <SectionList
-        keyExtractor={(item, index) => item._id}
+        keyExtractor={(item, index) => index}
         renderItem={this.renderCard.bind(this)}
         stickySectionHeadersEnabled={true}
         renderSectionHeader={this.renderHeader}
