@@ -80,7 +80,7 @@ export default class NewsCard extends Component {
     )
     if (Platform.OS === 'android') {
       return (
-        <TouchableNativeFeedback onPress={() => this.openEventDetail()}>
+        <TouchableNativeFeedback onPress={() => this.openNewsDetail()}>
           {mainView}
         </TouchableNativeFeedback>
       )
@@ -88,7 +88,7 @@ export default class NewsCard extends Component {
        return (
         <TouchableHighlight
           underlayColor='#00000010'
-          onPress={() => this.openEventDetail()}>
+          onPress={() => this.openNewsDetail()}>
           {mainView}
         </TouchableHighlight>
       )
