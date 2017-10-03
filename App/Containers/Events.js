@@ -305,7 +305,7 @@ export default class Events extends Component {
         renderItem={this.renderCard.bind(this)}
         stickySectionHeadersEnabled={true}
         renderSectionHeader={this.renderHeader}
-        contentContainerStyle={styles.scrollView}
+        style={styles.scrollView}
         sections={this.state.events}
       />
     )
