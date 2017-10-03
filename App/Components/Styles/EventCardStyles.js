@@ -23,7 +23,6 @@ export default StyleSheet.create({
     justifyContent: 'center'
   },
   nameText: {
-    fontFamily: Fonts.type.normal,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -32,7 +31,6 @@ export default StyleSheet.create({
     justifyContent: 'center'
   },
   eventTypeText: {
-    fontFamily: Fonts.type.base,
     fontSize: Fonts.size.medium,
     fontWeight: 'normal',
   },
