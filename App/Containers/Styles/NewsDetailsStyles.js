@@ -65,5 +65,12 @@ export default StyleSheet.create({
     width: 300,
     resizeMode: 'contain'
   },
-  searchBar
+  searchBar,
+  imageContainerStyle: {
+    flex: 1,
+    minHeight: 200,
+  },
+  coverStyles: {
+    resizeMode: 'cover'
+  }
 })

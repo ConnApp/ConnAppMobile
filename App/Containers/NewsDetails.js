@@ -23,6 +23,7 @@ import {
   reduceToMarkdownList,
 } from '../Helpers'
 import TextCard from '../Components/TextCard'
+import ImageCover from '../Components/ImageCover'
 import styles from './Styles/NewsDetailsStyles'
 import Markdown from 'react-native-easy-markdown'
 
@@ -32,8 +33,9 @@ export default class NewsDetails extends Component {
   constructor (props) {
     super()
     this.dataOrder = [
+      'cover',
       'title',
-      'message'
+      'message',
     ]
 
     const { news } = props.navigation.state.params
@@ -56,9 +58,12 @@ export default class NewsDetails extends Component {
     }
   }
 
-  updateNews() {
+  updateNews(news) {
+    const newsData = this.getNewsDataSet(news, this.dataOrder)
     this.setState({
-      ...this.state
+      ...this.state,
+      news,
+      newsData: ds.cloneWithRows(newsData)
     })
   }
 
@@ -66,7 +71,7 @@ export default class NewsDetails extends Component {
     const array = dataOrder.map(newsName => {
       let data = news[newsName] || newsName
       let isArray = Array.isArray(data)
-      let isName = newsName == 'name'
+      let isName = newsName == 'title'
 
       if (isName) {
         newsName = data
@@ -76,7 +81,7 @@ export default class NewsDetails extends Component {
       }
 
 
-      return !isArray? {newsName, data} : {newsName, data: this.reduceToMarkdownList(data)}
+      return !isArray? {newsName, data} : {newsName, data: reduceToMarkdownList(data)}
     }).filter(info => info.data)
 
     return flatten(array)
@@ -87,12 +92,19 @@ export default class NewsDetails extends Component {
   }
 
   componentDidMount() {
-    this.mongo.db.news.on('update', newLocal => {
-
+    this.mongo.db.news.on('update', newNews => {
+      this.updateNews(newNews)
     })
 
     const query = { _id: this.state.news._id }
 
+    this.mongo.db.news.find({ query })
+      .then(res => {
+        this.updateNews(res[0])
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   translateRowName (rowName) {
@@ -105,9 +117,6 @@ export default class NewsDetails extends Component {
       case 'Message':
         name =  'Descrição'
         break;
-      case 'Media':
-        name =  'Horário'
-        break;
       default:
         name = rowName
     }
@@ -116,15 +125,23 @@ export default class NewsDetails extends Component {
   }
 
   renderRow(rowData) {
-    const newsName = this.translateRowName(rowData.newsName)
-    return <TextCard title={`##**${newsName}**`} text={`${rowData.data}`}/>
+    if(rowData.newsName != 'Cover') {
+      const newsName = this.translateRowName(rowData.newsName)
+      return <TextCard title={`##**${newsName}**`} text={`${rowData.data}`}/>
+    }
+    return (
+      <View style={styles.contentContainer}>
+        <ImageCover containerStyle={styles.imageContainerStyle} imageStyle={styles.coverStyles} image={rowData.data}/>
+      </View>
+    )
   }
 
   render () {
+    const { news, newsData } = this.state
     return (
       <ScrollView>
         <ListView
-          dataSource={this.state.newsData}
+          dataSource={newsData}
           renderRow={(rowData) => this.renderRow(rowData)}
           contentContainerStyle={styles.contentContainer}
         />

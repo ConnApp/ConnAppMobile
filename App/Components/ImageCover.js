@@ -20,6 +20,8 @@ export default class ImageCover extends Component {
         width: 0,
         height: 0,
       },
+      imageStyle: props.imageStyle,
+      containerStyle: props.containerStyle,
       coverImage: props.image? { uri: props.image } : Images.newsPlaceholder
     }
   }
@@ -49,16 +51,18 @@ export default class ImageCover extends Component {
   }
 
   render () {
+    const { size, imageStyle, containerStyle, coverImage } = this.state
+
     return (
-      <View style={styles.contentContainer}>
+      <View style={[styles.contentContainer, containerStyle]}>
         <View
           style={styles.coverImageContainer}
           onLayout={this.setSize.bind(this)}
         >
           <Image
             resizeMode="cover"
-            style={this.state.size}
-            source={this.state.coverImage}
+            style={[size, imageStyle]}
+            source={coverImage}
           />
         </View>
       </View>

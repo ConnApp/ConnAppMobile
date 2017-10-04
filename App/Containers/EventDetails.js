@@ -90,7 +90,7 @@ export default class EventDetails extends Component {
       }
 
 
-      return !isArray? {eventName, data} : {eventName, data: this.reduceToMarkdownList(data)}
+      return !isArray? {eventName, data} : {eventName, data: reduceToMarkdownList(data)}
     }).filter(info => info.data)
 
     return flatten(array)
