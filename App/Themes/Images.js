@@ -22,6 +22,7 @@ const images = {
   closeButton: require('../Images/Icons/close-button.png'),
   enegepLogo: require('../Images/enegep.png'),
   enegepLogoOld: require('../Images/logo2.png'),
+  newsPlaceholder: require('../Images/news_placeholder.png'),
 }
 
 export default images

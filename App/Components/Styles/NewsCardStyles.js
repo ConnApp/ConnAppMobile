@@ -16,13 +16,6 @@ export default StyleSheet.create({
     shadowRadius: 2,
     backgroundColor: 'white'
   },
-  coverImageContainer: {
-    flex: 3,
-    alignItems: 'center',
-  },
-  coverImage: {
-    minHeight: 100
-  },
   bottomContainer: {
     flex: 1,
     padding: 10,

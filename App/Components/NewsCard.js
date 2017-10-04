@@ -13,6 +13,7 @@ import {
 } from 'react-native'
 
 import { Button } from 'react-native-elements'
+import ImageCover from './ImageCover'
 import { Fonts, Images, Colors, Metrics } from '../Themes/'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -51,14 +52,36 @@ export default class NewsCard extends Component {
         this.setNews(newNews)
       }
     })
+
+    const query = {
+      _id: this.state.news._id
+    }
+
+    this.mongo.db.news.find({ query })
+      .then(res => {
+        if (res.length) this.setNews(res[0])
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      ...this.state,
+      news: nextProps.news,
+    })
   }
 
   shouldComponentUpdate (nextProps, nextState) {
-    return true
+    return
+      nextState.news.title != this.state.news.title
+      nextState.news.cover != this.state.news.cover
+      nextState.news.createAt != this.state.news.createAt
   }
 
   openNewsDetail() {
-    // this.props.navigation.navigate('EventDetails', {event: this.state.event})
+    // this.props.navigation.navigate('NewsDetails', {event: this.state.news})
   }
 
   formatTitle(title, limit = 64) {
@@ -71,19 +94,11 @@ export default class NewsCard extends Component {
   }
 
   render () {
-
-    const coverImage = this.state.news.cover?
-      {uri: this.state.news.cover} : Images.enegepLogoOld
+    console.log(ImageCover)
     const mainView = (
       <View style={styles.contentContainer}>
 
-        <View style={styles.coverImageContainer}>
-          <Image
-            resizeMode="cover"
-            style={styles.coverImage}
-            source={coverImage}
-          />
-        </View>
+        <ImageCover image={this.state.news.cover}/>
 
         <View style={styles.bottomContainer}>
 
