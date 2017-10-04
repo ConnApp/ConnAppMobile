@@ -26,7 +26,6 @@ const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
 export default class News extends Component {
   constructor (props) {
     super()
-    // console.log(event)
     this.state = {
       news: []
     }
@@ -34,7 +33,6 @@ export default class News extends Component {
 
   static navigationOptions = ({ navigation  }) => {
     const {state} = navigation
-    // console.log(state)
     return {
       title: `Notícias`
     }
@@ -103,12 +101,12 @@ export default class News extends Component {
   }
 
   renderCard (news) {
-    return <NewsCard news={news.item}/>
+    return <NewsCard navigation={this.props.navigation} news={news.item}/>
   }
 
   renderHeader (pinnedNews) {
-    return <View></View>
-    // return <TextCard title={`##**${eventName}**`} text={`${rowData.data}`}/>
+    if (pinnedNews) return <View></View>
+    return <NewsCard navigation={this.props.navigation} news={news.item}/>
   }
 
   render () {

@@ -16,6 +16,7 @@ import Splash from '../Containers/Splash'
 import News from '../Containers/News'
 import Events from '../Containers/Events'
 import EventDetails from '../Containers/EventDetails'
+import NewsDetails from '../Containers/NewsDetails'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import { Images, Colors, Fonts } from '../Themes'
@@ -119,6 +120,9 @@ const PrimaryNav = StackNavigator({
   },
   News: {
     screen: News
+  },
+  NewsDetails: {
+    screen: NewsDetails
   },
   EventDetails: {
     navigationOptions: {},

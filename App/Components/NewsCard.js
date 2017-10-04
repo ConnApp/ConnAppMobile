@@ -66,6 +66,19 @@ export default class NewsCard extends Component {
       })
   }
 
+  shouldComponentUpdate (nextProps, nextState) {
+    let shouldUpdate =
+      nextState.news.title != this.state.news.title ||
+      nextState.news.cover != this.state.news.cover ||
+      nextState.news.createAt != this.state.news.createAt
+
+    if (typeof shouldUpdate === 'undefined') {
+      shouldUpdate = true
+    }
+
+    return shouldUpdate
+  }
+
   componentWillReceiveProps(nextProps) {
     this.setState({
       ...this.state,
@@ -73,15 +86,8 @@ export default class NewsCard extends Component {
     })
   }
 
-  shouldComponentUpdate (nextProps, nextState) {
-    return
-      nextState.news.title != this.state.news.title
-      nextState.news.cover != this.state.news.cover
-      nextState.news.createAt != this.state.news.createAt
-  }
-
   openNewsDetail() {
-    // this.props.navigation.navigate('NewsDetails', {event: this.state.news})
+    this.props.navigation.navigate('NewsDetails', {news: this.state.news})
   }
 
   formatTitle(title, limit = 64) {
@@ -94,30 +100,24 @@ export default class NewsCard extends Component {
   }
 
   render () {
-    console.log(ImageCover)
     const mainView = (
       <View style={styles.contentContainer}>
-
         <ImageCover image={this.state.news.cover}/>
-
         <View style={styles.bottomContainer}>
-
           <View style={styles.titleContainer}>
             <Text style={styles.titleText}>
               {this.formatTitle(this.state.news.title)}
             </Text>
           </View>
-
           <View style={styles.timeStampContainer}>
             <Text style={styles.timeStampText}>
               {getCompleteDate(this.state.news.createAt)}
             </Text>
           </View>
-
         </View>
-
       </View>
     )
+
     if (Platform.OS === 'android') {
       return (
         <TouchableNativeFeedback onPress={() => this.openNewsDetail()}>

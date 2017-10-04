@@ -32,10 +32,12 @@ export default class NewsDetails extends Component {
   constructor (props) {
     super()
     this.dataOrder = [
+      'title',
+      'message'
     ]
 
     const { news } = props.navigation.state.params
-    const newsData = this.getNewsDataSet(event, this.dataOrder)
+    const newsData = this.getNewsDataSet(news, this.dataOrder)
     // console.log(event)
     this.state = {
       news,
@@ -49,7 +51,7 @@ export default class NewsDetails extends Component {
     // console.log(state)
     if(state.params != undefined){
       return {
-        title: getCompleteDate(state.params.news.time)
+        title: getCompleteDate(state.params.news.createAt)
       }
     }
   }
@@ -81,29 +83,36 @@ export default class NewsDetails extends Component {
   }
 
   componentWillMount(){
-    this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers', 'news'])
+    this.mongo = new Mongoose(['news'])
   }
 
   componentDidMount() {
+    this.mongo.db.news.on('update', newLocal => {
 
-    this.mongo.db.locals.on('update', newLocal => {
     })
 
-    this.mongo.db.events.on('update', newEvent => {
-    })
-
-    this.mongo.db.eventtypes.on('update', newEventType => {
-    })
-
-    this.mongo.db.speakers.on('update', newSpeaker => {
-    })
-
-    const newsQuery = { query: { _id: this.state.news._id } }
+    const query = { _id: this.state.news._id }
 
   }
 
   translateRowName (rowName) {
-    return rowName
+    // console.log(rowName)
+    let name
+    switch (rowName) {
+      case 'Title':
+        name =  'Título'
+        break;
+      case 'Message':
+        name =  'Descrição'
+        break;
+      case 'Media':
+        name =  'Horário'
+        break;
+      default:
+        name = rowName
+    }
+
+    return name
   }
 
   renderRow(rowData) {
@@ -115,7 +124,7 @@ export default class NewsDetails extends Component {
     return (
       <ScrollView>
         <ListView
-          dataSource={this.state.eventData}
+          dataSource={this.state.newsData}
           renderRow={(rowData) => this.renderRow(rowData)}
           contentContainerStyle={styles.contentContainer}
         />
