@@ -84,14 +84,10 @@ export default class News extends Component {
 
   componentDidMount() {
     this.mongo.db.news.on('insert', newNews => {
-      this.addNews(newNews)
+      this.addNews(newNews[0])
     })
 
-    this.mongo.db.news.on('logicalRemove', newNews => {
-      this.removeNews(newNews)
-    })
-
-    this.mongo.db.news.find({ sort:{createAt: -1} })
+    this.mongo.db.news.find({ sort: { createAt: -1 } })
       .then(dbNews => {
         this.setNewState(dbNews)
       })
@@ -101,12 +97,24 @@ export default class News extends Component {
   }
 
   renderCard (news) {
-    return <NewsCard navigation={this.props.navigation} news={news.item}/>
+    return (
+      <NewsCard
+        removeItself={this.removeNews.bind(this)}
+        navigation={this.props.navigation}
+        news={news.item}
+      />
+    )
   }
 
   renderHeader (pinnedNews) {
     if (pinnedNews) return <View></View>
-    return <NewsCard navigation={this.props.navigation} news={news.item}/>
+    return (
+      <NewsCard
+        removeItself={this.removeNews.bind(this)}
+        navigation={this.props.navigation}
+        news={news.item}
+      />
+    )
   }
 
   render () {

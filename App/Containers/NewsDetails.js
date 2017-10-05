@@ -80,7 +80,9 @@ export default class NewsDetails extends Component {
         newsName = capitalize(newsName)
       }
 
-
+      if (data == 'cover') {
+        data = null
+      }
       return !isArray? {newsName, data} : {newsName, data: reduceToMarkdownList(data)}
     }).filter(info => info.data)
 

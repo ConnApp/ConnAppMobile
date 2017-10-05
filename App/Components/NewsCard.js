@@ -48,8 +48,14 @@ export default class NewsCard extends Component {
 
   componentDidMount() {
     this.mongo.db.news.on('update', newNews => {
-      if (newNews._id == this.state.news._id) {
-        this.setNews(newNews)
+      if (newNews[0]._id == this.state.news._id) {
+        this.setNews(newNews[0])
+      }
+    })
+
+    this.mongo.db.news.on('logicalRemove', newNews => {
+      if (newNews[0]._id == this.state.news._id) {
+        this.props.removeItself(newNews[0])
       }
     })
 

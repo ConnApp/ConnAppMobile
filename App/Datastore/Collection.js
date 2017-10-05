@@ -74,7 +74,7 @@ export default class Collection {
             this.event.emit('sync', this.isSync)
           }
         })
-    }, 1000)
+    }, 200 + Math.random() * 300)
   }
 
   closeSockets () {
@@ -293,7 +293,10 @@ export default class Collection {
 
       this
         .update({ query, data, fromRemote })
-        .then(resolve)
+        .then(res => {
+          this.event.emit('logicalRemove', res.newDocs)
+          resolve(res)
+        })
         .catch(reject)
     })
   }
