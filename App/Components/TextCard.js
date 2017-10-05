@@ -37,6 +37,27 @@ export default class TextCard extends Component {
     }
   }
 
+  componentWillReceiveProps(props) {
+    let { text, title } = props
+
+    if (text == 'nill') {
+      text = ''
+    }
+
+    if (title == 'nill') {
+      title = ''
+    }
+
+    this.setState({
+      text,
+      title
+    })
+  }
+
+  shouldComponentUpdate() {
+    return true
+  }
+
   render () {
     return (
       <View contentContainerStyle={styles.contentContainer}>

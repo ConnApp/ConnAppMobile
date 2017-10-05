@@ -196,7 +196,7 @@ export default class EventDetails extends Component {
 
   renderRow(rowData) {
     const eventName = this.translateRowName(rowData.eventName)
-    return <TextCard title={`##**${eventName}**`} text={`${rowData.data}`}/>
+    return <TextCard title={`##**${eventName}**`} text={rowData.data}/>
   }
 
   render () {
