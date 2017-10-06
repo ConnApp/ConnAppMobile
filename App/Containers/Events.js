@@ -55,12 +55,12 @@ export default class Events extends Component {
     this.state = {
       events: []
     }
-    this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
+    this.mongo = new Mongoose(['events', 'places', 'eventtypes', 'speakers'])
     this.localAgendaStorage = new LocalStorage('agenda')
     this.localLikesStorage = new LocalStorage('likes')
     this.events = []
     this.eventtypes = []
-    this.locals = []
+    this.places = []
   }
 
   componentWillMount(){
@@ -98,14 +98,14 @@ export default class Events extends Component {
 
   setNewEventsState (query = {}) {
     let eventTypes = this.reduceToId(this.eventTypes)
-    let locals = this.reduceToId(this.locals)
+    let places = this.reduceToId(this.places)
     let localAgendaIds = this.localAgenda.map(res => res.value)
     let localLikesIds = this.localLikes.map(res => res.value)
     let events = this.events.map(eventRef => {
       let event = {...eventRef}
       event.isAgenda = localAgendaIds.indexOf(event._id) > -1
       event.isLiked = localLikesIds.indexOf(event._id) > -1
-      event.local = locals[event.local]
+      event.place = places[event.place]
       event.eventType = eventTypes[event.eventType]
       return event
     })
@@ -114,12 +114,12 @@ export default class Events extends Component {
       events = events.filter(event => {
         const hasEventType = event.eventType.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         const hasEventName = event.name.toLowerCase().indexOf(query.name.toLowerCase()) > -1
-        const hasEventLocal = event.local.toLowerCase().indexOf(query.name.toLowerCase()) > -1
-        return hasEventName || hasEventType || hasEventLocal
+        const hasEventPlace = event.place.toLowerCase().indexOf(query.name.toLowerCase()) > -1
+        return hasEventName || hasEventType || hasEventPlace
       })
     }
 
-    this.groupEventsByLocal(events)
+    this.groupEventsByPlace(events)
   }
 
   insertIntoList (item = undefined, list = undefined) {
@@ -149,16 +149,16 @@ export default class Events extends Component {
   }
 
   componentDidMount() {
-    this.mongo.db.locals.on('insert', newLocal => {
-      this.insertIntoList(newLocal, 'locals')
+    this.mongo.db.places.on('insert', newPlace => {
+      this.insertIntoList(newPlace, 'places')
     })
 
     this.mongo.db.events.on('insert', newEvent => {
       this.insertIntoList(newEvent, 'events')
     })
 
-    this.mongo.db.locals.on('update', newLocal => {
-      this.updateListItem(newLocal, 'locals')
+    this.mongo.db.places.on('update', newPlace => {
+      this.updateListItem(newPlace, 'places')
     })
 
     // this.mongo.db.events.on('update', newEvent => {
@@ -202,10 +202,10 @@ export default class Events extends Component {
       })
       .then(eventTypes => {
         this.eventTypes = [...eventTypes]
-        return this.mongo.db.locals.find({})
+        return this.mongo.db.places.find({})
       })
-      .then(locals => {
-        this.locals = [...locals]
+      .then(places => {
+        this.places = [...places]
         this.setNewEventsState(query)
       })
       .catch(err => {
@@ -245,10 +245,10 @@ export default class Events extends Component {
     return (sectionA < sectionB) ? -1 : (sectionA > sectionB) ? 1 : 0;
   }
 
-  groupEventsByLocal(events, sectionSort = this.sortByRoom, sortEvents = this.sortByStart) {
+  groupEventsByPlace(events, sectionSort = this.sortByRoom, sortEvents = this.sortByStart) {
 
     let eventsArray =
-      groupBy(events, 'local')
+      groupBy(events, 'place')
       .map(event => ({
         ...event,
         data: event.data.sort(sortEvents)
@@ -262,9 +262,9 @@ export default class Events extends Component {
     // // console.log(this.state.events)
   }
 
-  getLocalName(localId) {
-    let locals = this.reduceToId(this.locals)
-    return locals[localId].split(' - ')[0]
+  getPlaceName(placeId) {
+    let places = this.reduceToId(this.places)
+    return places[placeId].split(' - ')[0]
   }
 
   getEventtypeName(eventtype) {
@@ -280,7 +280,7 @@ export default class Events extends Component {
     // console.log(test)
     return (
       <EventCard
-        getLocalName={this.getLocalName.bind(this)}
+        getPlaceName={this.getPlaceName.bind(this)}
         getEventtypeName={this.getEventtypeName.bind(this)}
         mongo={this.mongo}
         updateParent={() => this.fetchEvents({})}

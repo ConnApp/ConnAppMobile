@@ -21,7 +21,7 @@ export function capitalize(string) {
 
 export function getHourFromTimeStamp (timeStamp) {
   const time = new Date(timeStamp)
-  let hours = time.getHours() + 3 // Timezone offset. Brazil is GMT+3, hence 3
+  let hours = time.getHours() // Timezone offset. Brazil is GMT+3, hence 3
   let minutes = time.getMinutes()
   if (hours < 10) hours = `0${hours}`
   if (minutes < 10) minutes = `0${minutes}`

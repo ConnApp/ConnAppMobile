@@ -35,7 +35,7 @@ export default class EventDetails extends Component {
       'name',
       'duration',
       'description',
-      'local',
+      'place',
       'eventType',
       'speakers',
     ]
@@ -61,9 +61,9 @@ export default class EventDetails extends Component {
   }
 
   updateEvent() {
-    let { name, local, event, eventType, speakers } = this
+    let { name, place, event, eventType, speakers } = this
 
-    event.local = local.name
+    event.place = place.name
     event.eventType = eventType.name
     event.speakers = [...speakers].map(speaker => speaker.name)
     event.duration = getDurationFromEvent(event)
@@ -97,13 +97,13 @@ export default class EventDetails extends Component {
   }
 
   componentWillMount(){
-    this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
+    this.mongo = new Mongoose(['events', 'places', 'eventtypes', 'speakers'])
   }
 
   componentDidMount() {
 
-    this.mongo.db.locals.on('update', newLocal => {
-      this.local = {...newLocal}
+    this.mongo.db.places.on('update', newLocal => {
+      this.place = {...newLocal}
       this.updateEvent()
     })
 
@@ -152,12 +152,12 @@ export default class EventDetails extends Component {
       .then(speakers => {
         this.speakers = [...speakers]
         const query = {
-          _id: this.event.local
+          _id: this.event.place
         }
-        return this.mongo.db.locals.find({ query })
+        return this.mongo.db.places.find({ query })
       })
-      .then(locals => {
-        this.local = [...locals][0]
+      .then(places => {
+        this.place = [...places][0]
         this.updateEvent()
       })
       .catch(err => {

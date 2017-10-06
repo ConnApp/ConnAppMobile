@@ -34,7 +34,7 @@ export default class EventCard extends Component {
         ...props.event,
         likes: props.event.likes? props.event.likes : 0,
         likeColor: props.event.isLiked? Colors.primaryLight : 'gray',
-        local: (props.event.local || '').split(' - ')[0],
+        place: (props.event.place || '').split(' - ')[0],
         eventType: (props.event.eventType || '').split(' - ')[0],
         duration: getDurationFromEvent(props.event)
       }
@@ -56,7 +56,7 @@ export default class EventCard extends Component {
           event: {
             ...this.state.event,
             ...newEvent[0],
-            local: this.props.getLocalName(newEvent[0].local),
+            place: this.props.getPlaceName(newEvent[0].place),
             eventType: this.props.getEventtypeName(newEvent[0].eventType),
             // local: this.props.getSpeakersName(newEvent[0].speakers)
           }

@@ -36,7 +36,7 @@ export default class LaunchScreen extends Component {
   }
 
   componentWillMount() {
-    this.mongo = new Mongoose(['locals', 'eventtypes', 'speakers', 'events', 'news'])
+    this.mongo = new Mongoose(['places', 'eventtypes', 'speakers', 'events', 'news'])
   }
 
   componentDidMount() {
@@ -45,7 +45,7 @@ export default class LaunchScreen extends Component {
         return this.mongo.db.eventtypes.sync({fetchAll: true})
       })
       .then(res => {
-        return this.mongo.db.locals.sync({fetchAll: true})
+        return this.mongo.db.places.sync({fetchAll: true})
       })
       .then(res => {
         return this.mongo.db.speakers.sync({fetchAll: true})
@@ -55,7 +55,10 @@ export default class LaunchScreen extends Component {
       })
       .then(res => {
         console.log('DONE ALL SYNC')
-    })
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   handlePress(navKey) {

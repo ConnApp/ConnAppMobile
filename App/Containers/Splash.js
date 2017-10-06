@@ -17,7 +17,7 @@ import { styles, colorGradient, colors } from './Styles/SplashStyles'
 import localEvents      from '../Datastore/mongodb/events.js'
 import localEventtypes  from '../Datastore/mongodb/eventtypes.js'
 import localSpeakers    from '../Datastore/mongodb/speakers.js'
-import localLocals      from '../Datastore/mongodb/locals'
+import localPlaces      from '../Datastore/mongodb/places.js'
 
 export default class Splash extends Component {
 
@@ -31,7 +31,7 @@ export default class Splash extends Component {
   }
 
   shouldSyncFromCloud() {
-    console.log(localLocals)
+    console.log(localPlaces)
     return new Promise((resolve, reject) => {
       Promise.all(Object.keys(this.mongo.db).map(name => {
         let collection = this.mongo.db[name]
@@ -46,20 +46,20 @@ export default class Splash extends Component {
   }
 
   componentWillMount() {
-    this.mongo = new Mongoose(['events', 'locals', 'eventtypes', 'speakers'])
+    this.mongo = new Mongoose(['events', 'places', 'eventtypes', 'speakers'])
   }
 
   syncLocalFiles() {
-    let { events, locals, speakers, eventtypes } = this.mongo.db
+    let { events, places, speakers, eventtypes } = this.mongo.db
     const fromRemote = true
     return new Promise((resolve, reject) => {
       events.insert({ data: localEvents, fromRemote })
         .then(res => {
           console.log('Events inserted')
-          return locals.insert({ data: localLocals, fromRemote })
+          return places.insert({ data: localPlaces, fromRemote })
         })
         .then(res => {
-          console.log('Locals inserted')
+          console.log('Places inserted')
           return speakers.insert({ data: localSpeakers, fromRemote })
         })
         .then(res => {
