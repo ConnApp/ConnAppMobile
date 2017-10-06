@@ -115,6 +115,7 @@ export default class EventCard extends Component {
           ...this.state,
           event: {
             ...this.state.event,
+            like: this.state.event.like + setDataOver.$inc.like,
             likeColor: !this.state.event.isLiked? Colors.primaryLight : 'gray',
             isLiked: !this.state.event.isLiked
           }
@@ -123,7 +124,9 @@ export default class EventCard extends Component {
         return this.mongo.db.events.update({ query, data, setDataOver })
       })
       .then(res => {
-        this.likePressIsDone = true
+        setTimeout(() => {
+          this.likePressIsDone = true
+        }, 1000)
       })
       .catch(err => {
         // console.log(err)
