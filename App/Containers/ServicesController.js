@@ -4,7 +4,9 @@ import PushNotification from 'react-native-push-notification'
 import { NavigationActions } from 'react-navigation';
 import WAMP from '../WAMP'
 import Datastore from '../Datastore'
+
 const collectionsArray = ['places', 'eventtypes', 'speakers', 'events', 'news', 'info']
+
 export default class ServicesController extends Component {
   constructor(props) {
     super()
