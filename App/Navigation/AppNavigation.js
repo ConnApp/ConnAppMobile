@@ -14,8 +14,10 @@ import {
 import LaunchScreen from '../Containers/LaunchScreen'
 import Splash from '../Containers/Splash'
 import News from '../Containers/News'
+import Info from '../Containers/Info'
 import Events from '../Containers/Events'
 import EventDetails from '../Containers/EventDetails'
+import InfoDetails from '../Containers/InfoDetails'
 import NewsDetails from '../Containers/NewsDetails'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
@@ -120,6 +122,12 @@ const PrimaryNav = StackNavigator({
   },
   News: {
     screen: News
+  },
+  Info: {
+    screen: Info
+  },
+  InfoDetails: {
+    screen: InfoDetails
   },
   NewsDetails: {
     screen: NewsDetails

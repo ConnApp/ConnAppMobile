@@ -5,7 +5,7 @@ import Gradient from '../../Gradient'
 export const colors =  {
   initialColor: Colors.primary,
   finalColor: Colors.primaryLight,
-  steps: 4
+  steps: 5
 }
 
 export const colorGradient= new Gradient(colors)

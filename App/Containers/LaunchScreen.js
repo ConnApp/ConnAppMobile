@@ -17,14 +17,15 @@ import { styles, colorGradient, colors } from './Styles/LaunchScreenStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
+const collectionArray = ['places', 'eventtypes', 'speakers', 'events', 'news', 'info']
+
 const navigationItems = [
   { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1] },
-  { categoria: '1', title: 'Agenda',      navKey: 'Agenda', bg: colorGradient[2] },
-  // { categoria: '2', title: 'Informações', navKey: 'Info', bg: colorGradient[3] },
-  { categoria: '2', title: 'Notícias',    navKey: 'News', bg: colorGradient[3] },
+  { categoria: '1', title: 'Agenda', navKey: 'Agenda', bg: colorGradient[2] },
+  { categoria: '2', title: 'Notícias', navKey: 'News', bg: colorGradient[3] },
+  { categoria: '2', title: 'Informações', navKey: 'Info', bg: colorGradient[4] }
   // { categoria: '2', title: 'Notas',       navKey: 'Notes', bg: colorGradient[5] }
 ]
-
 
 export default class LaunchScreen extends Component {
 
@@ -35,11 +36,11 @@ export default class LaunchScreen extends Component {
     }
   }
 
-  componentWillMount() {
-    this.mongo = new Mongoose(['places', 'eventtypes', 'speakers', 'events', 'news'])
+  componentWillMount () {
+    this.mongo = new Mongoose(collectionArray)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.mongo.db.events.sync({fetchAll: true})
       .then(res => {
         return this.mongo.db.eventtypes.sync({fetchAll: true})
@@ -54,6 +55,9 @@ export default class LaunchScreen extends Component {
         return this.mongo.db.news.sync({fetchAll: true})
       })
       .then(res => {
+        return this.mongo.db.info.sync({fetchAll: true})
+      })
+      .then(res => {
         console.log('DONE ALL SYNC')
       })
       .catch(err => {
@@ -61,33 +65,40 @@ export default class LaunchScreen extends Component {
       })
   }
 
-  handlePress(navKey) {
+  handlePress (navKey) {
     let that = this
     switch (navKey) {
       case 'Events':
         that.goToEvents()
-        break;
+        break
       case 'Agenda':
         that.goToAgenda()
-        break;
+        break
       case 'News':
         that.goToNews()
-        break;
+        break
+      case 'Info':
+        that.goToInfo()
+        break
       default:
 
     }
   }
 
-  goToEvents() {
+  goToEvents () {
     this.props.navigation.navigate('Events')
   }
 
-  goToAgenda() {
+  goToAgenda () {
     this.props.navigation.navigate('Events', {fetchOnlyAgenda: true})
   }
 
-  goToNews() {
+  goToNews () {
     this.props.navigation.navigate('News')
+  }
+
+  goToInfo () {
+    this.props.navigation.navigate('Info')
   }
 
   render () {
