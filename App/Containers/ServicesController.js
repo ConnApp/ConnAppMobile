@@ -3,8 +3,9 @@ import { View } from 'react-native'
 import PushNotification from 'react-native-push-notification'
 import { NavigationActions } from 'react-navigation';
 import WAMP from '../WAMP'
-
-export default class PushNotifications extends Component {
+import Datastore from '../Datastore'
+const collectionsArray = ['places', 'eventtypes', 'speakers', 'events', 'news', 'info']
+export default class ServicesController extends Component {
   constructor(props) {
     super()
     PushNotification.configure({
@@ -35,6 +36,7 @@ export default class PushNotifications extends Component {
 
     // // console.log(subArray)
     this.sockets = new WAMP({ subArray })
+    this.mongo = new Datastore(collectionsArray)
   }
 
   render() {
