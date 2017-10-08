@@ -13,6 +13,7 @@ import { Button } from 'react-native-elements'
 import { Fonts, Colors, Metrics } from '../Themes/'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Markdown from 'react-native-easy-markdown'
+import ImageCover from './ImageCover'
 
 import styles from './Styles/TextCardStyles'
 
@@ -29,6 +30,13 @@ export default class TextCard extends Component {
 
     if (title == 'nill') {
       title = ''
+    }
+
+    this.markdownStyle = {
+      imageWrapper: {
+        width: 250,
+        flex: 1
+      }
     }
 
     this.state = {
@@ -50,7 +58,7 @@ export default class TextCard extends Component {
 
     this.setState({
       text,
-      title
+      title,
     })
   }
 
@@ -61,8 +69,8 @@ export default class TextCard extends Component {
   render () {
     return (
       <View contentContainerStyle={styles.contentContainer}>
-        <Markdown style={styles.markdownStyle}>
-          {this.state.title+'\n\n' + this.state.text || 's'}
+        <Markdown markdownStyles={this.markdownStyle} style={styles.markdownStyle}>
+          {this.state.title+'\n\n' + this.state.text || ''}
         </Markdown>
       </View>
     )

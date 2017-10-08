@@ -33,10 +33,10 @@ export default class EventDetails extends Component {
     super()
     this.dataOrder = [
       'name',
-      'duration',
-      'description',
-      'place',
       'eventType',
+      'duration',
+      'place',
+      'description',
       'speakers',
     ]
 
@@ -170,22 +170,22 @@ export default class EventDetails extends Component {
     let name
     switch (rowName) {
       case 'Name':
-        name =  'Título'
+        name = 'Título'
         break;
       case 'Duration':
-        name =  'Horário'
+        name = 'Horário'
         break;
       case 'Description':
-        name =  'Descrição'
+        name = 'Descrição'
         break;
-      case 'Local':
-        name =  'Sala'
+      case 'Place':
+        name = 'Sala'
         break;
       case 'EventType':
-        name =  'Tipo'
+        name = 'Tipo'
         break;
       case 'Speakers':
-        name =  'Palestrantes'
+        name = 'Palestrantes'
         break;
       default:
         name = rowName

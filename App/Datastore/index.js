@@ -29,13 +29,21 @@ class Mongoose {
   }
 
   initSyncAll () {
-    return new Promise((resolve, reject) => {
-      Promise.all(
-        keys(this.db).map(collection => this.db[collection].sync({fetchAll: true}))
+    return Promise.all(
+      keys(this.db).map(
+        collection => new Promise((resolve, reject) => {
+          console.log(collection)
+          setTimeout(() => {
+            this.db[collection].sync({ fetchAll: true })
+              .then(res => {
+                console.log(`Synced ${collection}`)
+                resolve(res)
+              })
+              .catch(reject)
+          }, 100 + 200 * Math.random())
+        })
       )
-      .then(resolve)
-      .catch(reject)
-    })
+    )
   }
 
   removeAll () {

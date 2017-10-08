@@ -9,6 +9,8 @@ import {
   NetInfo
 } from 'react-native'
 
+import { NavigationActions } from 'react-navigation'
+
 import { Images, Colors } from '../Themes'
 import { Button } from 'react-native-elements'
 import Gradient from '../Gradient'
@@ -17,7 +19,8 @@ import { styles, colorGradient, colors } from './Styles/LaunchScreenStyles'
 
 const ds = new ListView.DataSource({rowHasChanged: (oldRow, newRow) => oldRow != newRow})
 
-const collectionArray = ['places', 'eventtypes', 'speakers', 'events', 'news', 'info']
+// const collectionArray = ['places', 'eventtypes', 'speakers', 'events', 'news', 'info']
+const collectionArray = ['events']
 
 const navigationItems = [
   { categoria: '1', title: 'Programação', navKey: 'Events', bg: colorGradient[1] },
@@ -38,25 +41,33 @@ export default class LaunchScreen extends Component {
 
   componentWillMount () {
     this.mongo = new Mongoose(collectionArray)
+    // const resetAction = NavigationActions.reset({
+    //   index: 0,
+    //   actions: [
+    //     NavigationActions.navigate({ routeName: 'LaunchScreen'})
+    //   ]
+    // })
+    // this.props.navigation.dispatch(resetAction)
   }
 
   componentDidMount () {
-    this.mongo.db.events.sync({fetchAll: true})
-      .then(res => {
-        return this.mongo.db.eventtypes.sync({fetchAll: true})
-      })
-      .then(res => {
-        return this.mongo.db.places.sync({fetchAll: true})
-      })
-      .then(res => {
-        return this.mongo.db.speakers.sync({fetchAll: true})
-      })
-      .then(res => {
-        return this.mongo.db.news.sync({fetchAll: true})
-      })
-      .then(res => {
-        return this.mongo.db.info.sync({fetchAll: true})
-      })
+    // this.mongo.db.events.sync({fetchAll: true})
+    //   .then(res => {
+    //     return this.mongo.db.eventtypes.sync({fetchAll: true})
+    //   })
+    //   .then(res => {
+    //     return this.mongo.db.places.sync({fetchAll: true})
+    //   })
+    //   .then(res => {
+    //     return this.mongo.db.speakers.sync({fetchAll: true})
+    //   })
+    //   .then(res => {
+    //     return this.mongo.db.news.sync({fetchAll: true})
+    //   })
+    //   .then(res => {
+    //     return this.mongo.db.info.sync({fetchAll: true})
+    //   })
+    this.mongo.initSyncAll()
       .then(res => {
         console.log('DONE ALL SYNC')
       })

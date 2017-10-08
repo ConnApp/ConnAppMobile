@@ -27,18 +27,19 @@ export default class Collection {
     const insertFunction = (remoteData) => {
       // // console.log(`connapp.app.${this.name.toLowerCase()}.insert - ${data}`)
       const fromRemote = true
-      data = remoteData[0]
+      const data = remoteData[0]
+      const remoteAmount = remoteData[1]
 
-      // // console.log(`Inserting ${data} docs to ${this.name.toLowerCase()}`)
-      // console.log(`${data.length} ${this.name} to be inserted`)
-      this.insert({ data, fromRemote })
+      const action = remoteAmount != 0 ?
+        this.insert({ data, fromRemote }) :
+        this.remove({ query: {} })
+
+      action
         .then(res => {
-          // console.log(`Inserted successfully`)
-          this.checkSync(remoteData[1])
+          this.checkSync(remoteAmount)
         })
         .catch(err => {
-          // console.log('There was an error inserting ' + this.name)
-          // console.log(err)
+          console.log(err)
         })
     }
 
@@ -215,7 +216,7 @@ export default class Collection {
         // rejects error object
         return reject({err})
       }
-
+      console.log(`Inserting into ${this.name}`)
       // Make sure data is array
       if (!Array.isArray(data)) data = [data]
 
@@ -384,7 +385,7 @@ export default class Collection {
         let err = new Error(`Insert query not provided`)
         return reject({err})
       }
-
+      console.log(`Removing from ${this.name}`)
       options.multi = true
 
       return this.dataStore
