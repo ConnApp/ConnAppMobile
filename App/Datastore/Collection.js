@@ -225,28 +225,33 @@ export default class Collection {
       }
       // console.log(query)
       // Insert data into the collection and return promise
+      console.log('Initiating Find')
       this.dataStore.find(query, (err, foundData) => {
         // Map found array to id. To compare data sets easily
+
         const idArray = foundData.map(res => res._id)
+        console.log('Found '+ foundData.length)
         // console.log('Found: ' + foundData.length + ' items')
         // Filter data to insert
+        const updateArray = []
         const dataToInsert = data.filter(res => {
           // Check if data fromm server is also on local db. Will update, not insert
           const index = idArray.indexOf(res._id)
           if (index == -1) {
+            console.log(`Will insert ${res._id}`)
             return true
           } else {
             // Update existing data
-            this.update({ query: {_id: res._id}, data: res, fromRemote })
+            console.log(`Will update ${res._id}`)
+            updateArray.push(this.update({ query: {_id: res._id}, data: res, fromRemote }))
             return false
           }
         })
 
-        // console.log(dataToInsert.length + ' items are being inserted to ' + this.name)
-        // Insert new data
+        console.log(`Inserts: ${dataToInsert.length}; Updates: ${updateArray.length}`)
         this.dataStore.insert(dataToInsert, (err, result) => {
           // if there is error, reject
-          if (err) return reject(err)
+          if (err) { return reject(err)}
 
           // If update was trigged by remote DB action, no need to notify remote
           // again
@@ -267,10 +272,23 @@ export default class Collection {
             this.sockets.push(new WAMP({ pubArray }))
           }
 
-          this.event.emit('insert', result)
+          if (updateArray.length) {
+            console.log('Starting to update')
+            Promise.all(updateArray)
+              .then(res => {
+                console.log('all finished')
+                resolve(res)
+              })
+              .catch(err => {
+                console.log(err)
+                reject(err)
+              })
+          } else {
+            console.log('Nothing to update or insert')
+            resolve(true)
+          }
 
-          // Resolves result
-          return resolve(result)
+          this.event.emit('insert', result)
         })
       })
     })
