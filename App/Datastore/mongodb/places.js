@@ -102,6 +102,14 @@ let localPlaces = [
     __v: 0,
     lastUpdate: "2017-10-06T03:28:06.714Z",
     createAt: "2017-10-06T03:28:06.714Z"
+  },
+  {
+    _id: "59db2e7e03a9c67f978afec9",
+    name: "Bierville",
+    lastUpdate: "2017-10-09T08:08:30.263Z",
+    createAt: "2017-10-09T08:08:30.263Z",
+    active: true,
+    __v: 0
   }
 ]
 

@@ -42,7 +42,7 @@ export default StyleSheet.create({
     flex: 1,
   },
   scrollView: {
-    paddingBottom: 45,
+    marginBottom: 50,
     flexDirection: 'column',
     backgroundColor: '#E9E9EE'
   },

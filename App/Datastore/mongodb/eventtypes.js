@@ -126,6 +126,30 @@ let localEventtypes = [
     createAt: "2017-10-09T04:43:57.997Z",
     active: true,
     __v: 0
+  },
+  {
+    _id: "59db0cbf03a9c67f978afe72",
+    name: "Intervalo",
+    lastUpdate: "2017-10-09T05:44:31.618Z",
+    createAt: "2017-10-09T05:44:31.618Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59db2a4d03a9c67f978afeae",
+    name: "Get Together de Graduação",
+    lastUpdate: "2017-10-09T07:50:37.217Z",
+    createAt: "2017-10-09T07:50:37.217Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59db2d4503a9c67f978afebf",
+    name: "Painel Internacional",
+    lastUpdate: "2017-10-09T08:03:17.088Z",
+    createAt: "2017-10-09T08:03:17.088Z",
+    active: true,
+    __v: 0
   }
 ]
 
