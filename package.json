@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "apisauce": "^0.14.0",
+    "babel-plugin-transform-remove-console": "^6.8.5",
     "format-json": "^1.0.3",
     "lodash": "^4.17.2",
     "prop-types": "^15.5.10",

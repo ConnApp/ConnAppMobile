@@ -19,6 +19,8 @@ import localEventtypes  from '../Datastore/mongodb/eventtypes.js'
 import localSpeakers    from '../Datastore/mongodb/speakers.js'
 import localPlaces      from '../Datastore/mongodb/places.js'
 
+const collectionArray = ['places', 'eventtypes', 'speakers', 'events', 'news', 'info']
+
 export default class Splash extends Component {
 
   constructor (props) {
@@ -31,7 +33,6 @@ export default class Splash extends Component {
   }
 
   shouldSyncFromCloud() {
-    console.log(localPlaces)
     return new Promise((resolve, reject) => {
       Promise.all(Object.keys(this.mongo.db).map(name => {
         let collection = this.mongo.db[name]
@@ -46,10 +47,11 @@ export default class Splash extends Component {
   }
 
   componentWillMount() {
-    this.mongo = new Mongoose(['events', 'places', 'eventtypes', 'speakers'])
+    this.mongo = new Mongoose(collectionArray)
   }
 
   syncLocalFiles() {
+    console.log('Syncing local files')
     let { events, places, speakers, eventtypes } = this.mongo.db
     const fromRemote = true
     return new Promise((resolve, reject) => {
@@ -77,7 +79,7 @@ export default class Splash extends Component {
   navigateTo(screen) {
     setTimeout(() => {
       this.props.navigation.navigate(screen)
-    }, 1000)
+    }, 2000)
   }
 
   componentDidMount() {
@@ -86,7 +88,11 @@ export default class Splash extends Component {
         return itShould? true : this.syncLocalFiles()
       })
       .then(res => {
-        if (res) this.navigateTo('LaunchScreen')
+        this.navigateTo('LaunchScreen')
+        return this.mongo.initSyncAll()
+      })
+      .then(res => {
+        console.log('Finished sync all')
       })
       .catch(err => {
         console.log(err)

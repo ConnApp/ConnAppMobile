@@ -24,11 +24,6 @@ import styles from './Styles/EventsStyles'
 
 const device = Platform.OS
 
-const events = [{
-  key:  'Carregando Salas',
-  data: [],
-}]
-
 class SearchBar extends Component {
   constructor(props) {
     super()
@@ -57,9 +52,9 @@ export default class Events extends Component {
     }
     this.mongo = new Mongoose(['events', 'places', 'eventtypes', 'speakers'])
     this.localAgendaStorage = new LocalStorage('agenda')
-    this.localLikesStorage = new LocalStorage('likes')
+    this.localLikesStorage = new LocalStorage('like')
     this.events = []
-    this.eventtypes = []
+    this.eventtype = []
     this.places = []
   }
 
@@ -97,7 +92,7 @@ export default class Events extends Component {
   }
 
   setNewEventsState (query = {}) {
-    let eventTypes = this.reduceToId(this.eventTypes)
+    let eventtype = this.reduceToId(this.eventtype)
     let places = this.reduceToId(this.places)
     let localAgendaIds = this.localAgenda.map(res => res.value)
     let localLikesIds = this.localLikes.map(res => res.value)
@@ -106,13 +101,13 @@ export default class Events extends Component {
       event.isAgenda = localAgendaIds.indexOf(event._id) > -1
       event.isLiked = localLikesIds.indexOf(event._id) > -1
       event.place = places[event.place]
-      event.eventType = eventTypes[event.eventType]
+      event.eventtype = eventtype[event.eventtype]
       return event
     })
 
     if (query.name) {
       events = events.filter(event => {
-        const hasEventType = event.eventType.toLowerCase().indexOf(query.name.toLowerCase()) > -1
+        const hasEventType = event.eventtype.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         const hasEventName = event.name.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         const hasEventPlace = event.place.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         return hasEventName || hasEventType || hasEventPlace
@@ -161,12 +156,8 @@ export default class Events extends Component {
       this.updateListItem(newPlace, 'places')
     })
 
-    // this.mongo.db.events.on('update', newEvent => {
-    //   this.updateListItem(newEvent, 'events')
-    // })
-
     this.mongo.db.eventtypes.on('update', newEventType => {
-      this.updateListItem(newEventType, 'eventTypes')
+      this.updateListItem(newEventType, 'eventtypes')
     })
 
     this.fetchEvents({})
@@ -200,8 +191,8 @@ export default class Events extends Component {
         this.events = [...dbEvents]
         return this.mongo.db.eventtypes.find({})
       })
-      .then(eventTypes => {
-        this.eventTypes = [...eventTypes]
+      .then(eventtype => {
+        this.eventtype = [...eventtype]
         return this.mongo.db.places.find({})
       })
       .then(places => {
@@ -268,8 +259,8 @@ export default class Events extends Component {
   }
 
   getEventtypeName(eventtype) {
-    let eventtypes = this.reduceToId(this.eventTypes)
-    return eventtypes[eventtype].split(' - ')[0]
+    let eventtypeArray = this.reduceToId(this.eventtype)
+    return eventtypeArray[eventtype].split(' - ')[0]
   }
 
   getSpeakersName(speakersIds) {
@@ -309,6 +300,7 @@ export default class Events extends Component {
         sections={this.state.events}
       />
     )
+
 
     const finalView = (device == 'android') ?
       (<View contentContainerStyle={styles.contentContainer}>

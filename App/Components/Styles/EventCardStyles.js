@@ -26,11 +26,11 @@ export default StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  eventType: {
+  eventtype: {
     flex: 3,
     justifyContent: 'center'
   },
-  eventTypeText: {
+  eventtypeText: {
     fontSize: Fonts.size.medium,
     fontWeight: 'normal',
   },

@@ -35,7 +35,7 @@ export default class EventCard extends Component {
         like: props.event.like? props.event.like : 0,
         likeColor: props.event.isLiked? Colors.primaryLight : 'gray',
         place: (props.event.place || '').split(' - ')[0],
-        eventType: (props.event.eventType || '').split(' - ')[0],
+        eventtype: (props.event.eventtype || '').split(' - ')[0],
         duration: getDurationFromEvent(props.event)
       }
     }
@@ -57,7 +57,7 @@ export default class EventCard extends Component {
             ...this.state.event,
             ...newEvent[0],
             place: this.props.getPlaceName(newEvent[0].place),
-            eventType: this.props.getEventtypeName(newEvent[0].eventType),
+            eventtype: this.props.getEventtypeName(newEvent[0].eventtype),
             // local: this.props.getSpeakersName(newEvent[0].speakers)
           }
         })
@@ -68,7 +68,7 @@ export default class EventCard extends Component {
   shouldComponentUpdate (nextProps, nextState) {
     let shouldUpdate =
       nextState.event.like != this.state.event.like ||
-      nextState.event.eventType != this.state.event.eventType ||
+      nextState.event.eventtype != this.state.event.eventtype ||
       nextState.event.name != this.state.event.name ||
       nextState.event.isLiked != this.state.event.isLiked ||
       nextState.event.isAgenda != this.state.event.isAgenda ||
@@ -197,9 +197,9 @@ export default class EventCard extends Component {
             {this.formatTitle(this.state.event.name)}
           </Text>
         </View>
-        <View style={styles.eventType}>
-          <Text style={styles.eventTypeText}>
-            {this.state.event.eventType + ' ' + (this.state.event.order || '')}
+        <View style={styles.eventtype}>
+          <Text style={styles.eventtypeText}>
+            {this.state.event.eventtype + ' ' + (this.state.event.order || '')}
           </Text>
         </View>
         <View style={styles.timeContainer}>

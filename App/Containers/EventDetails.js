@@ -33,7 +33,7 @@ export default class EventDetails extends Component {
     super()
     this.dataOrder = [
       'name',
-      'eventType',
+      'eventtype',
       'duration',
       'place',
       'description',
@@ -61,10 +61,10 @@ export default class EventDetails extends Component {
   }
 
   updateEvent() {
-    let { name, place, event, eventType, speakers } = this
+    let { name, place, event, eventtype, speakers } = this
 
     event.place = place.name
-    event.eventType = eventType.name
+    event.eventtype = eventtype.name
     event.speakers = [...speakers].map(speaker => speaker.name)
     event.duration = getDurationFromEvent(event)
 
@@ -113,7 +113,7 @@ export default class EventDetails extends Component {
     })
 
     this.mongo.db.eventtypes.on('update', newEventType => {
-      this.eventType = {...newEventType}
+      this.eventtype = {...newEventType}
       this.updateEvent()
     })
 
@@ -138,12 +138,12 @@ export default class EventDetails extends Component {
       .then(dbEvents => {
         this.event = [...dbEvents][0]
         const query = {
-          _id: this.event.eventType
+          _id: this.event.eventtype
         }
         return this.mongo.db.eventtypes.find({ query })
       })
-      .then(eventTypes => {
-        this.eventType = [...eventTypes][0]
+      .then(eventtype => {
+        this.eventtype = [...eventtype][0]
         const query = {
           $or: this.event.speakers.map(speaker => ({ _id: speaker }))
         }
