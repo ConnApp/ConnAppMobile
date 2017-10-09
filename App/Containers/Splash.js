@@ -18,6 +18,8 @@ import localEvents      from '../Datastore/mongodb/events.js'
 import localEventtypes  from '../Datastore/mongodb/eventtypes.js'
 import localSpeakers    from '../Datastore/mongodb/speakers.js'
 import localPlaces      from '../Datastore/mongodb/places.js'
+import localInfo      from '../Datastore/mongodb/info.js'
+import localNews      from '../Datastore/mongodb/news.js'
 
 const collectionArray = ['places', 'eventtypes', 'speakers', 'events', 'news', 'info']
 
@@ -52,7 +54,7 @@ export default class Splash extends Component {
 
   syncLocalFiles() {
     console.log('Syncing local files')
-    let { events, places, speakers, eventtypes } = this.mongo.db
+    let { events, places, speakers, eventtypes, news, info } = this.mongo.db
     const fromRemote = true
     return new Promise((resolve, reject) => {
       events.insert({ data: localEvents, fromRemote })
@@ -70,6 +72,14 @@ export default class Splash extends Component {
         })
         .then(res => {
           console.log('EventTypes inserted')
+          return news.insert({ data: localNews, fromRemote })
+        })
+        .then(res => {
+          console.log('News inserted')
+          return info.insert({ data: localInfo, fromRemote })
+        })
+        .then(res => {
+          console.log('Info inserted')
           resolve(true)
         })
         .catch(reject)

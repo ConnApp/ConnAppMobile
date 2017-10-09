@@ -1,28 +1,4 @@
-const localPlaces = [
-  {
-    _id: "59d6f846985923b0b81b64ee",
-    active: true,
-    name: "Hortência/Jasmin",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:06.714Z",
-    createAt: "2017-10-06T03:28:06.714Z"
-  },
-  {
-    _id: "59d6f846985923b0b81b64f0",
-    active: true,
-    name: "Lírio",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:06.714Z",
-    createAt: "2017-10-06T03:28:06.714Z"
-  },
-  {
-    _id: "59d6f846985923b0b81b64ef",
-    active: true,
-    name: "Espaço de Exposições",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:06.714Z",
-    createAt: "2017-10-06T03:28:06.714Z"
-  },
+let localPlaces = [
   {
     _id: "59d6f846985923b0b81b64f1",
     active: true,
@@ -43,6 +19,30 @@ const localPlaces = [
     _id: "59d6f846985923b0b81b64f3",
     active: true,
     name: "Azaleia/Ipê",
+    __v: 0,
+    lastUpdate: "2017-10-06T03:28:06.714Z",
+    createAt: "2017-10-06T03:28:06.714Z"
+  },
+  {
+    _id: "59d6f846985923b0b81b64ef",
+    active: true,
+    name: "Espaço de Exposições",
+    __v: 0,
+    lastUpdate: "2017-10-06T03:28:06.714Z",
+    createAt: "2017-10-06T03:28:06.714Z"
+  },
+  {
+    _id: "59d6f846985923b0b81b64ee",
+    active: true,
+    name: "Hortência/Jasmin",
+    __v: 0,
+    lastUpdate: "2017-10-06T03:28:06.714Z",
+    createAt: "2017-10-06T03:28:06.714Z"
+  },
+  {
+    _id: "59d6f846985923b0b81b64f0",
+    active: true,
+    name: "Lírio",
     __v: 0,
     lastUpdate: "2017-10-06T03:28:06.714Z",
     createAt: "2017-10-06T03:28:06.714Z"

@@ -64,7 +64,7 @@ export default class EventDetails extends Component {
     let { name, place, event, eventtype, speakers } = this
 
     event.place = place.name
-    event.eventtype = eventtype.name
+    event.eventType = eventtype.name
     event.speakers = [...speakers].map(speaker => speaker.name)
     event.duration = getDurationFromEvent(event)
 
@@ -138,7 +138,7 @@ export default class EventDetails extends Component {
       .then(dbEvents => {
         this.event = [...dbEvents][0]
         const query = {
-          _id: this.event.eventtype
+          _id: this.event.eventType
         }
         return this.mongo.db.eventtypes.find({ query })
       })

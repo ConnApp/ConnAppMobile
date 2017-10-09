@@ -1,139 +1,131 @@
-const localEventtypes = [
+let localEventtypes = [
   {
-    _id: "59d6f846985923b0b81b64f4",
-    active: true,
-    name: "Intervalo",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.170Z",
-    createAt: "2017-10-06T03:28:07.170Z"
-  },
-  {
-    _id: "59d6f846985923b0b81b64f6",
-    active: true,
+    _id: "59dacdc981daae7cbacbbab3",
     name: "Sessão Temática Oral",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:08.107Z",
-    createAt: "2017-10-06T03:28:08.107Z"
+    lastUpdate: "2017-10-09T01:15:53.253Z",
+    createAt: "2017-10-09T01:15:53.253Z",
+    active: true,
+    __v: 0
   },
   {
-    _id: "59d6f846985923b0b81b64f7",
-    active: true,
-    name: "Workshop de Pós-graduação",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.121Z",
-    createAt: "2017-10-06T03:28:07.121Z"
-  },
-  {
-    _id: "59d6f846985923b0b81b64f8",
-    active: true,
-    name: "Workshop de Iniciação Científica",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.260Z",
-    createAt: "2017-10-06T03:28:07.260Z"
-  },
-  {
-    _id: "59d6f846985923b0b81b64fd",
-    active: true,
+    _id: "59dacdea81daae7cbacbbab4",
     name: "Sessão Temática de Pôster",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.055Z",
-    createAt: "2017-10-06T03:28:07.055Z"
+    lastUpdate: "2017-10-09T01:16:26.393Z",
+    createAt: "2017-10-09T01:16:26.393Z",
+    active: true,
+    __v: 0
   },
   {
-    _id: "59d6f846985923b0b81b64fe",
-    active: true,
-    name: "Sessão Dirigida",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.489Z",
-    createAt: "2017-10-06T03:28:07.489Z"
-  },
-  {
-    _id: "59d6f846985923b0b81b64ff",
-    active: true,
-    name: "Get Together",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.055Z",
-    createAt: "2017-10-06T03:28:07.055Z"
-  },
-  {
-    _id: "59d6f847985923b0b81b6503",
-    active: true,
-    name: "Encontro",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.993Z",
-    createAt: "2017-10-06T03:28:07.993Z"
-  },
-  {
-    _id: "59d6f847985923b0b81b650b",
-    active: true,
-    name: "Sessão Temática Internacional",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.410Z",
-    createAt: "2017-10-06T03:28:07.410Z"
-  },
-  {
-    _id: "59d6f847985923b0b81b6513",
-    active: true,
-    name: "Sessão Temática Internacional ",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:06.938Z",
-    createAt: "2017-10-06T03:28:06.938Z"
-  },
-  {
-    _id: "59d6f847985923b0b81b6527",
-    active: true,
-    name: "Palesta Internacional",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.966Z",
-    createAt: "2017-10-06T03:28:07.966Z"
-  },
-  {
-    _id: "59d6f847985923b0b81b652e",
-    active: true,
-    name: "Palesta Nacional",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:08.380Z",
-    createAt: "2017-10-06T03:28:08.380Z"
-  },
-  {
-    _id: "59d6f848985923b0b81b654b",
-    active: true,
-    name: "Painel",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:08.107Z",
-    createAt: "2017-10-06T03:28:08.107Z"
-  },
-  {
-    _id: "59d6f848985923b0b81b6557",
-    active: true,
-    name: "Workshop",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:08.107Z",
-    createAt: "2017-10-06T03:28:08.107Z"
-  },
-  {
-    _id: "59d6f848985923b0b81b655a",
-    active: true,
-    name: "Case Empresarial",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.667Z",
-    createAt: "2017-10-06T03:28:07.667Z"
-  },
-  {
-    _id: "59d6f848985923b0b81b6565",
-    active: true,
+    _id: "59dace0481daae7cbacbbab6",
     name: "Sessão de Abertura",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:08.049Z",
-    createAt: "2017-10-06T03:28:08.049Z"
+    lastUpdate: "2017-10-09T01:16:52.570Z",
+    createAt: "2017-10-09T01:16:52.570Z",
+    active: true,
+    __v: 0
   },
   {
-    _id: "59d6f848985923b0b81b6589",
+    _id: "59dace0e81daae7cbacbbab7",
+    name: "Painel",
+    lastUpdate: "2017-10-09T01:17:02.332Z",
+    createAt: "2017-10-09T01:17:02.332Z",
     active: true,
-    name: "Get Together de Graduação",
-    __v: 0,
-    lastUpdate: "2017-10-06T03:28:07.993Z",
-    createAt: "2017-10-06T03:28:07.993Z"
+    __v: 0
+  },
+  {
+    _id: "59dace1b81daae7cbacbbab8",
+    name: "Get Together",
+    lastUpdate: "2017-10-09T01:17:15.060Z",
+    createAt: "2017-10-09T01:17:15.060Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dace3181daae7cbacbbab9",
+    name: "Workshop de Iniciação Científica",
+    lastUpdate: "2017-10-09T01:17:37.706Z",
+    createAt: "2017-10-09T01:17:37.706Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dace5481daae7cbacbbaba",
+    name: "Workshop de Pós Graduação",
+    lastUpdate: "2017-10-09T01:18:12.988Z",
+    createAt: "2017-10-09T01:18:12.988Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dace7581daae7cbacbbabb",
+    name: "ConaJOVEM",
+    lastUpdate: "2017-10-09T01:18:45.776Z",
+    createAt: "2017-10-09T01:18:45.776Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dace8581daae7cbacbbabc",
+    name: "Case",
+    lastUpdate: "2017-10-09T01:19:01.758Z",
+    createAt: "2017-10-09T01:19:01.758Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dace9381daae7cbacbbabd",
+    name: "Palestra Nacional",
+    lastUpdate: "2017-10-09T01:19:15.241Z",
+    createAt: "2017-10-09T01:19:15.241Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dace9f81daae7cbacbbabe",
+    name: "Sessão Dirigida",
+    lastUpdate: "2017-10-09T01:19:27.401Z",
+    createAt: "2017-10-09T01:19:27.401Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59daceaf81daae7cbacbbabf",
+    name: "Sessão Temática Internacional",
+    lastUpdate: "2017-10-09T01:19:43.298Z",
+    createAt: "2017-10-09T01:19:43.298Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dacecc81daae7cbacbbac1",
+    name: "Palestra Internacional",
+    lastUpdate: "2017-10-09T01:20:12.841Z",
+    createAt: "2017-10-09T01:20:12.841Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dacf0281daae7cbacbbac2",
+    name: "Workshop",
+    lastUpdate: "2017-10-09T01:21:06.016Z",
+    createAt: "2017-10-09T01:21:06.016Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dacf7281daae7cbacbbac3",
+    name: "Encontro",
+    lastUpdate: "2017-10-09T01:22:58.082Z",
+    createAt: "2017-10-09T01:22:58.082Z",
+    active: true,
+    __v: 0
+  },
+  {
+    _id: "59dafe8d03a9c67f978afe6f",
+    name: "Assembleia",
+    lastUpdate: "2017-10-09T04:43:57.997Z",
+    createAt: "2017-10-09T04:43:57.997Z",
+    active: true,
+    __v: 0
   }
 ]
 

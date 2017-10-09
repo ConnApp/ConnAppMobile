@@ -101,13 +101,13 @@ export default class Events extends Component {
       event.isAgenda = localAgendaIds.indexOf(event._id) > -1
       event.isLiked = localLikesIds.indexOf(event._id) > -1
       event.place = places[event.place]
-      event.eventtype = eventtype[event.eventtype]
+      event.eventType = eventtype[event.eventType]
       return event
     })
 
     if (query.name) {
       events = events.filter(event => {
-        const hasEventType = event.eventtype.toLowerCase().indexOf(query.name.toLowerCase()) > -1
+        const hasEventType = (event.eventType || '').toLowerCase().indexOf(query.name.toLowerCase()) > -1
         const hasEventName = event.name.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         const hasEventPlace = event.place.toLowerCase().indexOf(query.name.toLowerCase()) > -1
         return hasEventName || hasEventType || hasEventPlace
